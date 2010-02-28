@@ -46,6 +46,7 @@
 (deftest train-classifier-c45
   (let [c (make-classifier :decission-tree :c45)
         ds (clj-ml.data/make-dataset "test" [:a :b {:c [:m :n]}] [[1 2 :m] [4 5 :m]])]
+    (clj-ml.data/dataset-set-class ds 2)
     (classifier-train c ds)
     (is true)))
 
@@ -53,7 +54,9 @@
   (let [c (make-classifier :decission-tree :c45)
         ds (clj-ml.data/make-dataset "test" [:a :b {:c [:m :n]}] [[1 2 :m] [4 5 :m]])
         tds (clj-ml.data/make-dataset "test" [:a :b {:c [:m :n]}] [[4 1 :n] [4 5 :m]])
-        foo (classifier-train c ds)
+        foo1(clj-ml.data/dataset-set-class ds 2)
+        foo2(clj-ml.data/dataset-set-class tds 2)
+        foo2 (classifier-train c ds)
         res (classifier-evaluate c :dataset ds tds)]
     (is (= 26 (count (keys res))))))
 
@@ -61,6 +64,7 @@
 (deftest classifier-evaluate-cross-validation
   (let [c (make-classifier :decission-tree :c45)
         ds (clj-ml.data/make-dataset "test" [:a :b {:c [:m :n]}] [[1 2 :m] [4 5 :m]])
-        foo (classifier-train c ds)
+        foo1(clj-ml.data/dataset-set-class ds 2)
+        foo2 (classifier-train c ds)
         res (classifier-evaluate c :cross-validation ds 2)]
     (is (= 26 (count (keys res))))))

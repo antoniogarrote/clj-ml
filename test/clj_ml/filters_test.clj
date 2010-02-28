@@ -69,6 +69,7 @@
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
+        foo1(clj-ml.data/dataset-set-class ds 2)
         f (make-filter :supervised-discretize {:dataset ds :attributes [0]})]
     (is (= weka.filters.supervised.attribute.Discretize
            (class f)))))
@@ -87,6 +88,7 @@
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
+        foo1(clj-ml.data/dataset-set-class ds 2)
         f (make-filter :supervised-nominal-to-binary {:dataset ds})]
     (is (= weka.filters.supervised.attribute.NominalToBinary
            (class f)))))

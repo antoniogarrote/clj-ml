@@ -24,16 +24,11 @@
   (is (= 1.0 (.value inst 0)))
   (is (= "b1" (.stringValue inst 1)))))
 
-(deftest dataset-default-class
-  (let [dataset (make-dataset :test
-                              [:a :b]
-                              2)]
-    (is (= 1 (.classIndex dataset)))))
-
 (deftest dataset-change-class
   (let [dataset (make-dataset :test
                               [:a :b]
-                              2)]
+                              2)
+        foo(clj-ml.data/dataset-set-class dataset 1)]
     (is (= 1 (.classIndex dataset)))
     (is (= 0 (.classIndex (dataset-set-class dataset 0))))))
 
