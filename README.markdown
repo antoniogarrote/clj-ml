@@ -20,7 +20,7 @@ Loading data from a CSV file:
 
     (use 'clj-ml.data)
 
-   ; Defining a dataset
+    ; Defining a dataset
     (def ds (make-dataset "name" [:length :width {:kind [:good :bad]}] [12 34 :good] [24 53 :bad] ]))
 
     ds
@@ -35,12 +35,12 @@ Loading data from a CSV file:
     12,34,good
     24,53,bad>
 
-   ; Using datasets like sequences
+    ; Using datasets like sequences
     (dataset-seq ds)
 
     (#<Instance 12,34,good> #<Instance 24,53,bad>)
 
-   ; Transforming instances  into maps or vectors
+    ; Transforming instances  into maps or vectors
     (instance-to-map (first (dataset-seq ds)))
 
     {:kind :good, :width 34.0, :length 12.0}
@@ -51,13 +51,10 @@ Loading data from a CSV file:
 
     (us 'clj-ml.filters)
 
-    (def ds (load-instances :arff
-    "file:///Applications/weka-3-6-2/data/iris.arff"))
+    (def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
 
     ; Discretizing a numeric attribute using an unsupervised filter
-    (def  discretize (make-filter :unsupervised-discretize
-                                                 {:dataset *ds*
-                                                  :attributes [0 2]}))
+    (def  discretize (make-filter :unsupervised-discretize {:dataset *ds* :attributes [0 2]}))
 
     (def filtered-ds (filter-process discretize ds))
 
