@@ -18,12 +18,12 @@ Loading data from a CSV file:
 
 * Working with datasets
 
-    (use 'clj-ml.data)
+     (use 'clj-ml.data)
 
     ; Defining a dataset
-    (def ds (make-dataset "name" [:length :width {:kind [:good :bad]}] [12 34 :good] [24 53 :bad] ]))
+     (def ds (make-dataset "name" [:length :width {:kind [:good :bad]}] [12 34 :good] [24 53 :bad] ]))
 
-    ds
+     ds
 
      #<ClojureInstances @relation name
 
@@ -36,12 +36,12 @@ Loading data from a CSV file:
      24,53,bad>
 
     ; Using datasets like sequences
-    (dataset-seq ds)
+     (dataset-seq ds)
 
      (#<Instance 12,34,good> #<Instance 24,53,bad>)
 
     ; Transforming instances  into maps or vectors
-    (instance-to-map (first (dataset-seq ds)))
+     (instance-to-map (first (dataset-seq ds)))
 
      {:kind :good, :width 34.0, :length 12.0}
 
