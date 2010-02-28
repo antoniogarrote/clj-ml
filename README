@@ -23,6 +23,8 @@ the jar manually.
 
 ### Installing from Maven
 
+(add Clojar repository)
+
  <dependency>
    <groupId>clj-ml</groupId>
    <artifactId>clj-ml</artifactId>
@@ -33,8 +35,7 @@ the jar manually.
 
 * I/O of data
 
-   REPL>; Loading data from a CSV file:
-   REPL>(use 'clj-ml.io)
+    REPL>(use 'clj-ml.io)
 
     REPL>; Loading data from an ARFF file, XRFF and CSV are also supported
     REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
