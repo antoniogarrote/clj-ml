@@ -6,9 +6,8 @@ A machine learning library for Clojure built on top of Weka and friends
 
 * I/O of data
 
-Loading data from a CSV file:
-
-    REPL>(use 'clj-ml.io)
+   REPL>; Loading data from a CSV file:
+   REPL>(use 'clj-ml.io)
 
     REPL>; Loading data from an ARFF file, XRFF and CSV are also supported
     REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))

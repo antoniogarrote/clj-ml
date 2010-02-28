@@ -1,5 +1,5 @@
 (defproject clj-ml "0.0.3-SNAPSHOT"
-  :description "Machine Learning library for Clojure"
+  :description "Machine Learning library for Clojure built around Weka and friends"
   :java-source-path "src/java"
   :javac-fork "true"
   :dependencies [[org.clojure/clojure "1.1.0"]
