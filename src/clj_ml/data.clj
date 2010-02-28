@@ -103,6 +103,10 @@
 
 ;; dataset information
 
+(defn dataset-name [dataset]
+  "Returns the name of this dataset"
+  (.relationName dataset))
+
 (defn dataset-class-values [dataset]
   "Returns the possible values for the class attribute"
   (let [class-attr (.classAttribute dataset)
