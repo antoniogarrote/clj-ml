@@ -18,34 +18,34 @@ Loading data from a CSV file:
 
 * Working with datasets
 
-     (use 'clj-ml.data)
+    (use 'clj-ml.data)
 
-    ; Defining a dataset
-     (def ds (make-dataset "name" [:length :width {:kind [:good :bad]}] [12 34 :good] [24 53 :bad] ]))
+   ; Defining a dataset
+    (def ds (make-dataset "name" [:length :width {:kind [:good :bad]}] [12 34 :good] [24 53 :bad] ]))
 
-     ds
+    ds
 
-     #<ClojureInstances @relation name
+    #<ClojureInstances @relation name
 
-     @attribute length numeric
-     @attribute width numeric
-     @attribute kind {good,bad}
+    @attribute length numeric
+    @attribute width numeric
+    @attribute kind {good,bad}
 
-     @data
-     12,34,good
-     24,53,bad>
+    @data
+    12,34,good
+    24,53,bad>
 
-    ; Using datasets like sequences
-     (dataset-seq ds)
+   ; Using datasets like sequences
+    (dataset-seq ds)
 
-     (#<Instance 12,34,good> #<Instance 24,53,bad>)
+    (#<Instance 12,34,good> #<Instance 24,53,bad>)
 
-    ; Transforming instances  into maps or vectors
-     (instance-to-map (first (dataset-seq ds)))
+   ; Transforming instances  into maps or vectors
+    (instance-to-map (first (dataset-seq ds)))
 
-     {:kind :good, :width 34.0, :length 12.0}
+    {:kind :good, :width 34.0, :length 12.0}
 
-     (instance-to-vector (dataset-at ds 0))
+    (instance-to-vector (dataset-at ds 0))
 
 * Filtering datasets
 
