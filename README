@@ -8,22 +8,21 @@ A machine learning library for Clojure built on top of Weka and friends
 
 Loading data from a CSV file:
 
-    (use 'clj-ml.io)
+    REPL>(use 'clj-ml.io)
 
-    ; Loading data from an ARFF file, XRFF and CSV are also supported
-    (def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
+    REPL>; Loading data from an ARFF file, XRFF and CSV are also supported
+    REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
 
-    ; Saving data in a different format
-    (save-instances :csv ds)
+    REPL>; Saving data in a different format
+    REPL>(save-instances :csv ds)
 
 * Working with datasets
 
-    (use 'clj-ml.data)
+    REPL>(use 'clj-ml.data)
 
-    ; Defining a dataset
-    (def ds (make-dataset "name" [:length :width {:kind [:good :bad]}] [12 34 :good] [24 53 :bad] ]))
-
-    ds
+    REPL>; Defining a dataset
+    REPL>(def ds (make-dataset "name" [:length :width {:kind [:good :bad]}] [12 34 :good] [24 53 :bad] ]))
+    REPL>ds
 
     #<ClojureInstances @relation name
 
@@ -35,41 +34,42 @@ Loading data from a CSV file:
     12,34,good
     24,53,bad>
 
-    ; Using datasets like sequences
-    (dataset-seq ds)
+    REPL>; Using datasets like sequences
+    REPL>(dataset-seq ds)
 
     (#<Instance 12,34,good> #<Instance 24,53,bad>)
 
-    ; Transforming instances  into maps or vectors
-    (instance-to-map (first (dataset-seq ds)))
+    REPL>; Transforming instances  into maps or vectors
+    REPL>(instance-to-map (first (dataset-seq ds)))
 
     {:kind :good, :width 34.0, :length 12.0}
 
-    (instance-to-vector (dataset-at ds 0))
+    REPL>(instance-to-vector (dataset-at ds 0))
+    [12.0 34.0 :good]
 
 * Filtering datasets
 
-    (us 'clj-ml.filters)
+    REPL>(us 'clj-ml.filters)
 
-    (def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
+    REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
 
-    ; Discretizing a numeric attribute using an unsupervised filter
-    (def  discretize (make-filter :unsupervised-discretize {:dataset *ds* :attributes [0 2]}))
+    REPL>; Discretizing a numeric attribute using an unsupervised filter
+    REPL>(def  discretize (make-filter :unsupervised-discretize {:dataset *ds* :attributes [0 2]}))
 
-    (def filtered-ds (filter-process discretize ds))
+    REPL>(def filtered-ds (filter-process discretize ds))
 
 * Using classifiers
 
-    (use 'clj-ml.classifiers)
+    REPL>(use 'clj-ml.classifiers)
 
-    ; Building a classifier using a  C4.5 decission tree
-    (def classifier (make-classifier :decission-tree :c45))
+    REPL>; Building a classifier using a  C4.5 decission tree
+    REPL>(def classifier (make-classifier :decission-tree :c45))
 
-    ; We set the class attribute for the loaded dataset
-    (dataset-set-class ds 4)
+    REPL>; We set the class attribute for the loaded dataset
+    REPL>(dataset-set-class ds 4)
 
-    ; Training the classifier
-    (classifier-train classifier ds)
+    REPL>; Training the classifier
+    REPL>(classifier-train classifier ds)
 
      #<J48 J48 pruned tree
      ------------------
@@ -88,9 +88,9 @@ Loading data from a CSV file:
      Size of the tree :	9
 
 
-    ; We evaluate the classifier using a test dataset
-    ; last parameter should be a different test dataset, here we are using the same
-    (def evaluation   (classifier-evaluate classifier  :dataset ds ds))
+    REPL>; We evaluate the classifier using a test dataset
+    REPL>; last parameter should be a different test dataset, here we are using the same
+    REPL>(def evaluation   (classifier-evaluate classifier  :dataset ds ds))
 
      === Confusion Matrix ===
 
@@ -110,21 +110,21 @@ Loading data from a CSV file:
      Root relative squared error		    22.9089 %
      Total Number of Instances		   150
 
-    (:kappa evaluation)
+    REPL>(:kappa evaluation)
 
      0.97
 
-    (:root-mean-squared-error e)
+    REPL>(:root-mean-squared-error e)
 
      0.10799370769526968
 
-    (:precision e)
+    REPL>(:precision e)
 
      {:Iris-setosa 1.0, :Iris-versicolor 0.9607843137254902, :Iris-virginica
       0.9795918367346939}
 
-    ; The classifier can also be evaluated using cross-validation
-    (classifier-evaluate classifier :cross-validation ds 10)
+    REPL>; The classifier can also be evaluated using cross-validation
+    REPL>(classifier-evaluate classifier :cross-validation ds 10)
 
      === Confusion Matrix ===
 
@@ -144,27 +144,27 @@ Loading data from a CSV file:
      Root relative squared error		    40.1278 %
      Total Number of Instances		   150
 
-    ; A trained classifier can be used to classify new instances
-    (def to-classify (make-instance ds
+    REPL>; A trained classifier can be used to classify new instances
+    REPL>(def to-classify (make-instance ds
                                                       {:class :Iris-versicolor,
                                                       :petalwidth 0.2,
                                                       :petallength 1.4,
                                                       :sepalwidth 3.5,
                                                       :sepallength 5.1}))
-    (classifier-classify classifier to-classify)
+    REPL>(classifier-classify classifier to-classify)
 
      0.0
 
-    (classifier-label to-classify)
+    REPL>(classifier-label to-classify)
 
      #<Instance 5.1,3.5,1.4,0.2,Iris-setosa>
 
 
-    ; The classifiers can be saved and restored later
-    (use 'clj-ml.utils)
+    REPL>; The classifiers can be saved and restored later
+    REPL>(use 'clj-ml.utils)
 
-    (serialize-to-file classifier
-    "/Users/antonio.garrote/Desktop/classifier.bin")
+    REPL>(serialize-to-file classifier
+    REPL> "/Users/antonio.garrote/Desktop/classifier.bin")
 
 ## Installation
 
