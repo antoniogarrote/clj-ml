@@ -21,13 +21,7 @@ Loading data from a CSV file:
     (use 'clj-ml.data)
 
     ; Defining a dataset
-    (def ds (make-dataset ; name of the dataset
-                    "name"
-                    ; two numeric attributes and one nominal
-                    [:length :width {:kind [:good :bad]}]
-                    ; initial data
-                     [12 34 :good]
-                     [24 53 :bad] ]))
+    (def ds (make-dataset "name" [:length :width {:kind [:good :bad]}] [12 34 :good] [24 53 :bad] ]))
 
     ds
 
