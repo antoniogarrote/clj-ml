@@ -23,7 +23,7 @@ the jar manually.
 
 ### Installing from Maven
 
-(add Clojar repository)
+(add Clojars repository)
 
  <dependency>
    <groupId>clj-ml</groupId>
@@ -41,7 +41,7 @@ the jar manually.
     REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
 
     REPL>; Saving data in a different format
-    REPL>(save-instances :csv ds)
+    REPL>(save-instances :csv "file:///Users/antonio.garrote/Desktop/iris.csv"  ds)
 
 * Working with datasets
 
