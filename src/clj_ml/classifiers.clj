@@ -1,5 +1,5 @@
 ;;
-;; Data processing of data with different filtering algorithms
+;; Classifiers
 ;; @author Antonio Garrote
 ;;
 
@@ -69,7 +69,7 @@
 
 (defmacro make-classifier-m
   ([kind algorithm classifier-class options]
-     `(let [options-read# (if (empty? ~options)  {} ~options)
+     `(let [options-read# (if (empty? ~options)  {} (first ~options))
             classifier# (new ~classifier-class)
             opts# (make-classifier-options ~kind ~algorithm options-read#)]
         (.setOptions classifier# opts#)

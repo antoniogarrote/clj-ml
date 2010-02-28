@@ -98,12 +98,13 @@
                 ;; we haven't received a vector so we create an empty dataset
                 (new Instances (key-to-str name) (parse-attributes attributes) capacity-or-values))]
        ;; by default the class is the last attribute in the dataset
-       (.setClassIndex ds (- (.numAttributes ds) 1))
+       ;; (.setClassIndex ds (- (.numAttributes ds) 1))
        ds)))
 
 ;; dataset information
 
 (defn dataset-class-values [dataset]
+  "Returns the possible values for the class attribute"
   (let [class-attr (.classAttribute dataset)
         values (.enumerateValues class-attr)]
     (loop [continue (.hasMoreElements values)
@@ -116,6 +117,7 @@
         acum))))
 
 (defn dataset-values-at [dataset-or-instance pos]
+  "Returns the possible values for a nominal attribute at the provided position"
   (let [class-attr (.attribute dataset-or-instance pos)
         values (.enumerateValues class-attr)]
     (if (nil? values)
@@ -128,6 +130,24 @@
             (recur (.hasMoreElements values)
                    (conj acum {(keyword val) index})))
           acum)))))
+
+(defn dataset-attributes-definition [dataset]
+  "Returns the definition of the attributes of this dataset"
+  (let [max (.numAttributes dataset)]
+    (loop [acum []
+           c 0]
+      (if (< c max)
+        (let [attr (.attribute dataset c)
+              index c
+              name (keyword (.name attr))
+              nominal? (.isNominal attr)
+              to-add (if nominal?
+                       (let [vals (dataset-values-at dataset index)]
+                         {name (keys vals)})
+                       name)]
+          (recur (conj acum to-add)
+                 (+ c 1)))
+        acum))))
 
 ;; manipulation of instances
 
@@ -191,6 +211,12 @@
   "Sets the index of the attribute of the dataset that is the class of the dataset"
   (do (.setClassIndex dataset pos)
       dataset))
+
+(defn dataset-remove-class [dataset]
+  "Removes the class attribute from the dataset"
+  (do
+    (.setClassIndex dataset -1)
+    dataset))
 
 (defn dataset-count [dataset]
   "Returns the number of elements in a dataset"
