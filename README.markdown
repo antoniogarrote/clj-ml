@@ -22,12 +22,12 @@ Loading data from a CSV file:
 
     ; Defining a dataset
     (def ds (make-dataset ; name of the dataset
-                                        "name"
-                                        ; two numeric attributes and one nominal
-                                        [:length :width {:kind [:good :bad]}]
-                                        ; initial data
-                                       [ [12 34 :good]
-                                         [24 53 :bad] ]))
+                    "name"
+                    ; two numeric attributes and one nominal
+                    [:length :width {:kind [:good :bad]}]
+                    ; initial data
+                     [12 34 :good]
+                     [24 53 :bad] ]))
 
     ds
 
@@ -51,7 +51,7 @@ Loading data from a CSV file:
 
      {:kind :good, :width 34.0, :length 12.0}
 
-    (instance-to-vector (dataset-at ds 0))
+     (instance-to-vector (dataset-at ds 0))
 
 * Filtering datasets
 
