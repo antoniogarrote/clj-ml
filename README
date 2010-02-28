@@ -2,6 +2,33 @@
 
 A machine learning library for Clojure built on top of Weka and friends
 
+## Installation
+
+In order to install the library you must first install Leiningen.
+You should also download the Weka 3.6.2 jar from the official weka homepage.
+If maven complains about not finding weka, follow its instructions to install
+the jar manually.
+
+### To install from source
+
+*  git clone the project
+* $ lein deps
+* $ lein compile
+* $ lein compile-java
+* $ lein uberjar
+
+### Installing from Clojars
+
+  [clj-ml "0.0.3-SNAPSHOT"]
+
+### Installing from Maven
+
+ <dependency>
+   <groupId>clj-ml</groupId>
+   <artifactId>clj-ml</artifactId>
+   <version>0.0.3-SNAPSHOT</version>
+ </dependency>
+
 ## Usage
 
 * I/O of data
@@ -164,21 +191,6 @@ A machine learning library for Clojure built on top of Weka and friends
 
     REPL>(serialize-to-file classifier
     REPL> "/Users/antonio.garrote/Desktop/classifier.bin")
-
-## Installation
-
-In order to install the library you must first install Leiningen.
-You should also download the Weka 3.6.2 jar from the official weka homepage.
-If maven complains about not finding weka, follow its instructions to install
-the jar manually.
-
-### To install from source
-
-*  git clone the project
-* $ lein deps
-* $ lein compile
-* $ lein compile-java
-* $ lein uberjar
 
 ## License
 
