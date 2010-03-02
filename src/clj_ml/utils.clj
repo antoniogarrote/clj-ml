@@ -17,6 +17,13 @@
        (let [sk (str k)]
          (.substring sk 1)))))
 
+(defn first-or-default
+  "Returns the first element in the collection or the default value"
+  ([col default]
+     (if (empty? col)
+       default
+       (first col))))
+
 ;; Manipulation of array of options
 
 (defn check-option [opts val flag map]

@@ -7,6 +7,12 @@
   (:use (incanter core stats charts)
         (clj-ml data utils)))
 
+(defn visualize-plot [plot]
+  "Prepare a plot to be displayed"
+  (do (clear-background plot)
+      (view plot)
+      plot))
+
 (defmulti display-object
   "Displays some kind of clj-ml object"
   (fn [kind chart data opts] [kind chart]))
@@ -24,17 +30,18 @@
                             {}
                             cols)
            title (or (get display-opts :title) (str "Dataset '" (dataset-name dataset) "' Box Plot"))
-           legend (or (get display-opts :legend) true)]
+           legend (if (nil? (get display-opts :legend))  true (get display-opts :legend))
+           should-display (get display-opts :visualize)]
        (loop [plot nil
               ks (keys vals-map)]
          (if (empty? ks)
-           (do
-             (view plot)
+           (if should-display
+             (visualize-plot plot)
              plot)
            (let [this-val (get vals-map (first ks))
                  the-plot (if (nil? plot)
-                            (box-plot this-val :title title)
-                            (do (add-box-plot plot this-val)
+                            (box-plot this-val :title title :legend legend :series-label (key-to-str (first ks)))
+                            (do (add-box-plot plot this-val :series-label (key-to-str (first ks)))
                                 plot))]
              (recur the-plot (rest ks))))))))
 
@@ -73,12 +80,13 @@
            title (or (get display-opts :title) (str "Dataset '" (dataset-name dataset) "' Scatter Plot ("
                                                     (key-to-str (nth cols-names col-0)) " vs "
                                                     (key-to-str (nth cols-names col-1)) ")"))
-           legend (or (get display-opts :legend) true)]
+           legend (if (nil? (get display-opts :legend))  true (get display-opts :legend))
+           should-display (get display-opts :visualize)]
        (loop [plot nil
               ks (keys folded-points)]
          (if (empty? ks)
-           (do
-             (view plot)
+           (if should-display
+             (visualize-plot plot)
              plot)
            (let [this-vals  (get folded-points (first ks))
                  this-val-0 (get this-vals col-0)
@@ -87,8 +95,10 @@
                             (scatter-plot this-val-0 this-val-1
                                           :title title
                                            :x-label (key-to-str (nth cols-names col-0))
-                                           :y-label (key-to-str (nth cols-names col-1)))
-                             (do (add-points plot this-val-0 this-val-1)
+                                           :y-label (key-to-str (nth cols-names col-1))
+                                           :series-label (key-to-str (first ks))
+                                           :legend legend)
+                             (do (add-points plot this-val-0 this-val-1 :series-label (key-to-str (first ks)))
                                  plot))]
               (recur the-plot (rest ks))))))))
 
@@ -97,6 +107,8 @@
 
 ;(defn load-test-from-slime []
 ;  (do
+;    (add-classpath "file:///Users/antonio.garrote/Development/old/clj-ml/lib/joda-time-1.6.jar")
+;    (add-classpath "file:///Users/antonio.garrote/Development/old/clj-ml/lib/opencsv-2.0.1.jar")
 ;    (add-classpath "file:///Users/antonio.garrote/Development/old/clj-ml/classes/")
 ;    (add-classpath "file:///Applications/weka-3-6-2/weka.jar")
 ;    (add-classpath "file:///Users/antonio.garrote/Development/old/clj-ml/src/")

@@ -4,14 +4,14 @@
 ;;
 
 (ns clj-ml.data
-  (:use [clj-ml utils])
+  (:use [clj-ml utils ui])
   (:import (weka.core Instance Instances FastVector Attribute)
            (cljml ClojureInstances)))
 
 
 ;; Construction of individual data and datasets
 
-(defn attribute-name-at- [dataset-or-instance pos]
+(defn attribute-name-at [dataset-or-instance pos]
   (let [class-attr (.attribute dataset-or-instance pos)]
     (.name class-attr)))
 
@@ -21,9 +21,16 @@
     (loop [c 0]
       (if (= c max)
         (throw (.Exception (str "Attribute " attrs " not found")))
-        (if (= attrs (attribute-name-at- dataset-or-instance c))
+        (if (= attrs (attribute-name-at dataset-or-instance c))
           c
           (recur (+ c 1 )))))))
+
+(defn dataset-index-attr [dataset attr]
+  (index-attr dataset attr))
+
+(defn instance-index-attr [instance attr]
+  (index-attr instance attr))
+
 
 (defn make-instance
   "Creates a new dataset instance from a vector"
@@ -153,6 +160,10 @@
                  (+ c 1)))
         acum))))
 
+(defn dataset-get-class [dataset]
+  "Returns the index of the class attribute for this dataset"
+  (.classIndex dataset))
+
 ;; manipulation of instances
 
 (defn instance-set-class [instance pos]
@@ -256,3 +267,19 @@
   "Removes and returns the first instance in the dataset"
   [dataset]
   (dataset-extract-at dataset 0))
+
+;; visualization
+
+(defn dataset-display-numeric-attributes [dataset attributes & visualization-options]
+  "Displays the provided attributes into a box plot"
+  (let [attr (map #(if (keyword? %1) (index-attr dataset %1) %1) attributes)
+        options (first-or-default visualization-options {})]
+    (display-object :dataset :boxplot {:dataset dataset :cols attr} options)))
+
+(defn dataset-display-class-for-attributes [dataset attribute-x attribute-y & visualization-options]
+  "Displays how a pair of attributes are distributed for each class"
+  (let [attr-x (if (keyword? attribute-x) (index-attr dataset attribute-x) attribute-x)
+        attr-y (if (keyword? attribute-y) (index-attr dataset attribute-y) attribute-y)
+        opts (first-or-default visualization-options {})
+        class-index (dataset-get-class dataset)]
+    (display-object :dataset :scatter-plot {:dataset dataset :cols [attr-x attr-y] :group-by class-index} opts)))
