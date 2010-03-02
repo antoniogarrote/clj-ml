@@ -103,20 +103,6 @@
 
 ;; Evaluating classifiers
 
-(defn- try-metric [f]
-  (try (f)
-       (catch Exception ex {:nan (.getMessage ex)})))
-
-(defn- try-multiple-values-metric [class-values f]
-  (loop [acum {}
-         ks (keys class-values)]
-    (if (empty? ks)
-      acum
-      (let [index (get class-values (first ks))
-            val (f index)]
-        (recur (conj acum {(first ks) val})
-               (rest ks))))))
-
 (defn- collect-evaluation-results
   "Collects all the statistics from the evaluation of a classifier"
   ([class-values evaluation]

@@ -4,8 +4,9 @@
 ;;
 
 (ns clj-ml.ui
-  (:use (incanter core stats charts)
-        (clj-ml data utils)))
+  (:use (clj-ml data utils clusterers)
+        (incanter core stats charts)))
+
 
 (defn visualize-plot [plot]
   "Prepare a plot to be displayed"
@@ -55,26 +56,28 @@
            col-1 (nth cols 1)
            group-by (get dataset-opts :group-by)
            cols-names (dataset-attributes-definition dataset)
-           group-vals (dataset-values-at dataset group-by)
+           group-vals (if (nil? group-by) {:no-group-by :no-class} (dataset-values-at dataset group-by))
            acum-map (reduce (fn [acum group-val]
-                              (conj acum {(first group-val) (reduce (fn [acum x] (conj acum {x []}))
-                                                            {}
-                                                            cols)}))
+                              (conj acum {(first group-val)
+                                          (reduce (fn [acum x] (conj acum {x []}))
+                                                  {}
+                                                  cols)}))
                             {}
                             group-vals)
            folded-points (reduce (fn [acum instance]
                                    (let [inst (instance-to-vector instance)
                                          val-0 (nth inst col-0)
                                          val-1 (nth inst col-1)
-                                         class (nth inst group-by)]
+                                         class (if (nil? group-by)
+                                                 :no-group-by
+                                                 (nth inst group-by))]
                                      (merge-with
                                       (fn [a b] {col-0 (conj (get a col-0)
                                                              (get b col-0))
                                                  col-1 (conj (get a col-1)
                                                              (get b col-1))})
                                       acum
-                                      {class {col-0 val-0 col-1 val-1}})
-                                     ))
+                                      {class {col-0 val-0 col-1 val-1}})))
                                  acum-map
                                  dataseq)
            title (or (get display-opts :title) (str "Dataset '" (dataset-name dataset) "' Scatter Plot ("
@@ -101,6 +104,66 @@
                              (do (add-points plot this-val-0 this-val-1 :series-label (key-to-str (first ks)))
                                  plot))]
               (recur the-plot (rest ks))))))))
+
+
+;; visualization of different objects
+
+(defn dataset-display-numeric-attributes [dataset attributes & visualization-options]
+  "Displays the provided attributes into a box plot"
+  (let [attr (map #(if (keyword? %1) (index-attr dataset %1) %1) attributes)
+        options-pre (first-or-default visualization-options {})
+        options (if (nil? (:visualize options-pre)) (conj options-pre {:visualize true}) options-pre)]
+    (display-object :dataset :boxplot {:dataset dataset :cols attr} options)))
+
+(defn dataset-display-class-for-attributes [dataset attribute-x attribute-y & visualization-options]
+  "Displays how a pair of attributes are distributed for each class"
+  (let [attr-x (if (keyword? attribute-x) (index-attr dataset attribute-x) attribute-x)
+        attr-y (if (keyword? attribute-y) (index-attr dataset attribute-y) attribute-y)
+        options-pre (first-or-default visualization-options {})
+        opts (if (nil? (:visualize options-pre)) (conj options-pre {:visualize true}) options-pre)
+        class-index (dataset-get-class dataset)]
+    (display-object :dataset :scatter-plot {:dataset dataset :cols [attr-x attr-y] :group-by class-index} opts)))
+
+(defn dataset-display-attributes [dataset attribute-x attribute-y & visualization-options]
+  "Displays the distribution of a set of attributes for a dataset"
+    (let [attr-x (if (keyword? attribute-x) (index-attr dataset attribute-x) attribute-x)
+        attr-y (if (keyword? attribute-y) (index-attr dataset attribute-y) attribute-y)
+        options-pre (first-or-default visualization-options {})
+        opts (if (nil? (:visualize options-pre)) (conj options-pre {:visualize true}) options-pre)
+        class-index (dataset-get-class dataset)]
+    (display-object :dataset :scatter-plot {:dataset dataset :cols [attr-x attr-y]} opts)))
+
+
+;; visualization
+
+(defmulti clusterer-display-for-attributes
+  (fn [clusterer dataset attribute-x attribute-y] (class clusterer)))
+
+(defmethod clusterer-display-for-attributes SimpleKMeans
+  ([clusterer dataset attribute-x attribute-y & visualization-options]
+     (let [attr-x (if (keyword? attribute-x) (instance-index-attr dataset attribute-x) attribute-x)
+           attr-y (if (keyword? attribute-y) (instance-index-attr dataset attribute-y) attribute-y)
+           opts (first-or-default visualization-options {})
+           display? (if (= (get visualization-options :visualize) false)
+                      false
+                      true)
+           true-opts (conj opts {:visualize false})
+           plot (dataset-display-class-for-attributes dataset attribute-x attribute-y true-opts)
+           info (clusterer-info clusterer)
+           centroids (:centroids info)]
+       (do
+         (loop [ks (keys centroids)]
+           (if (empty? ks)
+             (if display?
+               (visualize-plot plot)
+               plot)
+             (let [k (first ks)
+                   centroid (get centroids k)
+                   val-x (instance-value-at centroid attr-x)
+                   val-y (instance-value-at centroid attr-y)]
+               (add-pointer plot val-x val-y :text (str "centroid " k " (" (float val-x) "," (float val-y) ")"))
+               (recur (rest ks)))))))))
+
 
 
 ;; Things to load to test this from slime

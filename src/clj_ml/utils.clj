@@ -24,6 +24,23 @@
        default
        (first col))))
 
+;; trying metrics
+
+(defn try-metric [f]
+  (try (f)
+       (catch Exception ex {:nan (.getMessage ex)})))
+
+(defn try-multiple-values-metric [class-values f]
+  (loop [acum {}
+         ks (keys class-values)]
+    (if (empty? ks)
+      acum
+      (let [index (get class-values (first ks))
+            val (f index)]
+        (recur (conj acum {(first ks) val})
+               (rest ks))))))
+
+
 ;; Manipulation of array of options
 
 (defn check-option [opts val flag map]

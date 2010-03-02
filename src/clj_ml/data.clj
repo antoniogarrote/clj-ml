@@ -4,10 +4,9 @@
 ;;
 
 (ns clj-ml.data
-  (:use [clj-ml utils ui])
+  (:use [clj-ml utils])
   (:import (weka.core Instance Instances FastVector Attribute)
            (cljml ClojureInstances)))
-
 
 ;; Construction of individual data and datasets
 
@@ -267,19 +266,3 @@
   "Removes and returns the first instance in the dataset"
   [dataset]
   (dataset-extract-at dataset 0))
-
-;; visualization
-
-(defn dataset-display-numeric-attributes [dataset attributes & visualization-options]
-  "Displays the provided attributes into a box plot"
-  (let [attr (map #(if (keyword? %1) (index-attr dataset %1) %1) attributes)
-        options (first-or-default visualization-options {})]
-    (display-object :dataset :boxplot {:dataset dataset :cols attr} options)))
-
-(defn dataset-display-class-for-attributes [dataset attribute-x attribute-y & visualization-options]
-  "Displays how a pair of attributes are distributed for each class"
-  (let [attr-x (if (keyword? attribute-x) (index-attr dataset attribute-x) attribute-x)
-        attr-y (if (keyword? attribute-y) (index-attr dataset attribute-y) attribute-y)
-        opts (first-or-default visualization-options {})
-        class-index (dataset-get-class dataset)]
-    (display-object :dataset :scatter-plot {:dataset dataset :cols [attr-x attr-y] :group-by class-index} opts)))

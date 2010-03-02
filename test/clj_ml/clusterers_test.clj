@@ -27,7 +27,7 @@
            "1"))))
 
 
-(deftest make-and-buld-classifier
+(deftest make-and-build-classifier
   (let [ds (make-dataset :test [:a :b] [[1 2] [3 4]])
         c  (make-clusterer :k-means)]
     (clusterer-build c ds)

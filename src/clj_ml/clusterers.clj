@@ -4,7 +4,7 @@
 ;;
 
 (ns clj-ml.clusterers
-  (:use [clj-ml utils data ui]
+  (:use [clj-ml utils data]
         [incanter charts])
   (:import (java.util Date Random)
            (weka.clusterers ClusterEvaluation SimpleKMeans)))
@@ -88,8 +88,22 @@
 
 ;; Evaluating clusterers
 
+(defn- collect-evaluation-results
+  "Collects all the statistics from the evaluation of a classifier"
+  ([evaluation]
+     (do
+       (println "hola?")
+       (println (.clusterResultsToString evaluation))
+       {:classes-to-clusters (try-metric
+                              #(reduce (fn [acum i] (conj acum {i (aget (.getClassesToClusters evaluation) i)}))
+                                       {}
+                                       (range 0 (.getNumClusters evaluation))))
+        :log-likelihood (try-metric #(.getLogLikelihood evaluation))
+        :evaluation-object evaluation})))
+
+
 (defmulti clusterer-evaluate
-  "Evaluetes a trained clusterer using the provided dataset or cross-validation"
+  "Evaluates a trained clusterer using the provided dataset or cross-validation"
   (fn [clusterer mode & evaluation-data] mode))
 
 (defmethod clusterer-evaluate :dataset
@@ -100,7 +114,8 @@
                             evl))]
        (.evaluateClusterer evaluation test-data)
        (println (.clusterResultsToString evaluation))
-       evaluation)))
+;       evaluation)))
+       (collect-evaluation-results evaluation))))
 
 ;; Clustering collections
 
@@ -117,33 +132,3 @@
                              clustered)]
        (dataset-set-class nds (- (count attributes) 1))
        nds)))
-
-;; visualization
-
-(defmulti clusterer-display-for-attributes
-  (fn [clusterer dataset attribute-x attribute-y] (class clusterer)))
-
-(defmethod clusterer-display-for-attributes SimpleKMeans
-  ([clusterer dataset attribute-x attribute-y & visualization-options]
-     (let [attr-x (if (keyword? attribute-x) (instance-index-attr dataset attribute-x) attribute-x)
-           attr-y (if (keyword? attribute-y) (instance-index-attr dataset attribute-y) attribute-y)
-           opts (first-or-default visualization-options {})
-           display? (if (= (get visualization-options :visualize) false)
-                      false
-                      true)
-           true-opts (conj opts {:visualize false})
-           plot (dataset-display-class-for-attributes dataset attribute-x attribute-y true-opts)
-           info (clusterer-info clusterer)
-           centroids (:centroids info)]
-       (do
-         (loop [ks (keys centroids)]
-           (if (empty? ks)
-             (if display?
-               (visualize-plot plot)
-               plot)
-             (let [k (first ks)
-                   centroid (get centroids k)
-                   val-x (instance-value-at centroid attr-x)
-                   val-y (instance-value-at centroid attr-y)]
-               (add-pointer plot val-x val-y :text (str "centroid " k " (" (float val-x) "," (float val-y) ")"))
-               (recur (rest ks)))))))))
