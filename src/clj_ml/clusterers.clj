@@ -4,7 +4,7 @@
 ;;
 
 (ns clj-ml.clusterers
-  (:use [clj-ml utils data]
+  (:use [clj-ml utils data distance-functions]
         [incanter charts])
   (:import (java.util Date Random)
            (weka.clusterers ClusterEvaluation SimpleKMeans)))
@@ -37,6 +37,13 @@
             clusterer# (new ~clusterer-class)
             opts# (make-clusterer-options ~kind options-read#)]
         (.setOptions clusterer# opts#)
+        (when (not (empty? (get options-read# :distance-function)))
+          (let [dist# (get options-read# :distance-function)
+                real-dist# (if (map? dist#)
+                             (make-distance-function (first (keys dist#))
+                                                     (first (vals dist#)))
+                             dist#)]
+            (.setDistanceFunction clusterer# real-dist#)))
         clusterer#)))
 
 (defmulti make-clusterer

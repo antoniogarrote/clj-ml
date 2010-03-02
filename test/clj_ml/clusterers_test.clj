@@ -27,8 +27,12 @@
            "1"))))
 
 
-(deftest make-and-build-classifier
+(deftest make-and-build-clusterer
   (let [ds (make-dataset :test [:a :b] [[1 2] [3 4]])
         c  (make-clusterer :k-means)]
     (clusterer-build c ds)
     (is (= weka.clusterers.SimpleKMeans (class c)))))
+
+(deftest make-clusterer-with-distance
+  (let [c (clj-ml.clusterers/make-clusterer :k-means {:distance-function {:manhattan {:attributes [0 1 2]}}})]
+    (is (= weka.core.ManhattanDistance (.getDistanceFunction c)))))
