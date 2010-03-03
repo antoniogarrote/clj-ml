@@ -105,7 +105,7 @@
          classifier)))
 
 (defn classifier-update
-  "If the classifier is updatable it updates the classifier with the given instance or set of instances"
+  "If the classifier is updateable it updates the classifier with the given instance or set of instances"
   ([classifier instance-s]
      (if (is-dataset? instance-s)
        (do (for [i (dataset-seq instance-s)]

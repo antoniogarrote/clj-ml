@@ -36,3 +36,24 @@
 (deftest make-clusterer-with-distance
   (let [c (clj-ml.clusterers/make-clusterer :k-means {:distance-function {:manhattan {:attributes [0 1 2]}}})]
     (is (= weka.core.ManhattanDistance (class (.getDistanceFunction c))))))
+
+(deftest test-make-cobweb
+  (let [ds (make-dataset :test [:a :b] [[1 2] [3 4]])
+        c (make-clusterer :cobweb)]
+       (clusterer-build c ds)
+       (is true)))
+
+(deftest test-update-clusterer-cobweb
+  (let [ds (make-dataset :test [:a :b] [])
+        c (make-clusterer :cobweb)]
+       (clusterer-build c ds)
+       (clusterer-update c (clj-ml.data/make-instance ds [1 2]))
+       (is true)))
+
+(deftest test-update-clusterer-cobweb-many-instances
+  (let [ds (make-dataset :test [:a :b] [])
+        c (make-clusterer :cobweb)
+        to-update (make-dataset :test [:a :b] [[1 2] [3 4]])]
+       (clusterer-build c ds)
+       (clusterer-update c to-update)
+       (is true)))

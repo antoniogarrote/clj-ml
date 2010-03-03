@@ -7,7 +7,8 @@
   (:use [clj-ml utils data distance-functions]
         [incanter charts])
   (:import (java.util Date Random)
-           (weka.clusterers ClusterEvaluation SimpleKMeans)))
+           (weka.clusterers ClusterEvaluation SimpleKMeans Cobweb)))
+
 
 ;; Setting up clusterer options
 
@@ -29,6 +30,16 @@
                                            cols-val)]
     (into-array cols-val-a))))
 
+
+(defmethod make-clusterer-options :cobweb
+  ([kind map]
+     (let [cols-val-a (check-option-values {:acuity "-A"
+                                            :cutoff "-C"
+                                            :random-seed "-S"}
+                                           map
+                                           [""])]
+    (into-array cols-val-a))))
+
 ;; Building clusterers
 
 (defmacro make-clusterer-m
@@ -38,6 +49,7 @@
             opts# (make-clusterer-options ~kind options-read#)]
         (.setOptions clusterer# opts#)
         (when (not (empty? (get options-read# :distance-function)))
+          ;; We have to setup a different distance function
           (let [dist# (get options-read# :distance-function)
                 real-dist# (if (map? dist#)
                              (make-distance-function (first (keys dist#))
@@ -55,6 +67,10 @@
   ([kind & options]
      (make-clusterer-m kind SimpleKMeans options)))
 
+(defmethod make-clusterer :cobweb
+  ([kind & options]
+     (make-clusterer-m kind Cobweb options)))
+
 
 ;; Clustering data
 
@@ -62,6 +78,18 @@
   "Applies a clustering algorithm to a set of data"
   ([clusterer dataset]
      (.buildClusterer clusterer dataset)))
+
+(defn clusterer-update
+  "If the clusterer is updateable it updates the cluster with the given instance or set of instances"
+  ([clusterer instance-s]
+     (if (is-dataset? instance-s)
+       (do (for [i (dataset-seq instance-s)]
+             (.updateClusterer clusterer i))
+           (.updateFinished clusterer)
+           clusterer)
+       (do (.updateClusterer clusterer instance-s)
+           (.updateFinished clusterer)
+           clusterer))))
 
 ;; Retrieving information from a clusterer
 
@@ -74,7 +102,9 @@
      "Accepts a k-means clusterer
       Returns a map with:
        :number-clusters The number of clusters in the clusterer
-       :centroids       Map with the identifier and the centroid values for each cluster"
+       :centroids       Map with the identifier and the centroid values for each cluster
+       :cluster-sizes   Number of data points classified in each cluster
+       :squared-error   Minimized squared error"
      {:number-clusters (.numberOfClusters clusterer)
       :centroids (second
                   (reduce (fn [acum item]
@@ -96,7 +126,7 @@
 ;; Evaluating clusterers
 
 (defn- collect-evaluation-results
-  "Collects all the statistics from the evaluation of a classifier"
+  "Collects all the statistics from the evaluation of a clusterer"
   ([evaluation]
      (do
        (println "hola?")
@@ -121,8 +151,8 @@
                             evl))]
        (.evaluateClusterer evaluation test-data)
        (println (.clusterResultsToString evaluation))
-;       evaluation)))
        (collect-evaluation-results evaluation))))
+
 
 ;; Clustering collections
 
