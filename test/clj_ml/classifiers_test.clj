@@ -50,6 +50,25 @@
     (classifier-train c ds)
     (is true)))
 
+(deftest make-classifier-bayes
+  (let [c (clj-ml.classifiers/make-classifier :bayes :naive {:kernel-estimator true :old-format true})
+        opts (.getOptions c)]
+    (is (= (aget opts 0) "-K"))
+    (is (= (aget opts 1) "-O"))))
+
+(deftest make-classifier-bayes-updateable
+  (let [c (clj-ml.classifiers/make-classifier :bayes :naive {:updateable true})]
+    (is (= (class c)
+           weka.classifiers.bayes.NaiveBayesUpdateable))))
+
+(deftest train-classifier-bayes
+  (let [c (clj-ml.classifiers/make-classifier :bayes :naive {:kernel-estimator true :old-format true})
+        ds (clj-ml.data/make-dataset "test" [:a :b {:c [:m :n]}] [[1 2 :m] [4 5 :m]])]
+    (clj-ml.data/dataset-set-class ds 2)
+    (classifier-train c ds)
+    (is true)))
+
+
 (deftest classifier-evaluate-dataset
   (let [c (make-classifier :decission-tree :c45)
         ds (clj-ml.data/make-dataset "test" [:a :b {:c [:m :n]}] [[1 2 :m] [4 5 :m]])
@@ -68,3 +87,13 @@
         foo2 (classifier-train c ds)
         res (classifier-evaluate c :cross-validation ds 2)]
     (is (= 26 (count (keys res))))))
+
+(deftest update-updateable-classifier
+  (let [c (clj-ml.classifiers/make-classifier :bayes :naive {:updateable true})
+        ds (clj-ml.data/make-dataset "test" [:a :b {:c [:m :n]}] [[1 2 :m] [4 5 :m]])
+        _foo1 (dataset-set-class ds 2)
+        inst (make-instance ds {:a 56 :b 45 :c :m})]
+    (classifier-train  c ds)
+    (classifier-update c ds)
+    (classifier-update c inst)
+    (is true)))

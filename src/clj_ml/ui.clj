@@ -5,7 +5,8 @@
 
 (ns clj-ml.ui
   (:use (clj-ml data utils clusterers)
-        (incanter core stats charts)))
+        (incanter core stats charts))
+  (:import (weka.clusterers ClusterEvaluation SimpleKMeans)))
 
 
 (defn visualize-plot [plot]

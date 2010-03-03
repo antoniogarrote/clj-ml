@@ -35,4 +35,4 @@
 
 (deftest make-clusterer-with-distance
   (let [c (clj-ml.clusterers/make-clusterer :k-means {:distance-function {:manhattan {:attributes [0 1 2]}}})]
-    (is (= weka.core.ManhattanDistance (.getDistanceFunction c)))))
+    (is (= weka.core.ManhattanDistance (class (.getDistanceFunction c))))))

@@ -24,6 +24,16 @@
   (is (= 1.0 (.value inst 0)))
   (is (= "b1" (.stringValue inst 1)))))
 
+
+(deftest dataset-make-dataset-with-default-class
+  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:d :e]}] [] {:class :c})
+        ds2 (clj-ml.data/make-dataset :test [:a :b {:c [:d :e]}] [] {:class 2})]
+    (is (= (clj-ml.data/dataset-get-class ds)
+           2))
+    (is (= (clj-ml.data/dataset-get-class ds2)
+           2))))
+
+
 (deftest dataset-change-class
   (let [dataset (make-dataset :test
                               [:a :b]
@@ -98,3 +108,11 @@
       (is (= 1.0 (:a (first dsm))))
       (let [dsb (make-dataset "test" [:a :b {:c [:d :e]}] dsm)]
         (is (= 2 (dataset-count dsb)))))))
+
+(deftest dataset-instance-predicates
+  (let [ds (make-dataset "test" [:a :b {:c [:d :e]}] [{:a 1 :b 2 :c :d} [4 5 :e]])
+        inst (dataset-at ds 0)]
+    (is (is-dataset? ds))
+    (is (not (is-dataset? inst)))
+    (is (is-instance? inst))
+    (is (not (is-instance? ds)))))

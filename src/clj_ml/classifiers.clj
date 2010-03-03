@@ -8,6 +8,7 @@
   (:import (java.util Date Random)
            (weka.classifiers.trees J48)
            (weka.classifiers.bayes NaiveBayes)
+           (weka.classifiers.bayes NaiveBayesUpdateable)
            (weka.classifiers.functions MultilayerPerceptron)
            (weka.classifiers Evaluation)))
 
@@ -85,7 +86,10 @@
 
 (defmethod make-classifier [:bayes :naive]
   ([kind algorithm & options]
-     (make-classifier-m kind algorithm NaiveBayes options)))
+     (if (or (nil? (:updateable (first options)))
+             (= (:updateable (first options)) false))
+       (make-classifier-m kind algorithm NaiveBayes options)
+       (make-classifier-m kind algorithm NaiveBayesUpdateable options))))
 
 (defmethod make-classifier [:neural-network :multilayer-perceptron]
   ([kind algorithm & options]
@@ -100,6 +104,15 @@
      (do (.buildClassifier classifier dataset)
          classifier)))
 
+(defn classifier-update
+  "If the classifier is updatable it updates the classifier with the given instance or set of instances"
+  ([classifier instance-s]
+     (if (is-dataset? instance-s)
+       (do (for [i (dataset-seq instance-s)]
+             (.updateClassifier classifier i))
+           classifier)
+       (do (.updateClassifier classifier instance-s)
+           classifier))))
 
 ;; Evaluating classifiers
 

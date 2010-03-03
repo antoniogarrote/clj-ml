@@ -8,13 +8,30 @@
   (:import (weka.core Instance Instances FastVector Attribute)
            (cljml ClojureInstances)))
 
+;; Common functions
+
+(defn is-instance? [instance]
+  "Checks if the provided object is an instance"
+  (if (= weka.core.Instance
+         (class instance))
+    true
+    false))
+
+(defn is-dataset? [dataset]
+  "Checks if the provided object is a dataset"
+  (not (is-instance? dataset)))
+
 ;; Construction of individual data and datasets
 
 (defn attribute-name-at [dataset-or-instance pos]
+  "Returns the name of an attribute situated at the provided position in
+   the attributes definition of an instance or class"
   (let [class-attr (.attribute dataset-or-instance pos)]
     (.name class-attr)))
 
-(defn- index-attr [dataset-or-instance attr]
+(defn index-attr [dataset-or-instance attr]
+  "Returns the index of an attribute in the attributes definition of an
+   instance or dataset"
   (let [max (.numAttributes dataset-or-instance)
         attrs (key-to-str attr)]
     (loop [c 0]
@@ -86,11 +103,12 @@
                   fv))))))
 
 (defn make-dataset
-  "Creates a new empty dataset. By default the class is set to be the last attribute."
-  ([name attributes capacity-or-values]
-     (make-dataset name attributes 1 capacity-or-values))
-  ([name attributes weight capacity-or-values]
-     (let [ds (if (sequential? capacity-or-values)
+  "Creates a new dataset, empty or with the provided instances and options"
+  ([name attributes capacity-or-values & opts]
+     (let [options (first-or-default opts {})
+           weight (get options :weight 1)
+           class-attribute (get options :class)
+           ds (if (sequential? capacity-or-values)
                 ;; we have received a sequence instead of a number, so we initialize data
                 ;; instances in the dataset
                 (let [dataset (new ClojureInstances (key-to-str name) (parse-attributes attributes) (count capacity-or-values))]
@@ -103,8 +121,24 @@
                         (recur (rest vs))))))
                 ;; we haven't received a vector so we create an empty dataset
                 (new Instances (key-to-str name) (parse-attributes attributes) capacity-or-values))]
-       ;; by default the class is the last attribute in the dataset
-       ;; (.setClassIndex ds (- (.numAttributes ds) 1))
+       ;; we try to setup the class attribute if :class with a attribute name or
+       ;; integer value is provided
+       (when (not (nil? class-attribute))
+         (let [index-class-attribute (if (keyword? class-attribute)
+                                       (loop [c 0
+                                              acum attributes]
+                                           (if (= (let [at (first acum)]
+                                                        (if (map? at)
+                                                          (first (keys at))
+                                                          at))
+                                                  class-attribute)
+                                             c
+                                             (if (= c (count attributes))
+                                               (throw (new Exception "provided class attribute not found"))
+                                               (recur (+ c 1)
+                                                      (rest acum)))))
+                                           class-attribute)]
+           (.setClassIndex ds index-class-attribute)))
        ds)))
 
 ;; dataset information
