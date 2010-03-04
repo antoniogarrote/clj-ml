@@ -1,5 +1,5 @@
 (ns clj-ml.filters-test
-  (:use [clj-ml.filters] :reload-all)
+  (:use [clj-ml filters data] :reload-all)
   (:use [clojure.test]))
 
 (deftest make-filter-options-supervised-discretize
@@ -70,7 +70,7 @@
                                        [2 3 :m]
                                        [4 5 :g]])
         foo1(clj-ml.data/dataset-set-class ds 2)
-        f (make-filter :supervised-discretize {:dataset ds :attributes [0]})]
+        f (make-filter :supervised-discretize {:dataset-format ds :attributes [0]})]
     (is (= weka.filters.supervised.attribute.Discretize
            (class f)))))
 
@@ -79,7 +79,7 @@
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
-        f (make-filter :unsupervised-discretize {:dataset ds :attributes [0]})]
+        f (make-filter :unsupervised-discretize {:dataset-format ds :attributes [0]})]
     (is (= weka.filters.unsupervised.attribute.Discretize
            (class f)))))
 
@@ -89,7 +89,7 @@
                                        [2 3 :m]
                                        [4 5 :g]])
         foo1(clj-ml.data/dataset-set-class ds 2)
-        f (make-filter :supervised-nominal-to-binary {:dataset ds})]
+        f (make-filter :supervised-nominal-to-binary {:dataset-format ds})]
     (is (= weka.filters.supervised.attribute.NominalToBinary
            (class f)))))
 
@@ -98,6 +98,27 @@
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
-        f (make-filter :unsupervised-nominal-to-binary {:dataset ds :attributes [2]})]
+        f (make-filter :unsupervised-nominal-to-binary {:dataset-format ds :attributes [2]})]
     (is (= weka.filters.unsupervised.attribute.NominalToBinary
            (class f)))))
+
+(deftest make-filter-remove-attributes
+  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+                                     [ [1 2 :g]
+                                       [2 3 :m]
+                                       [4 5 :g]])
+        f (make-filter :remove-attributes {:dataset-format ds :attributes [0]})]
+    (is (= weka.filters.unsupervised.attribute.Remove
+           (class f)))
+    (let [res (filter-apply f ds)]
+      (is (= (dataset-format res)
+             [:b {:c '(:m :g)}])))))
+
+(deftest make-apply-filter-remove-attributes
+  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+                                     [ [1 2 :g]
+                                       [2 3 :m]
+                                       [4 5 :g]])
+        res (make-apply-filter :remove-attributes {:attributes [0]} ds)]
+    (is (= (dataset-format res)
+           [:b {:c '(:m :g)}]))))

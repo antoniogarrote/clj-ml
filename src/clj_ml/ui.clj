@@ -24,7 +24,7 @@
      (let [dataset (get dataset-opts :dataset)
            dataseq (dataset-seq dataset)
            cols    (get dataset-opts :cols)
-           cols-names (dataset-attributes-definition dataset)
+           cols-names (dataset-format dataset)
            vals-map (reduce (fn [acum col]
                               (let [name (key-to-str (nth cols-names col))
                                     vals (map #(nth (instance-to-vector %1) col) dataseq)]
@@ -56,7 +56,7 @@
            col-0 (nth cols 0)
            col-1 (nth cols 1)
            group-by (get dataset-opts :group-by)
-           cols-names (dataset-attributes-definition dataset)
+           cols-names (dataset-format dataset)
            group-vals (if (nil? group-by) {:no-group-by :no-class} (dataset-values-at dataset group-by))
            acum-map (reduce (fn [acum group-val]
                               (conj acum {(first group-val)

@@ -7,7 +7,7 @@
   (:use [clj-ml utils data distance-functions]
         [incanter charts])
   (:import (java.util Date Random)
-           (weka.clusterers ClusterEvaluation SimpleKMeans Cobweb)))
+           (weka.clusterers ClusterEvaluation SimpleKMeans Cobweb EM)))
 
 
 ;; Setting up clusterer options
@@ -40,6 +40,17 @@
                                            [""])]
     (into-array cols-val-a))))
 
+
+(defmethod make-clusterer-options :expectation-maximization
+  ([kind map]
+     (let [cols-val-a (check-option-values {:acuity "-A"
+                                            :cutoff "-C"
+                                            :random-seed "-S"}
+                                           map
+                                           [""])]
+    (into-array cols-val-a))))
+
+
 ;; Building clusterers
 
 (defmacro make-clusterer-m
@@ -70,6 +81,10 @@
 (defmethod make-clusterer :cobweb
   ([kind & options]
      (make-clusterer-m kind Cobweb options)))
+
+(defmethod make-clusterer :expectation-maximization
+  ([kind & options]
+     (make-clusterer-m kind EM options)))
 
 
 ;; Clustering data
@@ -153,13 +168,26 @@
        (println (.clusterResultsToString evaluation))
        (collect-evaluation-results evaluation))))
 
+(defmethod clusterer-evaluate :cross-validation
+  ([clusterer mode & evaluation-data]
+     (let [training-data (nth evaluation-data 0)
+           folds (nth evaluation-data 1)
+           evaluation (let [evl (new ClusterEvaluation)]
+                        (.setClusterer evl clusterer)
+                        evl)
+           log-likelihood (ClusterEvaluation/crossValidateModel clusterer
+                                                                training-data
+                                                                folds
+                                                                (new Random (.getTime (new Date))))]
+     {:log-likelihood log-likelihood})))
+
 
 ;; Clustering collections
 
 (defn clusterer-cluster
   "Add a class to each instance according to the provided clusterer"
   ([clusterer dataset]
-     (let [attributes (conj (clj-ml.data/dataset-attributes-definition dataset)
+     (let [attributes (conj (clj-ml.data/dataset-format dataset)
                             {:class (map #(keyword (str %1)) (range 0 (.numberOfClusters clusterer)))})
            clustered (map (fn [i] (conj (instance-to-vector i)
                                         (keyword (str (.clusterInstance clusterer i)))))

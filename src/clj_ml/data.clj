@@ -175,7 +175,7 @@
                    (conj acum {(keyword val) index})))
           acum)))))
 
-(defn dataset-attributes-definition [dataset]
+(defn dataset-format [dataset]
   "Returns the definition of the attributes of this dataset"
   (let [max (.numAttributes dataset)]
     (loop [acum []

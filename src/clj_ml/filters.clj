@@ -66,19 +66,29 @@
                                      cols-val-a)]
        (into-array cols-val-b))))
 
+(defmethod make-filter-options :remove-attributes
+  ([kind map]
+     (let [cols (get map :attributes)
+           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
+           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
+           cols-val-b (check-options {:invert "-V"}
+                                     map
+                                     cols-val-a)]
+       (into-array cols-val-b))))
+
 
 ;; Creation of filters
 
 (defmacro make-filter-m [kind options filter-class]
   `(let [filter# (new ~filter-class)
-         dataset# (get ~options :dataset)
+         dataset-format# (get ~options :dataset-format)
          opts# (make-filter-options ~kind ~options)]
      (.setOptions filter# opts#)
-     (.setInputFormat filter# dataset#)
+     (.setInputFormat filter# dataset-format#)
      filter#))
 
 (defmulti make-filter
-  "Creates a filter for datasets"
+  "Creates a filter for the provided attributes format"
   (fn [kind options] kind))
 
 (defmethod make-filter :supervised-discretize
@@ -98,9 +108,23 @@
     ([kind options]
      (make-filter-m kind options weka.filters.unsupervised.attribute.NominalToBinary)))
 
+(defmethod make-filter :remove-attributes
+  ([kind options]
+     (make-filter-m kind options weka.filters.unsupervised.attribute.Remove)))
+
 ;; Processing the filtering of data
 
-(defn filter-process
+(defn filter-apply
   "Filters an input dataset using the provided filter and generates an output dataset"
   [filter dataset]
   (Filter/useFilter dataset filter))
+
+(defn make-apply-filter
+  "Creates a new filter with the provided options and apply it to the provided dataset.
+   The dataset-format attribute for the making of the filter will be setup to the
+   dataset passed as an argument if no other valu is provided"
+  [kind options dataset]
+  (let [opts (if (nil? (:dataset-format options)) (conj options {:dataset-format dataset}))
+        filter (make-filter kind opts)
+        _foo (println (str "Options are " opts))]
+    (filter-apply filter dataset)))
