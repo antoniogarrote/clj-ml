@@ -76,6 +76,23 @@
                                      cols-val-a)]
        (into-array cols-val-b))))
 
+(defmethod make-filter-options :select-append-attributes
+  ([kind map]
+     (let [cols (get map :attributes)
+           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
+           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
+           cols-val-b (check-options {:invert "-V"}
+                                     map
+                                     cols-val-a)]
+       (into-array cols-val-b))))
+
+(defmethod make-filter-options :project-attributes
+  ([kind options]
+     (let [opts (if (nil? (:invert options))
+                  (conj options {:invert true})
+                  (dissoc options :invert))]
+       (make-filter-options :remove-attributes opts))))
+
 
 ;; Creation of filters
 
@@ -109,6 +126,14 @@
      (make-filter-m kind options weka.filters.unsupervised.attribute.NominalToBinary)))
 
 (defmethod make-filter :remove-attributes
+  ([kind options]
+     (make-filter-m kind options weka.filters.unsupervised.attribute.Remove)))
+
+(defmethod make-filter :select-append-attributes
+  ([kind options]
+     (make-filter-m kind options weka.filters.unsupervised.attribute.Copy)))
+
+(defmethod make-filter :project-attributes
   ([kind options]
      (make-filter-m kind options weka.filters.unsupervised.attribute.Remove)))
 
