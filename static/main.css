@@ -1,0 +1,30 @@
+#logo {
+   margin-left:20%;
+   margin-right:20%;
+   margin-top:10%;
+   font-size: 55px
+}
+
+#cljml-link {
+   color: purple;
+   font-size: 70px
+}
+
+#motto {
+   position: relative;
+   top: -5px
+}
+
+#logo img {
+   margin-right: 50px;
+   float: left
+}
+
+.title-link {
+   color: gray
+}
+
+a:link {text-decoration: none}
+a:visited {text-decoration: none}
+a:active {text-decoration: none}
+a:hover {text-decoration: none}
