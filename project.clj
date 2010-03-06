@@ -6,4 +6,5 @@
                  [org.clojure/clojure-contrib "1.1.0"]
                  [lein-javac "0.0.2-SNAPSHOT"]
                  [incanter/incanter-full "1.0-master-SNAPSHOT"]
+                 [com.mongodb/mongo "1.0"]
                  [weka/weka "3.6.2"]])

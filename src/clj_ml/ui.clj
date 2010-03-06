@@ -192,4 +192,7 @@
 ;    (add-classpath "file:///Users/antonio.garrote/Development/old/clj-ml/lib/jcommon-1.0.16.jar")
 ;    (add-classpath "file:///Users/antonio.garrote/Development/old/clj-ml/lib/netlib-java-0.9.1.jar")
 ;    (add-classpath "file:///Users/antonio.garrote/Development/old/clj-ml/lib/processing-core-1.jar")
+;    (add-classpath"file:///Users/antonio.garrote/Development/old/clj-ml/lib/congomongo-0.1.1-20091229.021828-1.jar")
+;    (add-classpath"file:///Users/antonio.garrote/Development/old/clj-ml/lib/mongo-1.0.jar")
+;    (add-classpath"file:///Users/antonio.garrote/Development/old/clj-ml/lib/mongo-java-driver-1.1.0-20091229.021828-3.jar")
 ;    ))

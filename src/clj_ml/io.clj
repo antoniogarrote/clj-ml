@@ -14,7 +14,7 @@
 
 (defmulti load-instances
   "Load instances from different data sources"
-  (fn [kind source] kind))
+  (fn [kind source & options] kind))
 
 (defmacro m-load-instances [loader source]
   `(do
@@ -25,27 +25,32 @@
      (.getDataSet ~loader)))
 
 (defmethod load-instances :arff
-  ([kind source]
+  ([kind source & options]
      (let [loader (new ArffLoader)]
        (m-load-instances loader source))))
 
 
 (defmethod load-instances :xrff
-  ([kind source]
+  ([kind source & options]
      (let [loader (new XRFFLoader)]
        (m-load-instances loader source))))
 
 (defmethod load-instances :csv
-  ([kind source]
+  ([kind source & options]
      (let [loader (new CSVLoader)]
        (m-load-instances loader source))))
 
+(defmethod load-instances :mongodb
+  ([kind source & options]
+     (let [database {:database source}
+           name {:dataset-name source}]
+       (clj-ml.data-store/data-store-load-dataset :mongodb database name options))))
 
 ;; Saving of instances
 
 (defmulti save-instances
   "Save instances into data destinies"
-  (fn [kind destiny instances] kind))
+  (fn [kind destiny instances & options] kind))
 
 (defmacro m-save-instances [saver destiny instances]
   `(do
@@ -57,17 +62,20 @@
      (.writeBatch ~saver)))
 
 (defmethod save-instances :arff
-  ([kind destiny instances]
+  ([kind destiny instances & options]
      (let [saver (new ArffSaver)]
        (m-save-instances saver destiny instances))))
 
 (defmethod save-instances :xrff
-  ([kind destiny instances]
+  ([kind destiny instances & options]
      (let [saver (new XRFFSaver)]
        (m-save-instances saver destiny instances))))
 
 (defmethod save-instances :csv
-  ([kind destiny instances]
+  ([kind destiny instances & options]
      (let [saver (new CSVSaver)]
        (m-save-instances saver destiny instances))))
 
+(defmethod save-instances :mongodb
+  ([kind destiny instances & options]
+     (clj-ml.data-store/data-store-save-dataset :mongodb destiny instances options)))
