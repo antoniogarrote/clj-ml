@@ -1,496 +1,247 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
- <head>
- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
- <link rel=stylesheet href="static/main.css" type="text/css" media=screen>
- <link rel=stylesheet href="static/wiki.css" type="text/css" media=screen>
- <link rel=stylesheet href="static/clojure.css" type="text/css" media=screen>
- <title>clj-ml : Machine Learning Clojure's style</title>
-</head>
-<!--  <body> -->
-<!--    <div id="logo"> -->
-<!--      <img src="static/melancolia.jpg"/> -->
-<!--      <span id="motto"> -->
-<!--        <a id="cljml-link" href="http://github.com/antoniogarrote/clj-ml">clj-ml</a> a -->
-<!--        <a href="http://en.wikipedia.org/wiki/Machine_learning" class="title-link">machine learning</a> -->
-<!--        library for <a class="title-link" href="http://clojure.org">Clojure</a> built on top -->
-<!--        of <a href="http://www.cs.waikato.ac.nz/ml/weka/" class="title-link">Weka</a> and other friends -->
-<!--      </span> -->
-<!--    </div> -->
-
+<html>
+  <head>
+    <title>clj-ml - Overview</title>
+    <link href="static/favicon.png" rel="icon" />
+    <link href="static/favicon.png" rel="shortcut icon" />
+    <link media="all" type="text/css" href="static/clojure.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/wiki.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/internal.css" rel="stylesheet" />
+    <!-- TODO: are we using these (from clojure.org)? If so, add the files -->
+    <script src="file/view/code_highlighter.js" type="text/javascript"></script>
+    <script src="file/view/clojure.js" type="text/javascript"></script>
+    <style>.menuWrapper{height: 36px;}</style>
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" href="http://www.wikispaces.com/_/2009051601/s/internal_ie.css" type="text/css" />
+    <![endif]-->
+  </head>
+<!--
+This document was auto-generated from the source by the clojure autodoc system.
+To report errors or ask questions about the overall documentation structure, formatting,
+etc., contact Tom Faulhaber (google mail name: tomfaulhaber).
+For errors in the documentation of a particular namespace, contact the author of that
+namespace.
+-->
   <body>
     <div id="AllContentContainer">
-
       <div id="Header">
-        <h1><a title="page header title" id="page-header" href="index.html">clj-ml</a></h1>
+	<a id="Logo" href="index.html"><img alt="Clojure" height="100" width="100" src="static/clojure-icon.gif" /></a>
+	<h1><a title="page header title" id="page-header" href="index.html">clj-ml machine learning Clojure's style</a></h1>
       </div>
       <div id="leftcolumn"><div style="text-align: center;"></div>
-
 <div class="menu">
   <div class="WikiCustomNav WikiElement wiki">
     <a class="wiki_link" href="index.html">Overview</a><br />
-
-    <a class="wiki_link" href="api_index.html">API Index</a><br />
+    <a class="wiki_link" href="api-index.html">API Index</a><br />
     <a class="wiki_link" href="#">Namespaces:</a>
     <ul id="left-sidebar-list">
-      <li><a href="classifiers_api.html" class="wiki_link">classifiers</a></li>
-      <li><a href="clusterers_api.html" class="wiki_link">clusterers</a></li>
-      <li><a href="data_api.html" class="wiki_link">data</a></li>
-      <li><a href="data_store_api.html" class="wiki_link">data-store</a></li>
-      <li><a href="distance_functions_api.html" class="wiki_link">distance-functions</a></li>
-      <li><a href="filters_api.html" class="wiki_link">filters</a></li>
-      <li><a href="io_api.html" class="wiki_link">io</a></li>
-      <li><a href="kernel_functions_api.html" class="wiki_link">kernel-functions</a></li>
-      <li><a href="ui_api.html" class="wiki_link">ui</a></li>
-   </ul>
-  </div>
+      <li><a href="clj-ml.classifiers-api.html" class="wiki_link">clj-ml.classifiers</a></li><li><a href="clj-ml.clusterers-api.html" class="wiki_link">clj-ml.clusterers</a></li><li><a href="clj-ml.data-api.html" class="wiki_link">clj-ml.data</a></li><li><a href="clj-ml.data-store-api.html" class="wiki_link">clj-ml.data-store</a></li><li><a href="clj-ml.distance-functions-api.html" class="wiki_link">clj-ml.distance-functions</a></li><li><a href="clj-ml.filters-api.html" class="wiki_link">clj-ml.filters</a></li><li><a href="clj-ml.io-api.html" class="wiki_link">clj-ml.io</a></li><li><a href="clj-ml.kernel-functions-api.html" class="wiki_link">clj-ml.kernel-functions</a></li><li><a href="clj-ml.ui-api.html" class="wiki_link">clj-ml.ui</a></li>
+    </ul>
   </div>
 </div>
-
-<div id="rightcolumn">
-  <div id="Content">
-    <div class="contentBox"><div class="innerContentBox">
-      <div id="content_view" class="wiki wikiPage">
-        <div id="right-sidebar"><div id="toc">
-          <h1 class="nopad">Table of Contents</h1>
-
-        <div style="margin-left: 1em;" class="toc-section">
-          <a href="#classifiers">classifiers</a>
-          <br />
-        </div>
-
-        <div style="margin-left: 1em;" class="toc-section">
-          <a href="#clusterers">clusterers</a>
-          <br />
-        </div>
-
-        <div style="margin-left: 1em;" class="toc-section">
-          <a href="#data">data</a>
-          <br />
-        </div>
-
-        <div style="margin-left: 1em;" class="toc-section">
-          <a href="#data-store">data-store</a>
-          <br />
-        </div>
-
-        <div style="margin-left: 1em;" class="toc-section">
-          <a href="#distance-functions">distance-functions</a>
-          <br />
-        </div>
-
-       <div style="margin-left: 1em;" class="toc-section">
-          <a href="#filters">filters</a>
-          <br />
-        </div>
-
-       <div style="margin-left: 1em;" class="toc-section">
-          <a href="#io">io</a>
-          <br />
-        </div>
-
-       <div style="margin-left: 1em;" class="toc-section">
-          <a href="#kernel-functions">kernel-functions</a>
-          <br />
-        </div>
-
-      <div style="margin-left: 1em;" class="toc-section">
-          <a href="#ui">ui</a>
-          <br />
-        </div>
-
-      </div>
-    </div>
-
-
-    <div id="content-tag">
-      <h1 id="toc0">An Overview of the <span id="header-project">clj-ml</span> API</h1>
-
-      <br />
-
-      <div id="project-description"><a
-        href="http://github.com/antoniogarrote/clj-ml">clj-ml</a> is a <a
-        href="http://clojure.org">Clojure</a>-based, machine learning library built on
-        top of the <a href="http://www.cs.waikato.ac.nz/ml/weka/">Weka</a> framework for the JVM.
-      </div>
-      <br />
-
-      <div id="namespace-entry">
-        <br />
-        <hr />
-        <h2 id="classifiers">classifiers</h2>
-
-        <a href="classifiers_api.html" id="api-link">Detailed API documentation</a>
-        <br />
-        <pre id="namespace-docstr">
-        This namespace contains several functions for
-        building classifiers using different classification algorithms: Bayes
-        networks, multilayer perceptron, decission tree or support vector machines are
-        available. Some of these classifiers have incremental versions so they can be
-        built without having all the dataset instances in memory. Functions for
-        evaluating the classifiers built using cross validation or a training set are
-        also provided
-        </pre>
-
-        Public variables and functions:
-        <span id="var-link">
-          <a href="classifiers_api.html#clj-ml.classifiers/classifier-classify" id="var-tag">classifier-classify</a>
-        </span>
-
-        <span id="var-link">
-          <a href="classifiers_api.html#clj-ml.classifiers/classifier-evaluate" id="var-tag">classifier-evaluate</a>
-        </span>
-
-        <span id="var-link">
-          <a href="classifiers_api.html#clj-ml.classifiers/classifier-label" id="var-tag">classifier-label</a>
-        </span>
-
-        <span id="var-link">
-          <a href="classifiers_api.html#clj-ml.classifiers/classifier-train" id="var-tag">classifier-train</a>
-        </span>
-
-        <span id="var-link">
-          <a href="classifiers_api.html#clj-ml.classifiers/classifier-update" id="var-tag">classifier-update</a>
-        </span>
-
-        <span id="var-link">
-          <a href="classifiers_api.html#clj-ml.classifiers/make-classifier" id="var-tag">make-classifier</a>
-        </span>
-
-
-        <span id="var-link">
-          <a href="classifiers_api.html#clj-ml.classifiers/make-classifier-options" id="var-tag">make-classifier-options</a>
-        </span>
-
-
-        <br/>
-    </div>
-
-    <div id="namespace-entry">
-      <br />
-      <hr />
-      <h2 id="clusterers">clusterers</h2>
-
-      <a href="clusterers_api.html" id="api-link">Detailed API documentation</a><br />
-      <pre id="namespace-docstr">
-      This namespace contains several functions for
-      building clusterers using different clustering algorithms. K-means, Cobweb and
-      Expectation maximization algorithms are currently supported. Some of these
-      algorithms support incremental building of the clustering without having the
-      full data set in main memory. Functions for evaluating the clusterer as well
-      as for clustering new instances are also supported
-    </pre>
-
-      Public variables and functions:
-      <span id="var-link">
-        <a href="clusterers_api.html#clj-ml.clusterers/clusterer-build" id="var-tag">clusterer-build</a>
-      </span>
-
-      <span id="var-link">
-        <a href="clusterers_api.html#clj-ml.clusterers/clusterer-cluster" id="var-tag">clusterer-cluster</a>
-      </span>
-
-      <span id="var-link">
-        <a href="clusterers_api.html#clj-ml.clusterers/clusterer-evaluate" id="var-tag">clusterer-evaluate</a>
-      </span>
-
-      <span id="var-link">
-        <a href="clusterers_api.html#clj-ml.clusterers/clusterer-train" id="var-tag">clusterer-info</a>
-      </span>
-
-      <span id="var-link">
-        <a href="clusterers_api.html#clj-ml.clusterers/clusterer-update" id="var-tag">clusterer-update</a>
-      </span>
-
-      <span id="var-link">
-        <a href="clusterers_api.html#clj-ml.clusterers/make-clusterer" id="var-tag">make-clusterer</a>
-      </span>
-
-
-      <span id="var-link">
-        <a href="clusterers_api.html#clj-ml.clusterers/make-clusterer-options" id="var-tag">make-clusterer-options</a>
-      </span>
-
-
-      <br/>
-    </div>
-
-    <div id="namespace-entry">
-      <br />
-      <hr />
-      <h2 id="data">data</h2>
-
-      <a href="data_api.html" id="api-link">Detailed API documentation</a><br />
-      <pre id="namespace-docstr">
-      This namespace contains several functions for
-      building creating and manipulating data sets and instances. The formats of
-      these data sets as well as their classes can be modified and assigned to
-      the instances. Finally data sets can be transformed into Clojure sequences
-      that can be transformed using usual Clojure functions like map, reduce, etc.
-    </pre>
-
-      Public variables and functions:
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/attribute-name-at" id="var-tag">attribute-name-at</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/index-attr" id="var-tag">index-attr</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/instance-set-class" id="var-tag">instance-set-class</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/instance-to-map" id="var-tag">instance-to-map</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/instance-to-vector" id="var-tag">instance-to-vector</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/instance-value-at" id="var-tag">instance-value-at</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/is-dataset?" id="var-tag">is-dataset?</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/is-instance?" id="var-tag">is-instance?</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/make-instance" id="var-tag">make-instance</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/make-dataset" id="var-tag">make-dataset</a>
-      </span>
-
-     <span id="var-link">
-        <a href="data_api.html#clj-ml.data/dataset-add" id="var-tag">dataset-add</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/dataset-at" id="var-tag">dataset-at</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/dataset-class" id="var-tag">dataset-class</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/dataset-class-value" id="var-tag">dataset-class-value</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/dataset-count" id="var-tag">dataset-count</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/dataset-extract-at" id="var-tag">dataset-extract-at</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/dataset-format" id="var-tag">dataset-format</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/instance-get-class" id="var-tag">instance-get-class</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/dataset-name" id="var-tag">dataset-name</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/dataset-pop" id="var-tag">dataset-pop</a>
-      </span>
-
-     <span id="var-link">
-        <a href="data_api.html#clj-ml.data/dataset-seq" id="var-tag">dataset-seq</a>
-      </span>
-
-      <span id="var-link">
-        <a href="data_api.html#clj-ml.data/dataset-values-at" id="var-tag">dataset-values-at</a>
-      </span>
-
-      <br/>
-    </div>
-
-      <div id="namespace-entry">
-        <br />
-        <hr />
-        <h2 id="data-store">data-store</h2>
-
-        <a href="data_store_api.html" id="api-link">Detailed API documentation</a>
-        <br />
-        <pre id="namespace-docstr">
-        Functions for storing and retrieving data
-        sets from a persistence store, like a data base system. Currently
-        MongoDB is the only store supported.
-        </pre>
-
-        Public variables and functions:
-        <span id="var-link">
-          <a href="data_store_api.html#clj-ml.data-store/data-store-connection-db" id="var-tag">data-store-connection-db</a>
-        </span>
-
-        <span id="var-link">
-          <a href="data_store_api.html#clj-ml.data-store/data-store-load-dataset" id="var-tag">data-store-load-dataset</a>
-        </span>
-
-        <span id="var-link">
-          <a href="data_store_api.html#clj-ml.data-store/data-store-save-dataset" id="var-tag">data-store-save-dataset</a>
-        </span>
-
-       <span id="var-link">
-          <a href="data_store_api.html#clj-ml.data-store/make-data-store-connection" id="var-tag">make-data-store-connection</a>
-        </span>
-
-        <br/>
-    </div>
-
-
-      <div id="namespace-entry">
-        <br />
-        <hr />
-        <h2 id="distance-functions">distance-functions</h2>
-
-        <a href="distance_functions_api.html" id="api-link">Detailed API documentation</a>
-        <br />
-        <pre id="namespace-docstr">
-        Generates different distance metrics that can
-        be passed as parameters to certain classifiers and clusterers like
-        K-Means. Euclidean, Manhattan and Chebysev distance functions are supported.
-        </pre>
-
-        Public variables and functions:
-        <span id="var-link">
-          <a href="distance_functions_api.html#clj-ml.distance-functions/make-distance-function" id="var-tag">make-distance-function</a>
-        </span>
-
-        <br/>
-    </div>
-
-
-
-      <div id="namespace-entry">
-        <br />
-        <hr />
-        <h2 id="filters">filters</h2>
-
-        <a href="filters_api.html" id="api-link">Detailed API documentation</a>
-        <br />
-        <pre id="namespace-docstr">
-        Functions in this namespace define transformations that can be applied
-        to any loaded data set.
-        </pre>
-
-        Public variables and functions:
-        <span id="var-link">
-          <a href="distance_functions_api.html#clj-ml.filters/make-filter" id="var-tag">make-filter</a>
-        </span>
-
-        <span id="var-link">
-          <a href="distance_functions_api.html#clj-ml.filters/filter-apply" id="var-tag">filter-apply</a>
-        </span>
-
-        <span id="var-link">
-          <a href="distance_functions_api.html#clj-ml.filters/make-apply-filter" id="var-tag">make-apply-filter</a>
-        </span>
-
-        <br/>
-    </div>
-
-
-      <div id="namespace-entry">
-        <br />
-        <hr />
-        <h2 id="io">io</h2>
-
-        <a href="io_api.html" id="api-link">Detailed API documentation</a>
-        <br />
-        <pre id="namespace-docstr">
-        Functions for reading and saving datasets, classifiers and clusterers to
-        files and other persistence mechanisms.
-        </pre>
-
-        Public variables and functions:
-        <span id="var-link">
-          <a href="distance_functions_api.html#clj-ml.io/load-instances" id="var-tag">load-instances</a>
-        </span>
-
-        <span id="var-link">
-          <a href="distance_functions_api.html#clj-ml.io/save-instances" id="var-tag">save-instances</a>
-        </span>
-       <br/>
-    </div>
-
-
-      <div id="namespace-entry">
-        <br />
-        <hr />
-        <h2 id="kernel-functions">kernel-functions</h2>
-
-        <a href="kernel_functions_api.html" id="api-link">Detailed API documentation</a>
-        <br />
-        <pre id="namespace-docstr">
-        Kernel functions that can be passed as parameters to support vector
-        machines classifiers. Polynomic, radial basis and string kernels are supported.
-        </pre>
-
-        Public variables and functions:
-        <span id="var-link">
-          <a href="kernel_functions_api.html#clj-ml.kernel-functions/make-kernel-function" id="var-tag">make-kernel-function</a>
-        </span>
-
-       <br/>
-    </div>
-
-
-      <div id="namespace-entry">
-        <br />
-        <hr />
-        <h2 id="ui">ui</h2>
-
-        <a href="kernel_functions_api.html" id="api-link">Detailed API documentation</a>
-        <br />
-        <pre id="namespace-docstr">
-        Namespace containing functions for plotting classifiers, clusterers and
-        data sets.
-        </pre>
-
-        Public variables and functions:
-        <span id="var-link">
-          <a href="kernel_functions_api.html#clj-ml.ui/visualize-plot" id="var-tag">visualiza-plot</a>
-        </span>
-
-        <span id="var-link">
-          <a href="kernel_functions_api.html#clj-ml.ui/display-object" id="var-tag">display-object</a>
-        </span>
-
-        <span id="var-link">
-          <a href="kernel_functions_api.html#clj-ml.ui/dataset-display-numeric-attributes" id="var-tag">datase-display-numeric-attributes</a>
-        </span>
-
-        <span id="var-link">
-          <a href="kernel_functions_api.html#clj-ml.ui/clusterer-display-for-attributes" id="var-tag">clusterer-display-for-attributes</a>
-        </span>
-
-       <br/>
-    </div>
-
-
-<!-- End of content tag! -->
-
+</div>
+      <div id="rightcolumn">
+	<div id="Content">
+	  <div class="contentBox"><div class="innerContentBox">
+              <div id="content_view" class="wiki wikiPage">
+                <div id="right-sidebar"><div id="toc">
+  <h1 class="nopad">Table of Contents</h1>
+  <div style="margin-left: 1em;" class="toc-section">
+    <a href="#clj-ml.classifiers">clj-ml.classifiers</a>
+    
+    <br />
+  </div><div style="margin-left: 1em;" class="toc-section">
+    <a href="#clj-ml.clusterers">clj-ml.clusterers</a>
+    
+    <br />
+  </div><div style="margin-left: 1em;" class="toc-section">
+    <a href="#clj-ml.data">clj-ml.data</a>
+    
+    <br />
+  </div><div style="margin-left: 1em;" class="toc-section">
+    <a href="#clj-ml.data-store">clj-ml.data-store</a>
+    
+    <br />
+  </div><div style="margin-left: 1em;" class="toc-section">
+    <a href="#clj-ml.distance-functions">clj-ml.distance-functions</a>
+    
+    <br />
+  </div><div style="margin-left: 1em;" class="toc-section">
+    <a href="#clj-ml.filters">clj-ml.filters</a>
+    
+    <br />
+  </div><div style="margin-left: 1em;" class="toc-section">
+    <a href="#clj-ml.io">clj-ml.io</a>
+    
+    <br />
+  </div><div style="margin-left: 1em;" class="toc-section">
+    <a href="#clj-ml.kernel-functions">clj-ml.kernel-functions</a>
+    
+    <br />
+  </div><div style="margin-left: 1em;" class="toc-section">
+    <a href="#clj-ml.ui">clj-ml.ui</a>
+    
+    <br />
   </div>
 </div>
+</div>
+                <div id="content-tag"><h1 id="toc0">An Overview of the <span id="header-project">clj-ml</span> API</h1>
+<br />
+<div id="project-description">Machine Learning library for Clojure built around Weka and friends</div>
+<br />
+<div id="namespace-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.classifiers">clj-ml.classifiers</h2>
+  by <span id="author">Antonio Garrote &lt;antoniogarrote@gmail.com&gt;</span><br />
+  <a href="clj-ml.classifiers-api.html" id="api-link">Detailed API documentation</a><br />
+  <pre id="namespace-docstr">This namespace contains several functions for building classifiers using different
+classification algorithms: Bayes networks, multilayer perceptron, decission tree or
+support vector machines are available. Some of these classifiers have incremental
+versions so they can be built without having all the dataset instances in memory.
 
- </body>
+Functions for evaluating the classifiers built using cross validation or a training
+set are also provided</pre>
+  
+  Public variables and functions:
+  <span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/classifier-classify" id="var-tag">classifier-classify</a> </span><span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/classifier-evaluate" id="var-tag">classifier-evaluate</a> </span><span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/classifier-label" id="var-tag">classifier-label</a> </span><span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/classifier-train" id="var-tag">classifier-train</a> </span><span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/classifier-update" id="var-tag">classifier-update</a> </span><span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/make-classifier" id="var-tag">make-classifier</a> </span><br />
+  
+</div><div id="namespace-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.clusterers">clj-ml.clusterers</h2>
+  by <span id="author">Antonio Garrote &lt;antoniogarrote@gmail.com&gt;</span><br />
+  <a href="clj-ml.clusterers-api.html" id="api-link">Detailed API documentation</a><br />
+  <pre id="namespace-docstr">This namespace contains several functions for
+building clusterers using different clustering algorithms. K-means, Cobweb and
+
+Expectation maximization algorithms are currently supported. Some of these
+algorithms support incremental building of the clustering without having the
+full data set in main memory. Functions for evaluating the clusterer as well
+as for clustering new instances are also supported</pre>
+  
+  Public variables and functions:
+  <span id="var-link"><a href="clj-ml.clusterers-api.html#clj-ml.clusterers/clusterer-build" id="var-tag">clusterer-build</a> </span><span id="var-link"><a href="clj-ml.clusterers-api.html#clj-ml.clusterers/clusterer-cluster" id="var-tag">clusterer-cluster</a> </span><span id="var-link"><a href="clj-ml.clusterers-api.html#clj-ml.clusterers/clusterer-evaluate" id="var-tag">clusterer-evaluate</a> </span><span id="var-link"><a href="clj-ml.clusterers-api.html#clj-ml.clusterers/clusterer-info" id="var-tag">clusterer-info</a> </span><span id="var-link"><a href="clj-ml.clusterers-api.html#clj-ml.clusterers/clusterer-update" id="var-tag">clusterer-update</a> </span><span id="var-link"><a href="clj-ml.clusterers-api.html#clj-ml.clusterers/make-clusterer" id="var-tag">make-clusterer</a> </span><span id="var-link"><a href="clj-ml.clusterers-api.html#clj-ml.clusterers/make-clusterer-options" id="var-tag">make-clusterer-options</a> </span><br />
+  
+</div><div id="namespace-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.data">clj-ml.data</h2>
+  by <span id="author">Antonio Garrote &lt;antoniogarrote@gmail.com&gt;</span><br />
+  <a href="clj-ml.data-api.html" id="api-link">Detailed API documentation</a><br />
+  <pre id="namespace-docstr">This namespace contains several functions for
+building creating and manipulating data sets and instances. The formats of
+these data sets as well as their classes can be modified and assigned to
+the instances. Finally data sets can be transformed into Clojure sequences
+that can be transformed using usual Clojure functions like map, reduce, etc.</pre>
+  
+  Public variables and functions:
+  <span id="var-link"><a href="clj-ml.data-api.html#clj-ml.data/dataset-add" id="var-tag">dataset-add</a> </span><span id="var-link"><a href="clj-ml.data-api.html#clj-ml.data/dataset-at" id="var-tag">dataset-at</a> </span><span id="var-link"><a href="clj-ml.data-api.html#clj-ml.data/dataset-extract-at" id="var-tag">dataset-extract-at</a> </span><span id="var-link"><a href="clj-ml.data-api.html#clj-ml.data/dataset-pop" id="var-tag">dataset-pop</a> </span><span id="var-link"><a href="clj-ml.data-api.html#clj-ml.data/instance-to-map" id="var-tag">instance-to-map</a> </span><span id="var-link"><a href="clj-ml.data-api.html#clj-ml.data/instance-to-vector" id="var-tag">instance-to-vector</a> </span><span id="var-link"><a href="clj-ml.data-api.html#clj-ml.data/make-dataset" id="var-tag">make-dataset</a> </span><span id="var-link"><a href="clj-ml.data-api.html#clj-ml.data/make-instance" id="var-tag">make-instance</a> </span><br />
+  
+</div><div id="namespace-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.data-store">clj-ml.data-store</h2>
+  by <span id="author">Antonio Garrote &lt;antoniogarrote@gmail.com&gt;</span><br />
+  <a href="clj-ml.data-store-api.html" id="api-link">Detailed API documentation</a><br />
+  <pre id="namespace-docstr">Functions for storing and retrieving data sets from a persistence store, like a data
+base system.
+Currently MongoDB is the only store supported.</pre>
+  
+  Public variables and functions:
+  <span id="var-link"><a href="clj-ml.data-store-api.html#clj-ml.data-store/data-store-connection-db" id="var-tag">data-store-connection-db</a> </span><span id="var-link"><a href="clj-ml.data-store-api.html#clj-ml.data-store/data-store-load-dataset" id="var-tag">data-store-load-dataset</a> </span><span id="var-link"><a href="clj-ml.data-store-api.html#clj-ml.data-store/data-store-save-dataset" id="var-tag">data-store-save-dataset</a> </span><span id="var-link"><a href="clj-ml.data-store-api.html#clj-ml.data-store/make-data-store-connection" id="var-tag">make-data-store-connection</a> </span><br />
+  
+</div><div id="namespace-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.distance-functions">clj-ml.distance-functions</h2>
+  by <span id="author">Antonio Garrote &lt;antoniogarrote@gmail.com&gt;</span><br />
+  <a href="clj-ml.distance-functions-api.html" id="api-link">Detailed API documentation</a><br />
+  <pre id="namespace-docstr">Generates different distance metrics that can be passed as parameters to certain
+classifiers and clusterers like K-Means.
+
+Euclidean, Manhattan and Chebysev distance functions are supported.</pre>
+  
+  Public variables and functions:
+  <span id="var-link"><a href="clj-ml.distance-functions-api.html#clj-ml.distance-functions/make-distance-function" id="var-tag">make-distance-function</a> </span><br />
+  
+</div><div id="namespace-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.filters">clj-ml.filters</h2>
+  by <span id="author">Antonio Garrote &lt;antoniogarrote@gmail.com&gt;</span><br />
+  <a href="clj-ml.filters-api.html" id="api-link">Detailed API documentation</a><br />
+  <pre id="namespace-docstr">This namespace defines a set of functions that can be applied to data sets to modify the
+dataset in some way: transforming nominal attributes into binary attributes, removing
+attributes etc.
+
+A sample use of the API is shown below:
+
+  ;; *ds* is the dataset where the first attribute is to be removed
+  (def *filter* (make-filter :remove-attributes {:dataset-format *ds* :attributes [0]}))
+
+  ;; We apply the filter to the original data set and obtain the new one
+  (def *filtered-ds* (filter-apply *filter* *ds*))
+
+
+The previous sample of code could be rewritten with the make-apply-filter function:
+
+  ;; There is no necessity of passing the :dataset-format option, *ds* format is used
+  ;; automatically
+  (def *filtered-ds* (make-apply-filter :remove-attributes {:attributes [0]} *ds*))</pre>
+  
+  Public variables and functions:
+  <span id="var-link"><a href="clj-ml.filters-api.html#clj-ml.filters/filter-apply" id="var-tag">filter-apply</a> </span><span id="var-link"><a href="clj-ml.filters-api.html#clj-ml.filters/make-apply-filter" id="var-tag">make-apply-filter</a> </span><span id="var-link"><a href="clj-ml.filters-api.html#clj-ml.filters/make-filter" id="var-tag">make-filter</a> </span><br />
+  
+</div><div id="namespace-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.io">clj-ml.io</h2>
+  by <span id="author">Antonio Garrote &lt;antoniogarrote@gmail.com&gt;</span><br />
+  <a href="clj-ml.io-api.html" id="api-link">Detailed API documentation</a><br />
+  <pre id="namespace-docstr">Functions for reading and saving datasets, classifiers and clusterers to files and other
+persistence mechanisms.</pre>
+  
+  Public variables and functions:
+  <span id="var-link"><a href="clj-ml.io-api.html#clj-ml.io/load-instances" id="var-tag">load-instances</a> </span><span id="var-link"><a href="clj-ml.io-api.html#clj-ml.io/save-instances" id="var-tag">save-instances</a> </span><br />
+  
+</div><div id="namespace-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.kernel-functions">clj-ml.kernel-functions</h2>
+  by <span id="author">Antonio Garrote &lt;antoniogarrote@gmail.com&gt;</span><br />
+  <a href="clj-ml.kernel-functions-api.html" id="api-link">Detailed API documentation</a><br />
+  <pre id="namespace-docstr">Kernel functions that can be passed as parameters to support vector machines classifiers.
+
+Polynomic, radial basis and string kernels are supported</pre>
+  
+  Public variables and functions:
+  <span id="var-link"><a href="clj-ml.kernel-functions-api.html#clj-ml.kernel-functions/make-kernel-function" id="var-tag">make-kernel-function</a> </span><span id="var-link"><a href="clj-ml.kernel-functions-api.html#clj-ml.kernel-functions/make-kernel-function-options" id="var-tag">make-kernel-function-options</a> </span><br />
+  
+</div><div id="namespace-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.ui">clj-ml.ui</h2>
+  by <span id="author">Antonio Garrote &lt;antoniogarrote@gmail.com&gt;</span><br />
+  <a href="clj-ml.ui-api.html" id="api-link">Detailed API documentation</a><br />
+  <pre id="namespace-docstr">Namespace containing functions for plotting classifiers, clusterers and data sets.</pre>
+  
+  Public variables and functions:
+  <span id="var-link"><a href="clj-ml.ui-api.html#clj-ml.ui/display-object" id="var-tag">display-object</a> </span><br />
+  
+</div>
+</div>
+              </div>
+            </div>
+          </div>
+	</div>
+	<div id="foot">
+	  <div style="text-align: center;" id="copyright">2010 (c) Antonio Garrote, under the MIT license</div>
+	</div>
+      </div>
+      <div id="DesignedBy">Logo &amp; site design by <a title="Visit Tom Hickey's website." href="http://www.tomhickey.com">Tom Hickey</a>.<br />
+      Clojure auto-documentation system by Tom Faulhaber.</div>
+    </div>
+    <!-- /AllContentContainer -->
+  </body>
+
 </html>

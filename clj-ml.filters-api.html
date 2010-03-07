@@ -1,0 +1,253 @@
+<html>
+  <head>
+    <title>clj-ml.filters API reference (clj-ml)</title>
+    <link href="static/favicon.png" rel="icon" />
+    <link href="static/favicon.png" rel="shortcut icon" />
+    <link media="all" type="text/css" href="static/clojure.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/wiki.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/internal.css" rel="stylesheet" />
+    <!-- TODO: are we using these (from clojure.org)? If so, add the files -->
+    <script src="file/view/code_highlighter.js" type="text/javascript"></script>
+    <script src="file/view/clojure.js" type="text/javascript"></script>
+    <style>.menuWrapper{height: 36px;}</style>
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" href="http://www.wikispaces.com/_/2009051601/s/internal_ie.css" type="text/css" />
+    <![endif]-->
+  </head>
+<!--
+This document was auto-generated from the source by the clojure autodoc system.
+To report errors or ask questions about the overall documentation structure, formatting,
+etc., contact Tom Faulhaber (google mail name: tomfaulhaber).
+For errors in the documentation of a particular namespace, contact the author of that
+namespace.
+-->
+  <body>
+    <div id="AllContentContainer">
+      <div id="Header">
+	<a id="Logo" href="index.html"><img alt="Clojure" height="100" width="100" src="static/clojure-icon.gif" /></a>
+	<h1><a title="page header title" id="page-header" href="index.html">clj-ml machine learning Clojure's style</a></h1>
+      </div>
+      <div id="leftcolumn"><div style="text-align: center;"></div>
+<div class="menu">
+  <div class="WikiCustomNav WikiElement wiki">
+    <a class="wiki_link" href="index.html">Overview</a><br />
+    <a class="wiki_link" href="api-index.html">API Index</a><br />
+    <a class="wiki_link" href="#">Namespaces:</a>
+    <ul id="left-sidebar-list">
+      <li><a href="clj-ml.classifiers-api.html" class="wiki_link">clj-ml.classifiers</a></li><li><a href="clj-ml.clusterers-api.html" class="wiki_link">clj-ml.clusterers</a></li><li><a href="clj-ml.data-api.html" class="wiki_link">clj-ml.data</a></li><li><a href="clj-ml.data-store-api.html" class="wiki_link">clj-ml.data-store</a></li><li><a href="clj-ml.distance-functions-api.html" class="wiki_link">clj-ml.distance-functions</a></li><li><a href="clj-ml.filters-api.html" class="wiki_link">clj-ml.filters</a></li><li><a href="clj-ml.io-api.html" class="wiki_link">clj-ml.io</a></li><li><a href="clj-ml.kernel-functions-api.html" class="wiki_link">clj-ml.kernel-functions</a></li><li><a href="clj-ml.ui-api.html" class="wiki_link">clj-ml.ui</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+      <div id="rightcolumn">
+	<div id="Content">
+	  <div class="contentBox"><div class="innerContentBox">
+              <div id="content_view" class="wiki wikiPage">
+                <div id="right-sidebar"><div id="toc">
+  <h1 class="nopad">Table of Contents</h1>
+  <div style="margin-left: 1em;" class="toc-section">
+    <a href="#toc0">Overview</a>
+    <div style="margin-left: 1em;" class="toc-entry">
+      <a href="#clj-ml.filters/filter-apply">filter-apply</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#clj-ml.filters/make-apply-filter">make-apply-filter</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#clj-ml.filters/make-filter">make-filter</a>
+    </div>
+    <br />
+  </div>
+</div>
+</div>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">clj-ml.filters</span></h1>
+by <span id="author">Antonio Garrote &lt;antoniogarrote@gmail.com&gt;</span><br />
+<br />Usage:
+<pre>
+(ns your-namespace
+  (:require <span id="long-name">clj-ml.filters</span>))
+</pre><pre>
+</pre><h2>Overview</h2>
+<pre id="namespace-docstr">This namespace defines a set of functions that can be applied to data sets to modify the
+dataset in some way: transforming nominal attributes into binary attributes, removing
+attributes etc.
+
+A sample use of the API is shown below:
+
+  ;; *ds* is the dataset where the first attribute is to be removed
+  (def *filter* (make-filter :remove-attributes {:dataset-format *ds* :attributes [0]}))
+
+  ;; We apply the filter to the original data set and obtain the new one
+  (def *filtered-ds* (filter-apply *filter* *ds*))
+
+
+The previous sample of code could be rewritten with the make-apply-filter function:
+
+  ;; There is no necessity of passing the :dataset-format option, *ds* format is used
+  ;; automatically
+  (def *filtered-ds* (make-apply-filter :remove-attributes {:attributes [0]} *ds*))</pre>
+<br />
+<h2>Public Variables and Functions</h2>
+<div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.filters/filter-apply">filter-apply</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (filter-apply filter dataset)
+</pre>
+  <pre id="var-docstr">Filters an input dataset using the provided filter and generates an output dataset. The
+first argument is a filter and the second parameter the data set where the filter should
+be applied.</pre>
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.filters/make-apply-filter">make-apply-filter</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (make-apply-filter kind options dataset)
+</pre>
+  <pre id="var-docstr">Creates a new filter with the provided options and apply it to the provided dataset.
+The :dataset-format attribute for the making of the filter will be setup to the
+dataset passed as an argument if no other value is provided.
+
+The application of this filter is equivalent a the consecutive application of
+make-filter and apply-filter.</pre>
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="clj-ml.filters/make-filter">make-filter</h2>
+  <span id="var-type">multimethod</span><br />
+  <pre id="var-usage">No usage documentation available</pre>
+  <pre id="var-docstr">Creates a filter for the provided attributes format. The first argument must be a symbol
+identifying the kind of filter to generate.
+Currently the following filters are supported:
+
+  - :supervised-discretize
+  - :unsupervised-discretize
+  - :supervised-nominal-to-binary
+  - :unsupervised-nominal-to-binary
+  - :remove-attributes
+  - :select-append-attributes
+  - :project-attributes
+
+ The second parameter is a map of attributes
+ for the filter to be built.
+
+ An example of usage could be:
+
+   (make-filter :remove {:attributes [0 1] :dataset-format dataset})
+
+ Documentation for the different filters:
+
+ * :supervised-discretize
+
+   An instance filter that discretizes a range of numeric attributes
+   in the dataset into nominal attributes. Discretization is by Fayyad
+   &amp; Irani's MDL method (the default).
+
+   Parameters:
+
+     - :attributes Index of the attributes to be discretized, sample value: [0,4,6]
+     - :invert Invert mathcing sense of the columns, sample value: true
+     - :kononenko Use Kononenko's MDL criterion, sample value: true
+
+ * :unsupervised-discretize
+
+   Unsupervised version of the discretize filter. Discretization is by simple
+   pinning.
+
+   Parameters:
+
+     - :attributes Index of the attributes to be discretized, sample value: [0,4,6]
+     - :dataset-format The dataset where the filter is going to be applied or a
+                       description of the format of its attributes. Sample value:
+                       dataset, (dataset-format dataset)
+     - :unset-class Does not take class attribute into account for the application
+                    of the filter, sample-value: true
+     - :binary
+     - :equal-frequency Use equal frequency instead of equal width discretization, sample
+                        value: true
+     - :optimize Optmize the number of bins using leave-one-out estimate of
+                 estimated entropy. Ingores the :binary attribute. sample value: true
+     - :number-bins Defines the number of bins to divide the numeric attributes into
+                    sample value: 3
+
+ * :supervised-nominal-to-binary
+
+   Converts nominal attributes into binary numeric attributes. An attribute with k values
+   is transformed into k binary attributes if the class is nominal.
+
+   Parameters:
+     - :dataset-format The dataset where the filter is going to be applied or a
+                       description of the format of its attributes. Sample value:
+                       dataset, (dataset-format dataset)
+     - :also-binary Sets if binary attributes are to be coded as nominal ones, sample value: true
+     - :for-each-nominal For each nominal value one binary attribute is created, not only if the
+                         values of the nominal attribute are greater than two.
+
+ * :unsupervised-nominal-to-binary
+
+   Unsupervised version of the :nominal-to-binary filter
+
+   Parameters:
+
+     - :attributes Index of the attributes to be binarized. Sample value: [1 2 3]
+     - :dataset-format The dataset where the filter is going to be applied or a
+                       description of the format of its attributes. Sample value:
+                       dataset, (dataset-format dataset)
+     - :also-binary Sets if binary attributes are to be coded as nominal ones, sample value: true
+     - :for-each-nominal For each nominal value one binary attribute is created, not only if the
+                         values of the nominal attribute are greater than two., sample value: true
+
+ * :remove-attributes
+
+   Remove some columns from the data set after the provided attributes.
+
+   Parameters:
+
+     - :dataset-format The dataset where the filter is going to be applied or a
+                       description of the format of its attributes. Sample value:
+                       dataset, (dataset-format dataset)
+     - :attributes: Index of the attributes to remove. Sample value: [1 2 3]
+
+ * :select-append-attributes
+
+   Append a copy of the selected columns at the end of the dataset.
+
+   Parameters:
+
+     - :dataset-format The dataset where the filter is going to be applied or a
+                       description of the format of its attributes. Sample value:
+                       dataset, (dataset-format dataset)
+     - :attributes Index of the attributes to remove. Sample value: [1 2 3]
+     - :invert Invert the selection of the columns. Sample value: [0 1]
+
+ * :project-attributes
+
+   Project some columns from the provided dataset
+
+   Parameters:
+
+     - :dataset-format The dataset where the filter is going to be applied or a
+                       description of the format of its attributes. Sample value:
+                       dataset, (dataset-format dataset)
+     - :invert Invert the selection of columns. Sample value: [0 1]</pre>
+  
+</div>
+
+
+</div>
+              </div>
+            </div>
+          </div>
+	</div>
+	<div id="foot">
+	  <div style="text-align: center;" id="copyright">2010 (c) Antonio Garrote, under the MIT license</div>
+	</div>
+      </div>
+      <div id="DesignedBy">Logo &amp; site design by <a title="Visit Tom Hickey's website." href="http://www.tomhickey.com">Tom Hickey</a>.<br />
+      Clojure auto-documentation system by Tom Faulhaber.</div>
+    </div>
+    <!-- /AllContentContainer -->
+  </body>
+
+</html>
