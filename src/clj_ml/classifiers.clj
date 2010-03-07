@@ -4,12 +4,13 @@
 ;;
 
 (ns clj-ml.classifiers
-  (:use [clj-ml utils data])
+  (:use [clj-ml utils data kernel-functions])
   (:import (java.util Date Random)
            (weka.classifiers.trees J48)
            (weka.classifiers.bayes NaiveBayes)
            (weka.classifiers.bayes NaiveBayesUpdateable)
            (weka.classifiers.functions MultilayerPerceptron)
+           (weka.classifiers.functions SMO)
            (weka.classifiers Evaluation)))
 
 
@@ -65,8 +66,23 @@
                                            cols-val)]
        (into-array cols-val-a))))
 
+(defmethod make-classifier-options [:support-vector-machine :smo]
+  ([kind algorithm map]
+     (let [cols-val (check-options {:fit-logistic-models "-M"}
+                                     map
+                                     [""])
+           cols-val-a (check-option-values {:complexity-constant "-C"
+                                            :tolerance "-L"
+                                            :epsilon-roundoff "-P"
+                                            :folds-for-cross-validation "-V"
+                                            :random-seed "-W"}
+                                           map
+                                           cols-val)]
+       (into-array cols-val-a))))
+
 
 ;; Building classifiers
+
 
 (defmacro make-classifier-m
   ([kind algorithm classifier-class options]
@@ -95,6 +111,21 @@
   ([kind algorithm & options]
      (make-classifier-m kind algorithm MultilayerPerceptron options)))
 
+(defmethod make-classifier [:support-vector-machine :smo]
+  ([kind algorithm & options]
+     (let [options-read (if (empty? options)  {} (first options))
+           classifier (new SMO)
+           opts (make-classifier-options :support-vector-machine :smo options-read)]
+       (.setOptions classifier opts)
+       (when (not (empty? (get options-read :kernel-function)))
+          ;; We have to setup a different kernel function
+         (let [kernel (get options-read :kernel-function)
+                real-kernel (if (map? kernel)
+                             (make-kernel-function (first (keys kernel))
+                                                   (first (vals kernel)))
+                             kernel)]
+            (.setKernel classifier real-kernel)))
+        classifier)))
 
 ;; Training classifiers
 
