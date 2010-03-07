@@ -3,7 +3,11 @@
 ;; @author Antonio Garrote
 ;;
 
-(ns clj-ml.data-store
+(ns #^{:author "Antonio Garrote <antoniogarrote@gmail.com>"}
+  clj-ml.data-store
+  "Functions for storing and retrieving data sets from a persistence store, like a data
+   base system.
+   Currently MongoDB is the only store supported."
   (:use [clj-ml utils data])
   (:import (com.mongodb Mongo DB BasicDBObject DBCollection DBCursor)))
 

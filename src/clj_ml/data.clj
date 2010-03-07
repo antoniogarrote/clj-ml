@@ -3,7 +3,13 @@
 ;; @author Antonio Garrote
 ;;
 
-(ns clj-ml.data
+(ns #^{:author "Antonio Garrote <antoniogarrote@gmail.com>"}
+  clj-ml.data
+  "This namespace contains several functions for
+   building creating and manipulating data sets and instances. The formats of
+   these data sets as well as their classes can be modified and assigned to
+   the instances. Finally data sets can be transformed into Clojure sequences
+   that can be transformed using usual Clojure functions like map, reduce, etc."
   (:use [clj-ml utils])
   (:import (weka.core Instance Instances FastVector Attribute)
            (cljml ClojureInstances)))

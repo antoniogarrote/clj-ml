@@ -3,7 +3,11 @@
 ;; @author Antonio Garrote
 ;;
 
-(ns clj-ml.kernel-functions
+(ns #^{:author "Antonio Garrote <antoniogarrote@gmail.com>"}
+  clj-ml.kernel-functions
+  "Kernel functions that can be passed as parameters to support vector machines classifiers.
+
+   Polynomic, radial basis and string kernels are supported"
   (:use [clj-ml utils data])
   (:import (weka.classifiers.functions.supportVector PolyKernel RBFKernel StringKernel)))
 

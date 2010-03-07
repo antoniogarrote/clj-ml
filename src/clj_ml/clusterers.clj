@@ -3,7 +3,15 @@
 ;; @author Antonio Garrote
 ;;
 
-(ns clj-ml.clusterers
+(ns #^{:author "Antonio Garrote <antoniogarrote@gmail.com>"}
+  clj-ml.clusterers
+  "This namespace contains several functions for
+   building clusterers using different clustering algorithms. K-means, Cobweb and
+
+   Expectation maximization algorithms are currently supported. Some of these
+   algorithms support incremental building of the clustering without having the
+   full data set in main memory. Functions for evaluating the clusterer as well
+   as for clustering new instances are also supported"
   (:use [clj-ml utils data distance-functions]
         [incanter charts])
   (:import (java.util Date Random)

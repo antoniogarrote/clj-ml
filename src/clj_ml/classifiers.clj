@@ -3,7 +3,15 @@
 ;; @author Antonio Garrote
 ;;
 
-(ns clj-ml.classifiers
+(ns #^{:author "Antonio Garrote <antoniogarrote@gmail.com>"}
+  clj-ml.classifiers
+  "This namespace contains several functions for building classifiers using different
+   classification algorithms: Bayes networks, multilayer perceptron, decission tree or
+   support vector machines are available. Some of these classifiers have incremental
+   versions so they can be built without having all the dataset instances in memory.
+
+   Functions for evaluating the classifiers built using cross validation or a training
+   set are also provided"
   (:use [clj-ml utils data kernel-functions])
   (:import (java.util Date Random)
            (weka.classifiers.trees J48)
@@ -16,7 +24,8 @@
 
 ;; Setting up classifier options
 
-(defmulti make-classifier-options
+(defmulti #^{:skip-wiki true}
+  make-classifier-options
   "Creates the right parameters for a classifier"
   (fn [kind algorithm map] [kind algorithm]))
 
@@ -85,6 +94,7 @@
 
 
 (defmacro make-classifier-m
+  #^{:skip-wiki true}
   ([kind algorithm classifier-class options]
      `(let [options-read# (if (empty? ~options)  {} (first ~options))
             classifier# (new ~classifier-class)
@@ -93,7 +103,44 @@
         classifier#)))
 
 (defmulti make-classifier
-  "Creates a new classifier for the given kind algorithm and options"
+  "Creates a new classifier for the given kind algorithm and options.
+
+   The first argument identifies the kind of classifier and the second
+   argument the algorithm to use, e.g. :decission-tree :c45.
+
+   The colection of classifiers currently supported are:
+
+     - :decission-tree :c45
+     - :bayes :naive
+     - :neural-network :mutilayer-perceptron
+     - :support-vector-machine :smo
+
+   Optionally, a map of options can also be passed as an argument with
+   a set of classifier specific options.
+
+   This is the description of the supported classifiers and the accepted
+   option parameters for each of them:
+
+   * :decission-tree :c45
+
+     A classifier building a pruned or unpruned C 4.5 decission tree using
+     Weka J 4.8 implementation.
+
+     Parameters:
+
+       - :unpruned Use unpruned tree. Sample value: true
+       - :reduce-error-pruning Sample value: true
+       - :only-binary-splits Sample value: true
+       - :no-raising Sample value: true
+       - :no-cleanup Sample value: true
+       - :laplace-smoothing For predicted probabilities. Sample value: true
+       - :pruning-confidence Threshold for pruning. Default value: 0.25
+       - :minimum-instances Minimum number of instances per leave. Default
+                            value: 2
+       - :pruning-number-folds Set number of folds for reduced error pruning.
+                               Default value: 3
+       - :shuffling-random-seed Seed for random data shuffling. Default value: 1
+    "
   (fn [kind algorithm & options] [kind algorithm]))
 
 (defmethod make-classifier [:decission-tree :c45]

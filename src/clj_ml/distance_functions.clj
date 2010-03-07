@@ -3,7 +3,12 @@
 ;; @author Antonio Garrote
 ;;
 
-(ns clj-ml.distance-functions
+(ns #^{:author "Antonio Garrote <antoniogarrote@gmail.com>"}
+  clj-ml.distance-functions
+  "Generates different distance metrics that can be passed as parameters to certain
+   classifiers and clusterers like K-Means.
+
+   Euclidean, Manhattan and Chebysev distance functions are supported."
   (:use [clj-ml utils data])
   (:import (weka.core EuclideanDistance ManhattanDistance ChebyshevDistance)))
 

@@ -3,7 +3,9 @@
 ;; @author Antonio Garrote
 ;;
 
-(ns clj-ml.ui
+(ns #^{:author "Antonio Garrote <antoniogarrote@gmail.com>"}
+  clj-ml.ui
+  "Namespace containing functions for plotting classifiers, clusterers and data sets."
   (:use (clj-ml data utils clusterers)
         (incanter core stats charts))
   (:import (weka.clusterers ClusterEvaluation SimpleKMeans)))
