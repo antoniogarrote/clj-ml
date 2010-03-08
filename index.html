@@ -100,7 +100,53 @@ support vector machines are available. Some of these classifiers have incrementa
 versions so they can be built without having all the dataset instances in memory.
 
 Functions for evaluating the classifiers built using cross validation or a training
-set are also provided</pre>
+set are also provided.
+
+A sample use of the API for classifiers is shown below:
+
+ (use 'clj-ml.classifiers)
+
+ ; Building a classifier using a  C4.5 decission tree
+ (def *classifier* (make-classifier :decission-tree :c45))
+
+ ; We set the class attribute for the loaded dataset.
+ ; *dataset* is supposed to contain a set of instances.
+ (dataset-set-class *dataset* 4)
+
+ ; Training the classifier
+ (classifier-train *classifier* *ds*)
+
+ ; We evaluate the classifier using a test dataset
+ (def *evaluation*   (classifier-evaluate classifier  :dataset *dataset* *trainingset*))
+
+ ; We retrieve some data from the evaluation result
+ (:kappa *evaluation*)
+ (:root-mean-squared-error *evaluation*)
+ (:precision *evaluation*)
+
+ ; A trained classifier can be used to classify new instances
+ (def *to-classify* (make-instance ds  {:class :Iris-versicolor
+                                        :petalwidth 0.2
+                                        :petallength 1.4
+                                        :sepalwidth 3.5
+                                        :sepallength 5.1}))
+
+ ; We retrieve the index of the class value assigned by the classifier
+ (classifier-classify *classifier* *to-classify*)
+
+ ; We retrieve a symbol with the value assigned by the classifier
+ (classifier-label *classifier* *to-classify*)
+
+A classifier can also be trained using cross-validation:
+
+ (classifier-evaluate *classifier* :cross-validation ds 10)
+
+Finally a classifier can be stored in a file for later use:
+
+ (use 'clj-ml.utils)
+
+ (serialize-to-file *classifier*
+  "/Users/antonio.garrote/Desktop/classifier.bin")</pre>
   
   Public variables and functions:
   <span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/classifier-classify" id="var-tag">classifier-classify</a> </span><span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/classifier-evaluate" id="var-tag">classifier-evaluate</a> </span><span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/classifier-label" id="var-tag">classifier-label</a> </span><span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/classifier-train" id="var-tag">classifier-train</a> </span><span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/classifier-update" id="var-tag">classifier-update</a> </span><span id="var-link"><a href="clj-ml.classifiers-api.html#clj-ml.classifiers/make-classifier" id="var-tag">make-classifier</a> </span><br />
