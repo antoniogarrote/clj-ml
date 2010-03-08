@@ -155,9 +155,12 @@
 
       Parameters:
 
-        - :attributes Index of the attributes to be discretized, sample value: [0,4,6]
-        - :invert Invert mathcing sense of the columns, sample value: true
-        - :kononenko Use Kononenko's MDL criterion, sample value: true
+        - :attributes
+            Index of the attributes to be discretized, sample value: [0,4,6]
+        - :invert
+            Invert mathcing sense of the columns, sample value: true
+        - :kononenko
+            Use Kononenko's MDL criterion, sample value: true
 
     * :unsupervised-discretize
 
@@ -166,19 +169,25 @@
 
       Parameters:
 
-        - :attributes Index of the attributes to be discretized, sample value: [0,4,6]
-        - :dataset-format The dataset where the filter is going to be applied or a
-                          description of the format of its attributes. Sample value:
-                          dataset, (dataset-format dataset)
-        - :unset-class Does not take class attribute into account for the application
-                       of the filter, sample-value: true
+        - :attributes
+            Index of the attributes to be discretized, sample value: [0,4,6]
+        - :dataset-format
+            The dataset where the filter is going to be applied or a
+            description of the format of its attributes. Sample value:
+            dataset, (dataset-format dataset)
+        - :unset-class
+            Does not take class attribute into account for the application
+            of the filter, sample-value: true
         - :binary
-        - :equal-frequency Use equal frequency instead of equal width discretization, sample
-                           value: true
-        - :optimize Optmize the number of bins using leave-one-out estimate of
-                    estimated entropy. Ingores the :binary attribute. sample value: true
-        - :number-bins Defines the number of bins to divide the numeric attributes into
-                       sample value: 3
+        - :equal-frequency
+            Use equal frequency instead of equal width discretization, sample
+            value: true
+        - :optimize
+            Optmize the number of bins using leave-one-out estimate of
+            estimated entropy. Ingores the :binary attribute. sample value: true
+        - :number-bins
+            Defines the number of bins to divide the numeric attributes into
+            sample value: 3
 
     * :supervised-nominal-to-binary
 
@@ -186,12 +195,15 @@
       is transformed into k binary attributes if the class is nominal.
 
       Parameters:
-        - :dataset-format The dataset where the filter is going to be applied or a
-                          description of the format of its attributes. Sample value:
-                          dataset, (dataset-format dataset)
-        - :also-binary Sets if binary attributes are to be coded as nominal ones, sample value: true
-        - :for-each-nominal For each nominal value one binary attribute is created, not only if the
-                            values of the nominal attribute are greater than two.
+        - :dataset-format
+            The dataset where the filter is going to be applied or a
+            description of the format of its attributes. Sample value:
+            dataset, (dataset-format dataset)
+        - :also-binary
+            Sets if binary attributes are to be coded as nominal ones, sample value: true
+        - :for-each-nominal
+            For each nominal value one binary attribute is created, not only if the
+            values of the nominal attribute are greater than two.
 
     * :unsupervised-nominal-to-binary
 
@@ -199,13 +211,17 @@
 
       Parameters:
 
-        - :attributes Index of the attributes to be binarized. Sample value: [1 2 3]
-        - :dataset-format The dataset where the filter is going to be applied or a
-                          description of the format of its attributes. Sample value:
-                          dataset, (dataset-format dataset)
-        - :also-binary Sets if binary attributes are to be coded as nominal ones, sample value: true
-        - :for-each-nominal For each nominal value one binary attribute is created, not only if the
-                            values of the nominal attribute are greater than two., sample value: true
+        - :attributes
+            Index of the attributes to be binarized. Sample value: [1 2 3]
+        - :dataset-format
+            The dataset where the filter is going to be applied or a
+            description of the format of its attributes. Sample value:
+            dataset, (dataset-format dataset)
+        - :also-binary
+            Sets if binary attributes are to be coded as nominal ones, sample value: true
+        - :for-each-nominal
+            For each nominal value one binary attribute is created, not only if the
+            values of the nominal attribute are greater than two., sample value: true
 
     * :remove-attributes
 
@@ -213,10 +229,12 @@
 
       Parameters:
 
-        - :dataset-format The dataset where the filter is going to be applied or a
-                          description of the format of its attributes. Sample value:
-                          dataset, (dataset-format dataset)
-        - :attributes: Index of the attributes to remove. Sample value: [1 2 3]
+        - :dataset-format
+            The dataset where the filter is going to be applied or a
+            description of the format of its attributes. Sample value:
+            dataset, (dataset-format dataset)
+        - :attributes
+            Index of the attributes to remove. Sample value: [1 2 3]
 
     * :select-append-attributes
 
@@ -224,11 +242,14 @@
 
       Parameters:
 
-        - :dataset-format The dataset where the filter is going to be applied or a
-                          description of the format of its attributes. Sample value:
-                          dataset, (dataset-format dataset)
-        - :attributes Index of the attributes to remove. Sample value: [1 2 3]
-        - :invert Invert the selection of the columns. Sample value: [0 1]
+        - :dataset-format
+            The dataset where the filter is going to be applied or a
+            description of the format of its attributes. Sample value:
+            dataset, (dataset-format dataset)
+        - :attributes
+            Index of the attributes to remove. Sample value: [1 2 3]
+        - :invert
+            Invert the selection of the columns. Sample value: [0 1]
 
     * :project-attributes
 
@@ -236,10 +257,12 @@
 
       Parameters:
 
-        - :dataset-format The dataset where the filter is going to be applied or a
-                          description of the format of its attributes. Sample value:
-                          dataset, (dataset-format dataset)
-        - :invert Invert the selection of columns. Sample value: [0 1]"
+        - :dataset-format
+            The dataset where the filter is going to be applied or a
+            description of the format of its attributes. Sample value:
+            dataset, (dataset-format dataset)
+        - :invert
+            Invert the selection of columns. Sample value: [0 1]"
   (fn [kind options] kind))
 
 (defmethod make-filter :supervised-discretize
@@ -285,7 +308,7 @@
    The :dataset-format attribute for the making of the filter will be setup to the
    dataset passed as an argument if no other value is provided.
 
-   The application of this filter is equivalent a the consecutive application of
+   The application of this filter is equivalent a the consequetive application of
    make-filter and apply-filter."
   [kind options dataset]
   (let [opts (if (nil? (:dataset-format options)) (conj options {:dataset-format dataset}))

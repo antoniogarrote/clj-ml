@@ -11,7 +11,55 @@
    versions so they can be built without having all the dataset instances in memory.
 
    Functions for evaluating the classifiers built using cross validation or a training
-   set are also provided"
+   set are also provided.
+
+   A sample use of the API for classifiers is shown below:
+
+    (use 'clj-ml.classifiers)
+
+    ; Building a classifier using a  C4.5 decission tree
+    (def *classifier* (make-classifier :decission-tree :c45))
+
+    ; We set the class attribute for the loaded dataset.
+    ; *dataset* is supposed to contain a set of instances.
+    (dataset-set-class *dataset* 4)
+
+    ; Training the classifier
+    (classifier-train *classifier* *ds*)
+
+    ; We evaluate the classifier using a test dataset
+    (def *evaluation*   (classifier-evaluate classifier  :dataset *dataset* *trainingset*))
+
+    ; We retrieve some data from the evaluation result
+    (:kappa *evaluation*)
+    (:root-mean-squared-error *evaluation*)
+    (:precision *evaluation*)
+
+    ; A trained classifier can be used to classify new instances
+    (def *to-classify* (make-instance ds  {:class :Iris-versicolor
+                                           :petalwidth 0.2
+                                           :petallength 1.4
+                                           :sepalwidth 3.5
+                                           :sepallength 5.1}))
+
+    ; We retrieve the index of the class value assigned by the classifier
+    (classifier-classify *classifier* *to-classify*)
+
+    ; We retrieve a symbol with the value assigned by the classifier
+    (classifier-label *classifier* *to-classify*)
+
+   A classifier can also be trained using cross-validation:
+
+    (classifier-evaluate *classifier* :cross-validation ds 10)
+
+   Finally a classifier can be stored in a file for later use:
+
+    (use 'clj-ml.utils)
+
+    (serialize-to-file *classifier*
+     \"/Users/antonio.garrote/Desktop/classifier.bin\")
+
+"
   (:use [clj-ml utils data kernel-functions])
   (:import (java.util Date Random)
            (weka.classifiers.trees J48)
@@ -42,7 +90,7 @@
            cols-val-a (check-option-values {:pruning-confidence "-C"
                                             :minimum-instances "-M"
                                             :pruning-number-folds "-N"
-                                            :shuffling-random-seed "-Q"}
+                                            :random-seed "-Q"}
                                            map
                                            cols-val)]
     (into-array cols-val-a))))
@@ -69,7 +117,7 @@
                                             :momentum "-M"
                                             :epochs "-N"
                                             :percentage-validation-set "-V"
-                                            :seed "-S"
+                                            :random-seed "-S"
                                             :threshold-number-errors "-E"}
                                            map
                                            cols-val)]
@@ -121,26 +169,84 @@
    This is the description of the supported classifiers and the accepted
    option parameters for each of them:
 
-   * :decission-tree :c45
+    * :decission-tree :c45
 
-     A classifier building a pruned or unpruned C 4.5 decission tree using
-     Weka J 4.8 implementation.
+      A classifier building a pruned or unpruned C 4.5 decission tree using
+      Weka J 4.8 implementation.
 
-     Parameters:
+      Parameters:
 
-       - :unpruned Use unpruned tree. Sample value: true
-       - :reduce-error-pruning Sample value: true
-       - :only-binary-splits Sample value: true
-       - :no-raising Sample value: true
-       - :no-cleanup Sample value: true
-       - :laplace-smoothing For predicted probabilities. Sample value: true
-       - :pruning-confidence Threshold for pruning. Default value: 0.25
-       - :minimum-instances Minimum number of instances per leave. Default
-                            value: 2
-       - :pruning-number-folds Set number of folds for reduced error pruning.
-                               Default value: 3
-       - :shuffling-random-seed Seed for random data shuffling. Default value: 1
-    "
+        - :unpruned
+            Use unpruned tree. Sample value: true
+        - :reduce-error-pruning
+            Sample value: true
+        - :only-binary-splits
+            Sample value: true
+        - :no-raising
+            Sample value: true
+        - :no-cleanup
+            Sample value: true
+        - :laplace-smoothing
+            For predicted probabilities. Sample value: true
+        - :pruning-confidence
+            Threshold for pruning. Default value: 0.25
+        - :minimum-instances
+            Minimum number of instances per leave. Default value: 2
+        - :pruning-number-folds
+            Set number of folds for reduced error pruning. Default value: 3
+        - :random-seed
+            Seed for random data shuffling. Default value: 1
+
+    * :bayes :naive
+
+      Classifier based on the Bayes' theorem with strong independence assumptions, among the
+      probabilistic variables.
+
+      Parameters:
+
+        - :kernel-estimator
+            Use kernel desity estimator rather than normal. Sample value: true
+        - :supervised-discretization
+            Use supervised discretization to to process numeric attributes (see :supervised-discretize
+            filter in clj-ml.filters/make-filter function). Sample value: true
+
+    * :neural-network :multilayer-perceptron
+
+      Classifier built using a feedforward artificial neural network with three or more layers
+      of neurons and nonlinear activation functions. It is able to distinguish data that is not
+      linearly separable.
+
+      Parameters:
+
+        - :no-nominal-to-binary
+            A :nominal-to-binary filter will not be applied by default. (see :supervised-nominal-to-binary
+            filter in clj-ml.filters/make-filter function). Default value: false
+        - :no-numeric-normalization
+            A numeric class will not be normalized. Default value: false
+        - :no-nomalization
+            No attribute will be normalized. Default value: false
+        - :no-reset
+            Reseting the network will not be allowed. Default value: false
+        - :learning-rate-decay
+            Learning rate decay will occur. Default value: false
+        - :learning-rate
+            Learning rate for the backpropagation algorithm. Value should be between [0,1].
+            Default value: 0.3
+        - :momentum
+            Momentum rate for the backpropagation algorithm. Value shuld be between [0,1].
+            Default value: 0.2
+        - :epochs
+            Number of iteration to train through. Default value: 500
+        - :percentage-validation-set
+            Percentage size of validation set to use to terminate training. If it is not zero
+            it takes precende over the number of epochs to finish training. Values should be
+            between [0,100]. Default value: 0
+        - :random-seed
+            Value of the seed for the random generator. Values should be longs greater than
+            0. Default value: 0
+        - :threshold-number-errors
+            The consequetive number of errors allowed for validation testing before the network
+            terminates. Values should be greater thant 0. Default value: 20"
   (fn [kind algorithm & options] [kind algorithm]))
 
 (defmethod make-classifier [:decission-tree :c45]

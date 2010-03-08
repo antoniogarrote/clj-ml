@@ -6,7 +6,7 @@
 (deftest make-classifiers-options-c45
   (let [options (make-classifier-options :decission-tree :c45 {:unpruned true :reduced-error-pruning true :only-binary-splits true :no-raising true
                                                                :no-cleanup true :laplace-smoothing true :pruning-confidence 0.12 :minimum-instances 10
-                                                               :pruning-number-folds 5 :shuffling-random-seed 1})]
+                                                               :pruning-number-folds 5 :random-seed 1})]
     (is (= (aget options 0)
            ""))
     (is (= (aget options 1)
