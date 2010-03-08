@@ -25,10 +25,10 @@
     (dataset-set-class *dataset* 4)
 
     ; Training the classifier
-    (classifier-train *classifier* *ds*)
+    (classifier-train *classifier* *dataset*)
 
     ; We evaluate the classifier using a test dataset
-    (def *evaluation*   (classifier-evaluate classifier  :dataset *dataset* *trainingset*))
+    (def *evaluation*   (classifier-evaluate *classifier* :dataset *dataset* *trainingset*))
 
     ; We retrieve some data from the evaluation result
     (:kappa *evaluation*)
@@ -36,21 +36,22 @@
     (:precision *evaluation*)
 
     ; A trained classifier can be used to classify new instances
-    (def *to-classify* (make-instance ds  {:class :Iris-versicolor
-                                           :petalwidth 0.2
-                                           :petallength 1.4
-                                           :sepalwidth 3.5
-                                           :sepallength 5.1}))
+    (def *to-classify* (make-instance *dataset*  {:class :Iris-versicolor
+                                                  :petalwidth 0.2
+                                                  :petallength 1.4
+                                                  :sepalwidth 3.5
+                                                  :sepallength 5.1}))
 
     ; We retrieve the index of the class value assigned by the classifier
     (classifier-classify *classifier* *to-classify*)
 
     ; We retrieve a symbol with the value assigned by the classifier
+    ; and assigns it to a certain instance
     (classifier-label *classifier* *to-classify*)
 
    A classifier can also be trained using cross-validation:
 
-    (classifier-evaluate *classifier* :cross-validation ds 10)
+    (classifier-evaluate *classifier* :cross-validation *dataset* 10)
 
    Finally a classifier can be stored in a file for later use:
 
@@ -58,7 +59,6 @@
 
     (serialize-to-file *classifier*
      \"/Users/antonio.garrote/Desktop/classifier.bin\")
-
 "
   (:use [clj-ml utils data kernel-functions])
   (:import (java.util Date Random)
@@ -243,10 +243,32 @@
             between [0,100]. Default value: 0
         - :random-seed
             Value of the seed for the random generator. Values should be longs greater than
-            0. Default value: 0
+            0. Default value: 1
         - :threshold-number-errors
             The consequetive number of errors allowed for validation testing before the network
-            terminates. Values should be greater thant 0. Default value: 20"
+            terminates. Values should be greater thant 0. Default value: 20
+
+    * :support-vector-machine :smo
+
+      Support vector machine (SVM) classifier built using the sequential minimal optimization (SMO)
+      training algorithm.
+
+      Parameters:
+
+        - :fit-logistic-models
+            Fit logistic models to SVM outputs. Default value :false
+        - :complexity-constant
+            The complexity constance. Default value: 1
+        - :tolerance
+            Tolerance parameter. Default value: 1.0e-3
+        - :epsilon-roundoff
+            Epsilon round-off error. Default value: 1.0e-12
+        - :folds-for-cross-validation
+            Number of folds for the internal cross-validation. Sample value: 10
+        - :random-seed
+            Value of the seed for the random generator. Values should be longs greater than
+            0. Default value: 1
+"
   (fn [kind algorithm & options] [kind algorithm]))
 
 (defmethod make-classifier [:decission-tree :c45]
@@ -283,13 +305,13 @@
 ;; Training classifiers
 
 (defn classifier-train
-  "Trains a classifier with the given dataset as the training data"
+  "Trains a classifier with the given dataset as the training data."
   ([classifier dataset]
      (do (.buildClassifier classifier dataset)
          classifier)))
 
 (defn classifier-update
-  "If the classifier is updateable it updates the classifier with the given instance or set of instances"
+  "If the classifier is updateable it updates the classifier with the given instance or set of instances."
   ([classifier instance-s]
      (if (is-dataset? instance-s)
        (do (for [i (dataset-seq instance-s)]
@@ -301,7 +323,7 @@
 ;; Evaluating classifiers
 
 (defn- collect-evaluation-results
-  "Collects all the statistics from the evaluation of a classifier"
+   "Collects all the statistics from the evaluation of a classifier."
   ([class-values evaluation]
      (do
        (println (.toMatrixString evaluation))
@@ -335,7 +357,68 @@
         :evaluation-object evaluation})))
 
 (defmulti classifier-evaluate
-  "Evaluetes a trained classifier using the provided dataset or cross-validation"
+  "Evaluetes a trained classifier using the provided dataset or cross-validation.
+   The first argument must be the classifier to evaluate, the second argument is
+   the kind of evaluation to do.
+   Two possible evaluations ara availabe: dataset and cross-validations. The values
+   for the second argument can be:
+
+    - :dataset
+    - :cross-validation
+
+    * :dataset
+
+    If dataset evaluation is desired, the function call must receive as the second
+    parameter the keyword :dataset and as third and fourth parameters the original
+    dataset used to build the classifier and the training data:
+
+      (classifier-evaluate *classifier* :dataset *training* *evaluation*)
+
+    * :cross-validation
+
+    If cross-validation is desired, the function call must receive as the second
+    parameter the keyword :cross-validation and as third and fourth parameters the dataset
+    where for training and the number of folds.
+
+      (classifier-evaluate *classifier* :cross-validation *training* 10)
+
+    The metrics available in the evaluation are listed below:
+
+    - :correct
+        Number of instances correctly classified
+    - :incorrect
+        Number of instances incorrectly evaluated
+    - :unclassified
+        Number of instances incorrectly classified
+    - :percentage-correct
+        Percentage of correctly classified instances
+    - :percentage-incorrect
+        Percentage of incorrectly classified instances
+    - :percentage-unclassified
+        Percentage of not classified instances
+    - :error-rate
+    - :mean-absolute-error
+    - :relative-absolute-error
+    - :root-mean-squared-error
+    - :root-relative-squared-error
+    - :correlation-coefficient
+    - :average-cost
+    - :kappa
+        The kappa statistic
+    - :kb-information
+    - :kb-mean-information
+    - :kb-relative-information
+    - :sf-entropy-gain
+    - :sf-mean-entropy-gain
+    - :roc-area
+    - :false-positive-rate
+    - :false-negative-rate
+    - :f-measure
+    - :precision
+    - :recall
+    - :evaluation-object
+        The underlying Weka's Java object containing the evaluation
+"
   (fn [classifier mode & evaluation-data] mode))
 
 (defmethod classifier-evaluate :dataset
@@ -360,12 +443,23 @@
 ;; Classifying instances
 
 (defn classifier-classify
-  "Classifies an instance or data vector using the provided classifier"
+  "Classifies an instance using the provided classifier.
+   The value returned is the numeric attribute of that value for
+   the list of valid values for the class."
   ([classifier instance]
      (.classifyInstance classifier instance)))
 
 (defn classifier-label
-  "Classifies and assign a label to a dataset instance"
+  "Classifies and assign a label to a dataset instance.
+   This function is similar to classifier-classify but
+   instead of just returning the numeric identifier for the
+   new instance, it changes the class value for that instance
+   to the newly assigned by the classifier.
+
+   The function returns the newly classified instance.
+
+   This call is destructive, the instance passed as an argument
+   is modified."
   ([classifier instance]
      (let [cls (classifier-classify classifier instance)]
        (instance-set-class instance cls))))
