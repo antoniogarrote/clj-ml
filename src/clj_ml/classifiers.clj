@@ -156,7 +156,7 @@
    The first argument identifies the kind of classifier and the second
    argument the algorithm to use, e.g. :decission-tree :c45.
 
-   The colection of classifiers currently supported are:
+   The classifiers currently supported are:
 
      - :decission-tree :c45
      - :bayes :naive
@@ -459,7 +459,23 @@
    The function returns the newly classified instance.
 
    This call is destructive, the instance passed as an argument
-   is modified."
+   is modified.
+
+    ; We create the instance to classify
+    (def *to-classify* (make-instance *dataset*  {:class :Iris-versicolor
+                                                  :petalwidth 0.2
+                                                  :petallength 1.4
+                                                  :sepalwidth 3.5
+                                                  :sepallength 5.1}))
+
+    ; We use the classifier to check the value for the class
+    (classifier-classify *classifier* *to-classify*)
+     >0.0
+
+    ; We change the class for the instance according to the assigned class
+    (classifier-label *classifier* *to-classify*)
+     >#<Instance 5.1,3.5,1.4,0.2,Iris-setosa>
+"
   ([classifier instance]
      (let [cls (classifier-classify classifier instance)]
        (instance-set-class instance cls))))

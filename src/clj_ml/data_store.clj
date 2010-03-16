@@ -29,7 +29,12 @@
         format))))
 
 (defmulti make-data-store-connection
-  "Connects to a data store"
+  "Connects to a data store.
+
+   - The first parameter is the kind of data store to connect to.
+   - The second parameter is a map with options for the connection
+     to that kind of data store.
+"
   (fn [kind params] kind))
 
 (defmethod make-data-store-connection :mongodb

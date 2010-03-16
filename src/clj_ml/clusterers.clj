@@ -7,11 +7,12 @@
   clj-ml.clusterers
   "This namespace contains several functions for
    building clusterers using different clustering algorithms. K-means, Cobweb and
+   Expectation maximization algorithms are currently supported.
 
-   Expectation maximization algorithms are currently supported. Some of these
-   algorithms support incremental building of the clustering without having the
-   full data set in main memory. Functions for evaluating the clusterer as well
-   as for clustering new instances are also supported"
+   Some of these algorithms support incremental building of the clustering without
+   having the full data set in main memory. Functions for evaluating the clusterer
+   as well as for clustering new instances are also supported
+"
   (:use [clj-ml utils data distance-functions]
         [incanter charts])
   (:import (java.util Date Random)
@@ -20,7 +21,8 @@
 
 ;; Setting up clusterer options
 
-(defmulti make-clusterer-options
+(defmulti #^{:skip-wiki true}
+  make-clusterer-options
   "Creates ther right parameters for a clusterer"
   (fn [kind map] kind))
 
@@ -51,8 +53,9 @@
 
 (defmethod make-clusterer-options :expectation-maximization
   ([kind map]
-     (let [cols-val-a (check-option-values {:acuity "-A"
-                                            :cutoff "-C"
+     (let [cols-val-a (check-option-values {:number-clusters "-N"
+                                            :maximum-iterations "-I"
+                                            :minimum-standard-deviation "-M"
                                             :random-seed "-S"}
                                            map
                                            [""])]
@@ -78,7 +81,66 @@
         clusterer#)))
 
 (defmulti make-clusterer
-  "Creates a new clusterer for the given kind algorithm and options"
+  "Creates a new clusterer for the given kind algorithm and options.
+
+   The first argument identifies the kind of clusterer. The second argument
+   is a map of parameters particular to each clusterer.
+
+   The clusterers currently supported are:
+     - :k-means
+     - :cobweb
+     - :expectation-maximization
+
+   This is the description of the supported clusterers and the parameters accepted
+   by each clusterer algorithm:
+
+     * :k-means
+
+       A clusterer that uses the simple K-Means algorithm to build the clusters
+
+       Parameters:
+
+         - :display-standard-deviation
+             Display the standard deviation of the centroids in the output for the
+             clusterer. Sample value: true
+         - :replace-missing-values
+             Replaces the missing values with the mean/mode. Sample value: true
+         - :number-clusters
+             The number of clusters to be built. Sample value: 3
+         - :random-seed
+             Seed for the random number generator. Sample value: 0.3
+         - :number-iterations
+             Maximum number of iterations that the algorithm will run. Sample value: 1000
+
+     * :cobweb
+
+       Implementation of the Cobweb incremental algorithm for herarchical conceptual clustering.
+
+       Parameters:
+
+         - :acuity
+             Acuity. Default value: 1.0
+         - :cutoff
+             Cutoff. Default value: 0.002
+         - :random-seed
+             Seed for the random number generator. Default value: 42.
+
+     * :expectation-maximization
+
+       Implementation of the probabilistic clusterer algorithm for expectation maximization.
+
+       Parameters:
+
+         - :number-clusters
+             Number of clusters to be built. If ommitted or -1 is passed as a value, cross-validation
+             will be used to select the number of clusters. Sample value: 3
+         - :maximum-iterations
+             Maximum number of iterations the algorithm will run. Default value: 100
+         - :minimum-standard-deviation
+             Minimum allowable standard deviation for normal density computation. Default value: 1e-6
+         - :random-seed
+             Seed for the random number generator. Default value: 100
+   "
   (fn [kind & options] kind))
 
 

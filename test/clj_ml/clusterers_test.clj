@@ -26,6 +26,27 @@
     (is (= (aget options 9)
            "1"))))
 
+(deftest make-clusterers-options-expectation-maximization
+  (let [options (make-clusterer-options :expectation-maximization {:number-clusters 3 :maximum-iterations 10 :minimum-standard-deviation 0.001 :random-seed 30})]
+    (is (= (aget options 0)
+           ""))
+    (is (= (aget options 1)
+           "-N"))
+    (is (= (aget options 2)
+           "3"))
+    (is (= (aget options 3)
+           "-I"))
+    (is (= (aget options 4)
+           "10"))
+    (is (= (aget options 5)
+           "-M"))
+    (is (= (aget options 6)
+           "0.0010"))
+    (is (= (aget options 7)
+           "-S"))
+    (is (= (aget options 8)
+           "30"))))
+
 
 (deftest make-and-build-clusterer
   (let [ds (make-dataset :test [:a :b] [[1 2] [3 4]])
