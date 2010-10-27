@@ -89,17 +89,20 @@ git clone the project, then run:
 
 ### Filtering datasets
 
-    REPL>(us 'clj-ml.filters)
+    REPL>(use '(clj-ml filters io))
 
     REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
 
     REPL>; Discretizing a numeric attribute using an unsupervised filter
-    REPL>(def  discretize (make-filter :unsupervised-discretize {:dataset ds :attributes [0 2]}))
-    ; FIXME: Outdated, it blows up with:
-    ; java.lang.NullPointerException (NO_SOURCE_FILE:55)
+    REPL>(def  discretize (make-filter :unsupervised-discretize {:dataset-format ds :attributes [0 2]}))
 
 
-    REPL>(def filtered-ds (filter-process discretize ds))
+    REPL>(def filtered-ds (filter-apply discretize ds))
+
+    REPL>; The eqivalent operation can be done with the ->> macro and make-apply-filter fn:
+    REPL>(def filtered-ds (->> "file:///Applications/weka-3-6-2/data/iris.arff")
+                               (load-instances :arff) 
+                               (make-apply-filter :unsupervised-discretize {:attributes [0 2]}))
 
 ### Using classifiers
 
