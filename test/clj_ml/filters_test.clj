@@ -18,7 +18,7 @@
            "-K"))))
 
 (deftest make-filter-options-unsupervised-discretize
-  (let [options (make-filter-options :unsupervised-discretize {:attributes [1 2] :binary true :better-encoding true
+  (let [options (make-filter-options :unsupervised-discretize {:attributes [1 2] :binary true
                                                                :better-encoding true :equal-frequency true :optimize true
                                                                :number-bins 4 :weight-bins 1})]
     (is (= (aget options 0)
