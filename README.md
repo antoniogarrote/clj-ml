@@ -5,9 +5,6 @@ A machine learning library for Clojure built on top of Weka and friends
 ## Installation
 
 In order to install the library you must first install Leiningen.
-You should also download the Weka 3.6.2 jar from the official weka homepage.
-If maven complains about not finding weka, follow its instructions to install
-the jar manually.
 
 ### To install from source
 
