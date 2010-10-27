@@ -11,10 +11,11 @@ the jar manually.
 
 ### To install from source
 
-*  git clone the project
-* $ lein deps
-* $ lein javac
-* $ lein uberjar
+git clone the project, then run:
+
+    $ lein deps
+    $ lein javac
+    $ lein uberjar
 
 ### Installing from Clojars
 
@@ -24,31 +25,31 @@ the jar manually.
 
 (add Clojars repository)
 
- <dependency>
-   <groupId>clj-ml</groupId>
-   <artifactId>clj-ml</artifactId>
-   <version>0.0.3-SNAPSHOT</version>
- </dependency>
+    <dependency>
+      <groupId>clj-ml</groupId>
+      <artifactId>clj-ml</artifactId>
+      <version>0.0.3-SNAPSHOT</version>
+    </dependency>
 
 ## Supported algorithms
 
  * Filters
-  - supervised discretize
-  - unsupervised discretize
-  - supervised nominal to binary
-  - unsupervised nominal to binary
+   * supervised discretize
+   * unsupervised discretize
+   * supervised nominal to binary
+   * unsupervised nominal to binary
 
  * Classifiers
-  - C4.5 (J4.8)
-  - naive Bayes
-  - multilayer perceptron
+   * C4.5 (J4.8)
+   * naive Bayes
+   * multilayer perceptron
 
-  * Clusterers
-   - k-means
+ * Clusterers
+   * k-means
 
 ## Usage
 
-* I/O of data
+### I/O of data
 
     REPL>(use 'clj-ml.io)
 
@@ -58,7 +59,7 @@ the jar manually.
     REPL>; Saving data in a different format
     REPL>(save-instances :csv "file:///Users/antonio.garrote/Desktop/iris.csv"  ds)
 
-* Working with datasets
+### Working with datasets
 
     REPL>(use 'clj-ml.data)
 
@@ -89,7 +90,7 @@ the jar manually.
     REPL>(instance-to-vector (dataset-at ds 0))
     [12.0 34.0 :good]
 
-* Filtering datasets
+### Filtering datasets
 
     REPL>(us 'clj-ml.filters)
 
@@ -103,7 +104,7 @@ the jar manually.
 
     REPL>(def filtered-ds (filter-process discretize ds))
 
-* Using classifiers
+### Using classifiers
 
     REPL>(use 'clj-ml.classifiers)
 
@@ -212,7 +213,7 @@ the jar manually.
 
     REPL>(serialize-to-file classifier "/Users/antonio.garrote/Desktop/classifier.bin")
 
-* Using clusterers
+### Using clusterers
 
     REPL>(use 'clj-ml.clusterers)
 
