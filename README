@@ -13,8 +13,7 @@ the jar manually.
 
 *  git clone the project
 * $ lein deps
-* $ lein compile
-* $ lein compile-java
+* $ lein javac
 * $ lein uberjar
 
 ### Installing from Clojars
@@ -97,7 +96,10 @@ the jar manually.
     REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
 
     REPL>; Discretizing a numeric attribute using an unsupervised filter
-    REPL>(def  discretize (make-filter :unsupervised-discretize {:dataset *ds* :attributes [0 2]}))
+    REPL>(def  discretize (make-filter :unsupervised-discretize {:dataset ds :attributes [0 2]}))
+    ; FIXME: Outdated, it blows up with:
+    ; java.lang.NullPointerException (NO_SOURCE_FILE:55)
+
 
     REPL>(def filtered-ds (filter-process discretize ds))
 
@@ -201,13 +203,14 @@ the jar manually.
     REPL>(classifier-label to-classify)
 
      #<Instance 5.1,3.5,1.4,0.2,Iris-setosa>
+     ; FIXME: Outdated, it blows up with:
+     ; java.lang.IllegalArgumentException: Wrong number of args passed to: classifiers$classifier-label (NO_SOURCE_FILE:0)
 
 
     REPL>; The classifiers can be saved and restored later
     REPL>(use 'clj-ml.utils)
 
-    REPL>(serialize-to-file classifier
-    REPL> "/Users/antonio.garrote/Desktop/classifier.bin")
+    REPL>(serialize-to-file classifier "/Users/antonio.garrote/Desktop/classifier.bin")
 
 * Using clusterers
 
@@ -219,6 +222,7 @@ the jar manually.
     REPL> ; we need to remove the class from the dataset to
     REPL> ; use this clustering algorithm
     REPL> (dataset-remove-class ds)
+          ; FIXME: Outdated - there is no dataset-remove-class
 
     REPL> ; we build the clusters
     REPL> (clusterer-build kmeans ds)
