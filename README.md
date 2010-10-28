@@ -221,7 +221,6 @@ git clone the project, then run:
     REPL> ; we need to remove the class from the dataset to
     REPL> ; use this clustering algorithm
     REPL> (dataset-remove-class ds)
-          ; FIXME: Outdated - there is no dataset-remove-class
 
     REPL> ; we build the clusters
     REPL> (clusterer-build kmeans ds)
