@@ -201,11 +201,9 @@ git clone the project, then run:
 
      0.0
 
-    REPL>(classifier-label to-classify)
+    REPL>(classifier-label classifier to-classify)
 
      #<Instance 5.1,3.5,1.4,0.2,Iris-setosa>
-     ; FIXME: Outdated, it blows up with:
-     ; java.lang.IllegalArgumentException: Wrong number of args passed to: classifiers$classifier-label (NO_SOURCE_FILE:0)
 
 
     REPL>; The classifiers can be saved and restored later
