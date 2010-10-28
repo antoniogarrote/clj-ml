@@ -6,6 +6,8 @@
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [org.mongodb/mongo-java-driver "1.0"]
+                 [incanter/incanter-core "1.2.3"]
+                 [incanter/incanter-charts "1.2.3"]
                  [lt/weka "3.6.3"]]
   :dev-dependencies [[autodoc "0.7.0"]
                      [lein-javac "1.2.1-SNAPSHOT"]]
