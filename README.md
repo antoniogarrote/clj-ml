@@ -1,6 +1,6 @@
 # clj-ml
 
-A machine learning library for Clojure built on top of Weka and friends
+A machine learning library for Clojure built on top of Weka and friends.
 
 ## Installation
 
@@ -16,7 +16,7 @@ git clone the project, then run:
 
 ### Installing from Clojars
 
-  [clj-ml "0.0.3-SNAPSHOT"]
+    [clj-ml "0.0.3-SNAPSHOT"]
 
 ### Installing from Maven
 
@@ -45,6 +45,8 @@ git clone the project, then run:
    * k-means
 
 ## Usage
+
+API documenation can be found [here](http://antoniogarrote.github.com/clj-ml/index.html).
 
 ### I/O of data
 
