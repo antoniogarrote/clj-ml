@@ -49,58 +49,53 @@
 (defmethod make-filter-options :supervised-discretize
   ([kind m]
      (->> (extract-attributes m)
-          (check-options {:invert "-V"
-                          :binary "-D"
-                          :better-encoding "-E"
-                          :kononenko "-K"}
-                         m)
+          (check-options m {:invert "-V"
+                            :binary "-D"
+                            :better-encoding "-E"
+                            :kononenko "-K"})
           into-string-array)))
 
 (defmethod make-filter-options :unsupervised-discretize
   ([kind m]
      (->> (extract-attributes m)
-          (check-options {:unset-class "-unset-class-temporarily"
-                                      :binary "-D"
-                                      :better-encoding "-E"
-                                      :equal-frequency "-F"
-                                      :optimize "-O"}
-                                     m)
-          (check-option-values {:number-bins "-B"
-                                :weight-bins "-M"}
-                               m)
+          (check-options m {:unset-class "-unset-class-temporarily"
+                            :binary "-D"
+                            :better-encoding "-E"
+                            :equal-frequency "-F"
+                            :optimize "-O"})
+          (check-option-values m {:number-bins "-B"
+                                  :weight-bins "-M"})
           into-string-array)))
 
 (defmethod make-filter-options :supervised-nominal-to-binary
   ([kind m]
      (->>
-      (check-options {:also-binary "-N"
-                          :for-each-nominal "-A"}
-                         m)
+      (check-options m {:also-binary "-N"
+                        :for-each-nominal "-A"})
           into-string-array)))
 
 (defmethod make-filter-options :unsupervised-nominal-to-binary
   ([kind m]
      (->> (extract-attributes m)
-          (check-options {:invert "-V"
-                          :also-binary "-N"
-                          :for-each-nominal "-A"}
-                         m)
+          (check-options m {:invert "-V"
+                            :also-binary "-N"
+                            :for-each-nominal "-A"})
           into-string-array)))
 
 (defmethod make-filter-options :remove-attributes
   ([kind m]
      (->> (extract-attributes m)
-          (check-options {:invert "-V"} m)
+          (check-options m {:invert "-V"})
           into-string-array)))
 
 (defmethod make-filter-options :remove-useless-attributes
   ([kind m]
-     (->> m (check-option-values {:max-variance "-M"}) into-string-array)))
+     (->> (check-option-values m {:max-variance "-M"}) into-string-array)))
 
 (defmethod make-filter-options :select-append-attributes
   ([kind m]
      (->> (extract-attributes m)
-          (check-options {:invert "-V"} m)
+          (check-options m {:invert "-V"})
           into-string-array)))
 
 (defmethod make-filter-options :project-attributes

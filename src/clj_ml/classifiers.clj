@@ -78,62 +78,61 @@
   (fn [kind algorithm map] [kind algorithm]))
 
 (defmethod make-classifier-options [:decission-tree :c45]
-  ([kind algorithm map]
-     (let [cols-val (check-options {:unpruned "-U"
+  ([kind algorithm m]
+     (let [cols-val (check-options m
+                                   {:unpruned "-U"
                                     :reduced-error-pruning "-R"
                                     :only-binary-splits "-B"
                                     :no-raising "-S"
                                     :no-cleanup "-L"
                                     :laplace-smoothing "-A"}
-                                     map
                                      [""])
-           cols-val-a (check-option-values {:pruning-confidence "-C"
+           cols-val-a (check-option-values m
+                                           {:pruning-confidence "-C"
                                             :minimum-instances "-M"
                                             :pruning-number-folds "-N"
                                             :random-seed "-Q"}
-                                           map
                                            cols-val)]
     (into-array cols-val-a))))
 
 (defmethod make-classifier-options [:bayes :naive]
-  ([kind algorithm map]
-     (let [cols-val (check-options {:kernel-estimator "-K"
+  ([kind algorithm m]
+     (let [cols-val (check-options m
+                                   {:kernel-estimator "-K"
                                     :supervised-discretization "-D"
                                     :old-format "-O"}
-                                     map
                                      [""])]
        (into-array cols-val))))
 
 (defmethod make-classifier-options [:neural-network :multilayer-perceptron]
-  ([kind algorithm map]
-     (let [cols-val (check-options {:no-nominal-to-binary "-B"
+  ([kind algorithm m]
+     (let [cols-val (check-options m
+                                   {:no-nominal-to-binary "-B"
                                     :no-numeric-normalization "-C"
                                     :no-normalization "-I"
                                     :no-reset "-R"
                                     :learning-rate-decay "-D"}
-                                     map
                                      [""])
-           cols-val-a (check-option-values {:learning-rate "-L"
+           cols-val-a (check-option-values m
+                                           {:learning-rate "-L"
                                             :momentum "-M"
                                             :epochs "-N"
                                             :percentage-validation-set "-V"
                                             :random-seed "-S"
                                             :threshold-number-errors "-E"}
-                                           map
                                            cols-val)]
        (into-array cols-val-a))))
 
 (defmethod make-classifier-options [:support-vector-machine :smo]
-  ([kind algorithm map]
-     (let [cols-val (check-options {:fit-logistic-models "-M"}
-                                     map
-                                     [""])
-           cols-val-a (check-option-values {:complexity-constant "-C"
+  ([kind algorithm m]
+     (let [cols-val (check-options m {:fit-logistic-models "-M"}
+                                   [""])
+           cols-val-a (check-option-values m
+                                           {:complexity-constant "-C"
                                             :tolerance "-L"
                                             :epsilon-roundoff "-P"
                                             :folds-for-cross-validation "-V"
                                             :random-seed "-W"}
-                                           map
                                            cols-val)]
        (into-array cols-val-a))))
 

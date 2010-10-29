@@ -76,8 +76,8 @@
 ; TODO: Raise a helpful exception when the keys don't match up with the provided flags.
 (defn check-options
   "Checks the presence of a set of options for a filter"
-  ([opts-map args-map] (check-options opts-map args-map []))
-  ( [opts-map args-map tmp]
+  ([args-map opts-map] (check-options args-map opts-map []))
+  ( [args-map opts-map tmp]
       (loop [rem (keys opts-map)
              acum tmp]
         (if (empty? rem)
@@ -90,8 +90,8 @@
 
 (defn check-option-values
   "Checks the presence of a set of options with value for a filter"
-  ([opts-map args-map] (check-option-values opts-map args-map []))
-  ([opts-map args-map val]
+  ([args-map opts-map] (check-option-values args-map opts-map []))
+  ([args-map opts-map val]
       (loop [rem (keys opts-map)
              acum val]
         (if (empty? rem)
