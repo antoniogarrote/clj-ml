@@ -33,7 +33,7 @@
 
 (defmulti  #^{:skip-wiki true}
   make-filter-options
-  "Creates the right parameters for a filter"
+  "Creates the right parameters for a filter. Returns a clojure vector."
   (fn [kind map] kind))
 
 (defn- extract-attributes
@@ -41,19 +41,13 @@
   [m]
   ["-R" (str/join "," (map inc (:attributes m)))])
 
-(defn- into-string-array
-  "Returns an array of type String, even if aseq is empty."
-  [aseq]
-  (into-array String aseq))
-
 (defmethod make-filter-options :supervised-discretize
   ([kind m]
      (->> (extract-attributes m)
           (check-options m {:invert "-V"
                             :binary "-D"
                             :better-encoding "-E"
-                            :kononenko "-K"})
-          into-string-array)))
+                            :kononenko "-K"}))))
 
 (defmethod make-filter-options :unsupervised-discretize
   ([kind m]
@@ -64,39 +58,32 @@
                             :equal-frequency "-F"
                             :optimize "-O"})
           (check-option-values m {:number-bins "-B"
-                                  :weight-bins "-M"})
-          into-string-array)))
+                                  :weight-bins "-M"}))))
 
 (defmethod make-filter-options :supervised-nominal-to-binary
   ([kind m]
-     (->>
-      (check-options m {:also-binary "-N"
-                        :for-each-nominal "-A"})
-          into-string-array)))
+     (check-options m {:also-binary "-N" :for-each-nominal "-A"})))
 
 (defmethod make-filter-options :unsupervised-nominal-to-binary
   ([kind m]
      (->> (extract-attributes m)
           (check-options m {:invert "-V"
                             :also-binary "-N"
-                            :for-each-nominal "-A"})
-          into-string-array)))
+                            :for-each-nominal "-A"}))))
 
 (defmethod make-filter-options :remove-attributes
   ([kind m]
      (->> (extract-attributes m)
-          (check-options m {:invert "-V"})
-          into-string-array)))
+          (check-options m {:invert "-V"}))))
 
 (defmethod make-filter-options :remove-useless-attributes
   ([kind m]
-     (->> (check-option-values m {:max-variance "-M"}) into-string-array)))
+     (check-option-values m {:max-variance "-M"})))
 
 (defmethod make-filter-options :select-append-attributes
   ([kind m]
      (->> (extract-attributes m)
-          (check-options m {:invert "-V"})
-          into-string-array)))
+          (check-options m {:invert "-V"}))))
 
 (defmethod make-filter-options :project-attributes
   ([kind options]
@@ -112,7 +99,7 @@
   make-filter-m [kind options filter-class]
   `(let [filter# (new ~filter-class)
          dataset-format# (get ~options :dataset-format)
-         opts# (make-filter-options ~kind ~options)]
+         opts# (into-array String (make-filter-options ~kind ~options))]
      (.setOptions filter# opts#)
      (.setInputFormat filter# dataset-format#)
      filter#))

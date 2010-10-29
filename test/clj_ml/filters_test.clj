@@ -4,7 +4,7 @@
 
 (deftest make-filter-options-supervised-discretize
   (let [options (make-filter-options :supervised-discretize {:attributes [1 2] :invert true :binary true :better-encoding true :kononenko true :nonexitent true})]
-    (are [index expected-flag] (is (= (aget options index) expected-flag))
+    (are [index expected-flag] (is (= (get options index) expected-flag))
          0 "-R"
          1 "2,3"
          2 "-V"
@@ -16,7 +16,7 @@
   (let [options (make-filter-options :unsupervised-discretize {:attributes [1 2] :binary true
                                                                :better-encoding true :equal-frequency true :optimize true
                                                                :number-bins 4 :weight-bins 1})]
-    (are [index expected-flag] (is (= (aget options index) expected-flag))
+    (are [index expected-flag] (is (= (get options index) expected-flag))
          0 "-R"
          1 "2,3"
          2 "-D"
@@ -30,13 +30,13 @@
 
 (deftest make-filter-options-supervised-nominal-to-binary
   (let [options (make-filter-options :supervised-nominal-to-binary {:also-binary true :for-each-nominal true})]
-    (are [index expected-flag] (is (= (aget options index) expected-flag))
+    (are [index expected-flag] (is (= (get options index) expected-flag))
          0 "-N"
          1 "-A")))
 
 (deftest make-filter-options-unsupervised-nominal-to-binary
   (let [options (make-filter-options :unsupervised-nominal-to-binary {:attributes [1,2] :also-binary true :for-each-nominal true :invert true})]
-    (are [index expected-flag] (is (= (aget options index) expected-flag))
+    (are [index expected-flag] (is (= (get options index) expected-flag))
          0 "-R"
          1 "2,3"
          2 "-V"
