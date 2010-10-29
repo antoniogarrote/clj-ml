@@ -4,72 +4,57 @@
 
 (deftest make-filter-options-supervised-discretize
   (let [options (make-filter-options :supervised-discretize {:attributes [1 2] :invert true :binary true :better-encoding true :kononenko true :nonexitent true})]
-    (is (= (aget options 0)
-           "-R"))
-    (is (= (aget options 1)
-           "2,3"))
-    (is (= (aget options 2)
-           "-V"))
-    (is (= (aget options 3)
-           "-D"))
-    (is (= (aget options 4)
-           "-E"))
-    (is (= (aget options 5)
-           "-K"))))
+    (are [index expected-flag] (is (= (aget options index) expected-flag))
+         0 "-R"
+         1 "2,3"
+         2 "-V"
+         3 "-D"
+         4 "-E"
+         5 "-K")))
 
 (deftest make-filter-options-unsupervised-discretize
   (let [options (make-filter-options :unsupervised-discretize {:attributes [1 2] :binary true
                                                                :better-encoding true :equal-frequency true :optimize true
                                                                :number-bins 4 :weight-bins 1})]
-    (is (= (aget options 0)
-           "-R"))
-    (is (= (aget options 1)
-           "2,3"))
-    (is (= (aget options 2)
-           "-D"))
-    (is (= (aget options 3)
-           "-E"))
-    (is (= (aget options 4)
-           "-F"))
-    (is (= (aget options 5)
-           "-O"))
-    (is (= (aget options 6)
-           "-B"))
-    (is (= (aget options 7)
-           "4"))
-    (is (= (aget options 8)
-           "-M"))
-    (is (= (aget options 9)
-           "1"))))
+    (are [index expected-flag] (is (= (aget options index) expected-flag))
+         0 "-R"
+         1 "2,3"
+         2 "-D"
+         3 "-E"
+         4 "-F"
+         5 "-O"
+         6 "-B"
+         7 "4"
+         8 "-M"
+         9 "1")))
 
 (deftest make-filter-options-supervised-nominal-to-binary
   (let [options (make-filter-options :supervised-nominal-to-binary {:also-binary true :for-each-nominal true})]
-    (is (= (aget options 0)
-           ""))
-    (is (= (aget options 1)
-           "-N"))
-    (is (= (aget options 2)
-           "-A"))))
+    (are [index expected-flag] (is (= (aget options index) expected-flag))
+         0 ""
+         1 "-N"
+         2 "-A")))
 
 (deftest make-filter-options-unsupervised-nominal-to-binary
   (let [options (make-filter-options :unsupervised-nominal-to-binary {:attributes [1,2] :also-binary true :for-each-nominal true :invert true})]
-    (is (= (aget options 0)
-           "-R"))
-    (is (= (aget options 1)
-           "2,3"))
-    (is (= (aget options 2)
-           "-V"))
-    (is (= (aget options 3)
-           "-N"))
-    (is (= (aget options 4)
-           "-A"))))
+    (are [index expected-flag] (is (= (aget options index) expected-flag))
+         0 "-R"
+         1 "2,3"
+         2 "-V"
+         3 "-N"
+         4 "-A")))
+
+(deftest make-filter-remove-useless-attributes
+  (let [ds (clj-ml.data/make-dataset :foo [:a] [[1] [2]])
+        filter (make-filter :remove-useless-attributes {:dataset-format ds :max-variance 95})]
+    (is (= (.getMaximumVariancePercentageAllowed filter) 95))))
 
 (deftest make-filter-discretize-sup
   (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
-        foo1(clj-ml.data/dataset-set-class ds 2)
+        _ (clj-ml.data/dataset-set-class ds 2)
         f (make-filter :supervised-discretize {:dataset-format ds :attributes [0]})]
     (is (= weka.filters.supervised.attribute.Discretize
            (class f)))))

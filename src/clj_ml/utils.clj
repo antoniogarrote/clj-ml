@@ -73,30 +73,34 @@
       opts
       (conj  (conj opts flag) (str val-in-map)))))
 
-
-(defn check-options [opts-map args-map tmp]
+; TODO: Raise a helpful exception when the keys don't match up with the provided flags.
+(defn check-options
   "Checks the presence of a set of options for a filter"
-  (loop [rem (keys opts-map)
-         acum tmp]
-    (if (empty? rem)
-      acum
-      (let [k (first rem)
-            vk (get opts-map k)
-            rst (rest rem)]
-        (recur rst
-               (check-option acum k vk args-map))))))
+  ([opts-map args-map] (check-options opts-map args-map []))
+  ( [opts-map args-map tmp]
+      (loop [rem (keys opts-map)
+             acum tmp]
+        (if (empty? rem)
+          acum
+          (let [k (first rem)
+                vk (get opts-map k)
+                rst (rest rem)]
+            (recur rst
+                   (check-option acum k vk args-map)))))))
 
-(defn check-option-values [opts-map args-map tmp]
+(defn check-option-values
   "Checks the presence of a set of options with value for a filter"
-  (loop [rem (keys opts-map)
-         acum tmp]
-    (if (empty? rem)
-      acum
-      (let [k (first rem)
-            vk (get opts-map k)
-            rst (rest rem)]
-        (recur rst
-               (check-option-value acum k vk args-map))))))
+  ([opts-map args-map] (check-option-values opts-map args-map []))
+  ([opts-map args-map val]
+      (loop [rem (keys opts-map)
+             acum val]
+        (if (empty? rem)
+          acum
+          (let [k (first rem)
+                vk (get opts-map k)
+                rst (rest rem)]
+            (recur rst
+                   (check-option-value acum k vk args-map)))))))
 
 ;; Serializing classifiers
 

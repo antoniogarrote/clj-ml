@@ -96,6 +96,10 @@
                                      cols-val-a)]
        (into-array cols-val-b))))
 
+(defmethod make-filter-options :remove-useless-attributes
+  ([kind map]
+     (->> map (check-option-values {:max-variance "-M"}) into-array)))
+
 (defmethod make-filter-options :select-append-attributes
   ([kind map]
      (let [cols (get map :attributes)
@@ -135,6 +139,7 @@
      - :supervised-nominal-to-binary
      - :unsupervised-nominal-to-binary
      - :remove-attributes
+     - :remove-useless-attributes
      - :select-append-attributes
      - :project-attributes
 
@@ -236,6 +241,19 @@
         - :attributes
             Index of the attributes to remove. Sample value: [1 2 3]
 
+    * :remove-useless-attributes
+
+       Remove attributes that do not vary at all or that vary too much. All constant
+       attributes are deleted automatically, along with any that exceed the maximum percentage
+       of variance parameter. The maximum variance test is only applied to nominal attributes.
+
+     Parameters:
+
+        - :max-variance
+            Maximum variance percentage allowed (default 99).
+            Note: percentage, not decimal. e.g. 89 not 0.89
+            If you pass in a decimal Weka silently sets it to 0.0.
+
     * :select-append-attributes
 
       Append a copy of the selected columns at the end of the dataset.
@@ -269,7 +287,6 @@
   ([kind options]
      (make-filter-m kind options weka.filters.supervised.attribute.Discretize)))
 
-
 (defmethod make-filter :unsupervised-discretize
   ([kind options]
      (make-filter-m kind options weka.filters.unsupervised.attribute.Discretize)))
@@ -285,6 +302,10 @@
 (defmethod make-filter :remove-attributes
   ([kind options]
      (make-filter-m kind options weka.filters.unsupervised.attribute.Remove)))
+
+(defmethod make-filter :remove-useless-attributes
+  ([kind options]
+     (make-filter-m kind options weka.filters.unsupervised.attribute.RemoveUseless)))
 
 (defmethod make-filter :select-append-attributes
   ([kind options]
