@@ -23,10 +23,10 @@
      ;; There is no necessity of passing the :dataset-format option, *ds* format is used
      ;; automatically
      (def *filtered-ds* (make-apply-filter :remove-attributes {:attributes [0]} *ds*))"
-  (:use [clj-ml data utils])
+  (:use [clj-ml data utils]
+        [clojure.contrib [def :only [defvar]]])
   (:require [clojure.contrib [string :as str]])
   (:import (weka.filters Filter)))
-
 
 
 ;; Options for the filters
@@ -95,13 +95,19 @@
 
 ;; Creation of filters
 
-(defmacro #^{:skip-wiki true}
-  make-filter-m [kind options filter-class]
-  `(doto (new ~filter-class)
-     (.setOptions (into-array String (make-filter-options ~kind ~options)))
-     (.setInputFormat (:dataset-format ~options))))
+(defvar filter-aliases
+  {:supervised-discretize weka.filters.supervised.attribute.Discretize
+   :unsupervised-discretize weka.filters.unsupervised.attribute.Discretize
+   :supervised-nominal-to-binary weka.filters.supervised.attribute.NominalToBinary
+   :unsupervised-nominal-to-binary weka.filters.unsupervised.attribute.NominalToBinary
+   :remove-attributes weka.filters.unsupervised.attribute.Remove
+   :remove-useless-attributes weka.filters.unsupervised.attribute.RemoveUseless
+   :select-append-attributes weka.filters.unsupervised.attribute.Copy
+   :project-attributes weka.filters.unsupervised.attribute.Remove}
+  "Mapping of cjl-ml keywords to actual Weka classes")
 
-(defmulti make-filter
+
+(defn make-filter
   "Creates a filter for the provided attributes format. The first argument must be a symbol
    identifying the kind of filter to generate.
    Currently the following filters are supported:
@@ -253,39 +259,10 @@
             dataset, (dataset-format dataset)
         - :invert
             Invert the selection of columns. Sample value: [0 1]"
-  (fn [kind options] kind))
-
-(defmethod make-filter :supervised-discretize
-  ([kind options]
-     (make-filter-m kind options weka.filters.supervised.attribute.Discretize)))
-
-(defmethod make-filter :unsupervised-discretize
-  ([kind options]
-     (make-filter-m kind options weka.filters.unsupervised.attribute.Discretize)))
-
-(defmethod make-filter :supervised-nominal-to-binary
-  ([kind options]
-     (make-filter-m kind options weka.filters.supervised.attribute.NominalToBinary)))
-
-(defmethod make-filter :unsupervised-nominal-to-binary
-    ([kind options]
-     (make-filter-m kind options weka.filters.unsupervised.attribute.NominalToBinary)))
-
-(defmethod make-filter :remove-attributes
-  ([kind options]
-     (make-filter-m kind options weka.filters.unsupervised.attribute.Remove)))
-
-(defmethod make-filter :remove-useless-attributes
-  ([kind options]
-     (make-filter-m kind options weka.filters.unsupervised.attribute.RemoveUseless)))
-
-(defmethod make-filter :select-append-attributes
-  ([kind options]
-     (make-filter-m kind options weka.filters.unsupervised.attribute.Copy)))
-
-(defmethod make-filter :project-attributes
-  ([kind options]
-     (make-filter-m kind options weka.filters.unsupervised.attribute.Remove)))
+  [kind options]
+  (doto (.newInstance (kind filter-aliases))
+    (.setOptions (into-array String (make-filter-options kind options)))
+    (.setInputFormat (:dataset-format options))))
 
 ;; Processing the filtering of data
 
