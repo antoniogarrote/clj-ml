@@ -31,9 +31,8 @@
 (deftest make-filter-options-supervised-nominal-to-binary
   (let [options (make-filter-options :supervised-nominal-to-binary {:also-binary true :for-each-nominal true})]
     (are [index expected-flag] (is (= (aget options index) expected-flag))
-         0 ""
-         1 "-N"
-         2 "-A")))
+         0 "-N"
+         1 "-A")))
 
 (deftest make-filter-options-unsupervised-nominal-to-binary
   (let [options (make-filter-options :unsupervised-nominal-to-binary {:attributes [1,2] :also-binary true :for-each-nominal true :invert true})]

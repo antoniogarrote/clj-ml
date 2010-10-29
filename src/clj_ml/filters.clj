@@ -24,6 +24,7 @@
      ;; automatically
      (def *filtered-ds* (make-apply-filter :remove-attributes {:attributes [0]} *ds*))"
   (:use [clj-ml data utils])
+  (:require [clojure.contrib [string :as str]])
   (:import (weka.filters Filter)))
 
 
@@ -35,80 +36,72 @@
   "Creates the right parameters for a filter"
   (fn [kind map] kind))
 
+(defn- extract-attributes
+  "Transforms the :attributes value from m into the appropriate weka flag"
+  [m]
+  ["-R" (str/join "," (map inc (:attributes m)))])
+
+(defn- into-string-array
+  "Returns an array of type String, even if aseq is empty."
+  [aseq]
+  (into-array String aseq))
+
 (defmethod make-filter-options :supervised-discretize
-  ([kind map]
-     (let [cols (get map :attributes)
-           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
-           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
-           cols-val-b (check-options {:invert "-V"
-                                      :binary "-D"
-                                      :better-encoding "-E"
-                                      :kononenko "-K"}
-                                     map
-                                     cols-val-a)]
-    (into-array cols-val-b))))
+  ([kind m]
+     (->> (extract-attributes m)
+          (check-options {:invert "-V"
+                          :binary "-D"
+                          :better-encoding "-E"
+                          :kononenko "-K"}
+                         m)
+          into-string-array)))
 
 (defmethod make-filter-options :unsupervised-discretize
-  ([kind map]
-     (let [cols (get map :attributes)
-           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
-           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
-           cols-val-b (check-options {:unset-class "-unset-class-temporarily"
+  ([kind m]
+     (->> (extract-attributes m)
+          (check-options {:unset-class "-unset-class-temporarily"
                                       :binary "-D"
                                       :better-encoding "-E"
                                       :equal-frequency "-F"
                                       :optimize "-O"}
-                                     map
-                                     cols-val-a)
-           cols-val-c (check-option-values {:number-bins "-B"
-                                            :weight-bins "-M"}
-                                           map
-                                           cols-val-b)]
-       (into-array cols-val-c))))
+                                     m)
+          (check-option-values {:number-bins "-B"
+                                :weight-bins "-M"}
+                               m)
+          into-string-array)))
 
 (defmethod make-filter-options :supervised-nominal-to-binary
-  ([kind map]
-     (let [cols-val (check-options {:also-binary "-N"
-                                    :for-each-nominal "-A"}
-                                   map
-                                   [""])]
-    (into-array cols-val))))
+  ([kind m]
+     (->>
+      (check-options {:also-binary "-N"
+                          :for-each-nominal "-A"}
+                         m)
+          into-string-array)))
 
 (defmethod make-filter-options :unsupervised-nominal-to-binary
-  ([kind map]
-     (let [cols (get map :attributes)
-           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
-           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
-           cols-val-b (check-options {:invert "-V"
-                                      :also-binary "-N"
-                                      :for-each-nominal "-A"}
-                                     map
-                                     cols-val-a)]
-       (into-array cols-val-b))))
+  ([kind m]
+     (->> (extract-attributes m)
+          (check-options {:invert "-V"
+                          :also-binary "-N"
+                          :for-each-nominal "-A"}
+                         m)
+          into-string-array)))
 
 (defmethod make-filter-options :remove-attributes
-  ([kind map]
-     (let [cols (get map :attributes)
-           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
-           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
-           cols-val-b (check-options {:invert "-V"}
-                                     map
-                                     cols-val-a)]
-       (into-array cols-val-b))))
+  ([kind m]
+     (->> (extract-attributes m)
+          (check-options {:invert "-V"} m)
+          into-string-array)))
 
 (defmethod make-filter-options :remove-useless-attributes
-  ([kind map]
-     (->> map (check-option-values {:max-variance "-M"}) into-array)))
+  ([kind m]
+     (->> m (check-option-values {:max-variance "-M"}) into-string-array)))
 
 (defmethod make-filter-options :select-append-attributes
-  ([kind map]
-     (let [cols (get map :attributes)
-           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
-           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
-           cols-val-b (check-options {:invert "-V"}
-                                     map
-                                     cols-val-a)]
-       (into-array cols-val-b))))
+  ([kind m]
+     (->> (extract-attributes m)
+          (check-options {:invert "-V"} m)
+          into-string-array)))
 
 (defmethod make-filter-options :project-attributes
   ([kind options]
