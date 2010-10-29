@@ -10,7 +10,10 @@
                  [incanter/incanter-charts "1.2.3"]
                  [lt/weka "3.6.3"]]
   :dev-dependencies [[autodoc "0.7.0"]
-                     [lein-javac "1.2.1-SNAPSHOT"]]
+                     [lein-javac "1.2.1-SNAPSHOT"]
+                     [swank-clojure "1.2.1"]
+                     [lein-difftest "1.2.2"]]
+  :hooks [leiningen.hooks.difftest]
   :autodoc { :name "clj-ml", :page-title "clj-ml machine learning Clojure's style"
              :author "Antonio Garrote <antoniogarrote@gmail.com>"
              :copyright "2010 (c) Antonio Garrote, under the MIT license"})
