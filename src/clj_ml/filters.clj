@@ -97,12 +97,9 @@
 
 (defmacro #^{:skip-wiki true}
   make-filter-m [kind options filter-class]
-  `(let [filter# (new ~filter-class)
-         dataset-format# (get ~options :dataset-format)
-         opts# (into-array String (make-filter-options ~kind ~options))]
-     (.setOptions filter# opts#)
-     (.setInputFormat filter# dataset-format#)
-     filter#))
+  `(doto (new ~filter-class)
+     (.setOptions (into-array String (make-filter-options ~kind ~options)))
+     (.setInputFormat (:dataset-format ~options))))
 
 (defmulti make-filter
   "Creates a filter for the provided attributes format. The first argument must be a symbol
