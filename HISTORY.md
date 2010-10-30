@@ -1,5 +1,10 @@
 # clj-ml History
 
+## v0.0.5 - ????-??-??
+
+### New Features
+  * New filter wrapper added: RemoveUseless
+
 ## v0.0.4 - 2010-10-28
 
 ### New Features
