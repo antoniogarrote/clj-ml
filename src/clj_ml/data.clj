@@ -207,8 +207,7 @@
 
 (defn instance-set-class [instance pos]
   "Sets the index of the class attribute for this instance"
-  (do (.setClassValue instance pos)
-      instance))
+  (doto instance (.setClassValue pos)))
 
 (defn instance-get-class [instance]
   "Get the index of the class attribute for this instance"
@@ -263,14 +262,11 @@
 
 (defn dataset-set-class [dataset pos]
   "Sets the index of the attribute of the dataset that is the class of the dataset"
-  (do (.setClassIndex dataset pos)
-      dataset))
+  (doto dataset (.setClassIndex pos)))
 
 (defn dataset-remove-class [dataset]
   "Removes the class attribute from the dataset"
-  (do
-    (.setClassIndex dataset -1)
-    dataset))
+  (doto dataset (.setClassIndex -1)))
 
 (defn dataset-count [dataset]
   "Returns the number of elements in a dataset"
