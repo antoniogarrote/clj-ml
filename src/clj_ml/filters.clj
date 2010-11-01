@@ -71,6 +71,10 @@
                             :also-binary "-N"
                             :for-each-nominal "-A"}))))
 
+(defmethod make-filter-options :numeric-to-nominal
+  ([kind m]
+     (->> (extract-attributes m) (check-options m {:invert "-V"}))))
+
 (defmethod make-filter-options :remove-attributes
   ([kind m]
      (->> (extract-attributes m)
@@ -100,6 +104,7 @@
    :unsupervised-discretize weka.filters.unsupervised.attribute.Discretize
    :supervised-nominal-to-binary weka.filters.supervised.attribute.NominalToBinary
    :unsupervised-nominal-to-binary weka.filters.unsupervised.attribute.NominalToBinary
+   :numeric-to-nominal weka.filters.unsupervised.attribute.NumericToNominal
    :remove-attributes weka.filters.unsupervised.attribute.Remove
    :remove-useless-attributes weka.filters.unsupervised.attribute.RemoveUseless
    :select-append-attributes weka.filters.unsupervised.attribute.Copy
@@ -116,6 +121,7 @@
      - :unsupervised-discretize
      - :supervised-nominal-to-binary
      - :unsupervised-nominal-to-binary
+     - :numeric-to-nominal
      - :remove-attributes
      - :remove-useless-attributes
      - :select-append-attributes
