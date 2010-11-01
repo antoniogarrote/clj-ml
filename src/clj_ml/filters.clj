@@ -24,7 +24,7 @@
      ;; automatically
      (def *filtered-ds* (make-apply-filter :remove-attributes {:attributes [0]} *ds*))"
   (:use [clj-ml data utils]
-        [clojure.contrib [def :only [defvar]]])
+        [clojure.contrib [def :only [defvar defvar-]]])
   (:require [clojure.contrib [string :as str]])
   (:import (weka.filters Filter)))
 
@@ -75,6 +75,26 @@
   ([kind m]
      (->> (extract-attributes m) (check-options m {:invert "-V"}))))
 
+(defmethod make-filter-options :add-attribute
+  ([kind m]
+     (->> (extract-attributes m)
+          (check-options m {:invert "-V"}))))
+
+(defvar- attribute-types {:numeric "NUM" :nominal "NOM" :string "STR" :date "DAT"}
+  "Mapping of Weka's attribute types from clj-ml keywords to the -T flag's representation.")
+
+(defmethod make-filter-options :add-attribute
+  ([kind m]
+     (-> m
+         (update-in-when [:type] attribute-types)
+         (update-in-when [:labels] (partial str/join ","))
+         (update-in-when [:column] #(if (number? %) (inc %) %))
+         (check-option-values {:type "-T"
+                                :labels "-L"
+                                :name "-N"
+                                :column "-C"
+                                :date-format "-F"}))))
+
 (defmethod make-filter-options :remove-attributes
   ([kind m]
      (->> (extract-attributes m)
@@ -105,6 +125,7 @@
    :supervised-nominal-to-binary weka.filters.supervised.attribute.NominalToBinary
    :unsupervised-nominal-to-binary weka.filters.unsupervised.attribute.NominalToBinary
    :numeric-to-nominal weka.filters.unsupervised.attribute.NumericToNominal
+   :add-attribute weka.filters.unsupervised.attribute.Add
    :remove-attributes weka.filters.unsupervised.attribute.Remove
    :remove-useless-attributes weka.filters.unsupervised.attribute.RemoveUseless
    :select-append-attributes weka.filters.unsupervised.attribute.Copy
@@ -122,6 +143,7 @@
      - :supervised-nominal-to-binary
      - :unsupervised-nominal-to-binary
      - :numeric-to-nominal
+     - :add-attribute
      - :remove-attributes
      - :remove-useless-attributes
      - :select-append-attributes
@@ -222,6 +244,26 @@
             Index of the attributes to be transformed. Sample value: [0 1 2]
         - :invert
             Invert the selection of the columns. Sample value: true
+
+    * :add-attribute
+
+      Adds a new attribute to the dataset. The new attribute will contain all missing values.
+
+      Parameters:
+
+        - :type
+            Type of the new attribute. Valid options: :numeric, :nominal, :string, :date. Defaults to :numeric.
+        - :name
+            Name of the new attribute.
+        - :column
+            Index of where to insert the attribute, indexed by 0. You may also pass in \"first\" and \"last\".
+            Sample values: \"first\", 0, 1, \"last\"
+            The default is: \"last\"
+        - :labels
+            Vector of valid nominal values. This only applies when the type is :nominal.
+        - :format
+            The format of the date values (see ISO-8601).  This only applies when the type is :date.
+            The default is: \"yyyy-MM-dd'T'HH:mm:ss\"
 
     * :remove-attributes
 

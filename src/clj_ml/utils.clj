@@ -29,6 +29,17 @@
        default
        (first col))))
 
+
+(defn update-in-when
+  "Similar to update-in, but returns m unmodified if any levels do
+  not exist"
+  ([m [k & ks] f & args]
+   (if (contains? m k)
+     (if ks
+       (assoc m k (apply update-in-when (get m k) ks f args))
+       (assoc m k (apply f (get m k) args)))
+     m)))
+
 ;; trying metrics
 
 (defn try-metric [f]

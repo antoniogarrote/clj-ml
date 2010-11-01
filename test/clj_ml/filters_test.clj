@@ -116,3 +116,14 @@
         res (make-apply-filter :numeric-to-nominal {} ds)]
     (is (= (dataset-format res)
            [{:a '(:4 :2 :1)} {:b '(:5 :3 :2)} {:c '(:m :g)}]))))
+
+
+
+(deftest make-apply-filter-add-attribute
+  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+                                     [ [1 2 :g]
+                                       [2 3 :m]
+                                       [4 5 :g]])
+        res (make-apply-filter :add-attribute {:type :nominal, :column 1, :name "pet", :labels ["dog" "cat"]} ds)]
+    (is (= (dataset-format res)
+           [:a {:pet '(:cat :dog)} :b {:c '(:m :g)}]))))
