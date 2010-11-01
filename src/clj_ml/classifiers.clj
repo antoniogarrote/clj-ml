@@ -74,67 +74,56 @@
 
 (defmulti #^{:skip-wiki true}
   make-classifier-options
-  "Creates the right parameters for a classifier"
+  "Creates the right parameters for a classifier. Returns the parameters as a Clojure vector."
   (fn [kind algorithm map] [kind algorithm]))
 
 (defmethod make-classifier-options [:decission-tree :c45]
   ([kind algorithm m]
-     (let [cols-val (check-options m
-                                   {:unpruned "-U"
-                                    :reduced-error-pruning "-R"
-                                    :only-binary-splits "-B"
-                                    :no-raising "-S"
-                                    :no-cleanup "-L"
-                                    :laplace-smoothing "-A"}
-                                     [""])
-           cols-val-a (check-option-values m
-                                           {:pruning-confidence "-C"
-                                            :minimum-instances "-M"
-                                            :pruning-number-folds "-N"
-                                            :random-seed "-Q"}
-                                           cols-val)]
-    (into-array cols-val-a))))
+     (->> (check-options m
+                         {:unpruned "-U"
+                          :reduced-error-pruning "-R"
+                          :only-binary-splits "-B"
+                          :no-raising "-S"
+                          :no-cleanup "-L"
+                          :laplace-smoothing "-A"})
+          (check-option-values m
+                               {:pruning-confidence "-C"
+                                :minimum-instances "-M"
+                                :pruning-number-folds "-N"
+                                :random-seed "-Q"}))))
 
 (defmethod make-classifier-options [:bayes :naive]
   ([kind algorithm m]
-     (let [cols-val (check-options m
-                                   {:kernel-estimator "-K"
-                                    :supervised-discretization "-D"
-                                    :old-format "-O"}
-                                     [""])]
-       (into-array cols-val))))
+     (check-options m
+                    {:kernel-estimator "-K"
+                     :supervised-discretization "-D"
+                     :old-format "-O"})))
 
 (defmethod make-classifier-options [:neural-network :multilayer-perceptron]
   ([kind algorithm m]
-     (let [cols-val (check-options m
-                                   {:no-nominal-to-binary "-B"
-                                    :no-numeric-normalization "-C"
-                                    :no-normalization "-I"
-                                    :no-reset "-R"
-                                    :learning-rate-decay "-D"}
-                                     [""])
-           cols-val-a (check-option-values m
-                                           {:learning-rate "-L"
-                                            :momentum "-M"
-                                            :epochs "-N"
-                                            :percentage-validation-set "-V"
-                                            :random-seed "-S"
-                                            :threshold-number-errors "-E"}
-                                           cols-val)]
-       (into-array cols-val-a))))
+     (->> (check-options m
+                         {:no-nominal-to-binary "-B"
+                          :no-numeric-normalization "-C"
+                          :no-normalization "-I"
+                          :no-reset "-R"
+                          :learning-rate-decay "-D"})
+          (check-option-values m
+                               {:learning-rate "-L"
+                                :momentum "-M"
+                                :epochs "-N"
+                                :percentage-validation-set "-V"
+                                :random-seed "-S"
+                                :threshold-number-errors "-E"}))))
 
 (defmethod make-classifier-options [:support-vector-machine :smo]
   ([kind algorithm m]
-     (let [cols-val (check-options m {:fit-logistic-models "-M"}
-                                   [""])
-           cols-val-a (check-option-values m
-                                           {:complexity-constant "-C"
-                                            :tolerance "-L"
-                                            :epsilon-roundoff "-P"
-                                            :folds-for-cross-validation "-V"
-                                            :random-seed "-W"}
-                                           cols-val)]
-       (into-array cols-val-a))))
+     (->> (check-options m {:fit-logistic-models "-M"})
+          (check-option-values m
+                               {:complexity-constant "-C"
+                                :tolerance "-L"
+                                :epsilon-roundoff "-P"
+                                :folds-for-cross-validation "-V"
+                                :random-seed "-W"}))))
 
 
 ;; Building classifiers
@@ -145,7 +134,7 @@
   ([kind algorithm classifier-class options]
      `(let [options-read# (if (empty? ~options)  {} (first ~options))
             classifier# (new ~classifier-class)
-            opts# (make-classifier-options ~kind ~algorithm options-read#)]
+            opts# (into-array String (make-classifier-options ~kind ~algorithm options-read#))]
         (.setOptions classifier# opts#)
         classifier#)))
 
@@ -289,7 +278,7 @@
   ([kind algorithm & options]
      (let [options-read (if (empty? options)  {} (first options))
            classifier (new SMO)
-           opts (make-classifier-options :support-vector-machine :smo options-read)]
+           opts (into-array String (make-classifier-options :support-vector-machine :smo options-read))]
        (.setOptions classifier opts)
        (when (not (empty? (get options-read :kernel-function)))
           ;; We have to setup a different kernel function
