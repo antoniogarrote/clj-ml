@@ -201,7 +201,7 @@
       Parameters:
 
         - :attributes
-            Index of the attributes to be binarized. Sample value: [1 2 3]
+            Index of the attributes to be binarized. Sample value: [0 1 2]
         - :dataset-format
             The dataset where the filter is going to be applied or a
             description of the format of its attributes. Sample value:
@@ -211,6 +211,17 @@
         - :for-each-nominal
             For each nominal value one binary attribute is created, not only if the
             values of the nominal attribute are greater than two., sample value: true
+
+    * :numeric-to-nominal
+
+      Transforms numeric attributes into nominal ones.
+
+      Parameters:
+
+        - :attributes
+            Index of the attributes to be transformed. Sample value: [0 1 2]
+        - :invert
+            Invert the selection of the columns. Sample value: true
 
     * :remove-attributes
 
@@ -223,7 +234,7 @@
             description of the format of its attributes. Sample value:
             dataset, (dataset-format dataset)
         - :attributes
-            Index of the attributes to remove. Sample value: [1 2 3]
+            Index of the attributes to remove. Sample value: [0 1 2]
 
     * :remove-useless-attributes
 
@@ -251,7 +262,7 @@
         - :attributes
             Index of the attributes to remove. Sample value: [1 2 3]
         - :invert
-            Invert the selection of the columns. Sample value: [0 1]
+            Invert the selection of the columns. Sample value: true
 
     * :project-attributes
 
@@ -264,7 +275,7 @@
             description of the format of its attributes. Sample value:
             dataset, (dataset-format dataset)
         - :invert
-            Invert the selection of columns. Sample value: [0 1]"
+            Invert the selection of columns. Sample value: true"
   [kind options]
   (doto (.newInstance (kind filter-aliases))
     (.setOptions (into-array String (make-filter-options kind options)))
