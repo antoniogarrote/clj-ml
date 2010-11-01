@@ -129,14 +129,14 @@
 ;; Building classifiers
 
 
-(defmacro make-classifier-m
+(defn make-classifier-with
   #^{:skip-wiki true}
-  ([kind algorithm classifier-class options]
-     `(let [options-read# (if (empty? ~options)  {} (first ~options))
-            classifier# (new ~classifier-class)
-            opts# (into-array String (make-classifier-options ~kind ~algorithm options-read#))]
-        (.setOptions classifier# opts#)
-        classifier#)))
+  [kind algorithm classifier-class options]
+     (let [options-read (if (empty? options)  {} (first options))
+            classifier (.newInstance classifier-class)
+           opts (into-array String (make-classifier-options kind algorithm options-read))]
+       (.setOptions classifier opts)
+        classifier))
 
 (defmulti make-classifier
   "Creates a new classifier for the given kind algorithm and options.
@@ -261,18 +261,18 @@
 
 (defmethod make-classifier [:decission-tree :c45]
   ([kind algorithm & options]
-     (make-classifier-m kind algorithm J48 options)))
+     (make-classifier-with kind algorithm J48 options)))
 
 (defmethod make-classifier [:bayes :naive]
   ([kind algorithm & options]
      (if (or (nil? (:updateable (first options)))
              (= (:updateable (first options)) false))
-       (make-classifier-m kind algorithm NaiveBayes options)
-       (make-classifier-m kind algorithm NaiveBayesUpdateable options))))
+       (make-classifier-with kind algorithm NaiveBayes options)
+       (make-classifier-with kind algorithm NaiveBayesUpdateable options))))
 
 (defmethod make-classifier [:neural-network :multilayer-perceptron]
   ([kind algorithm & options]
-     (make-classifier-m kind algorithm MultilayerPerceptron options)))
+     (make-classifier-with kind algorithm MultilayerPerceptron options)))
 
 (defmethod make-classifier [:support-vector-machine :smo]
   ([kind algorithm & options]
