@@ -26,7 +26,8 @@
   (:use [clj-ml data utils]
         [clojure.contrib [def :only [defvar defvar-]]])
   (:require [clojure.contrib [string :as str]])
-  (:import (weka.filters Filter)))
+  (:import (weka.filters Filter)
+           (cljml ClojureStreamFilter)))
 
 
 ;; Options for the filters
@@ -319,9 +320,12 @@
         - :invert
             Invert the selection of columns. Sample value: true"
   [kind options]
-  (doto (.newInstance (kind filter-aliases))
-    (.setOptions (into-array String (make-filter-options kind options)))
-    (.setInputFormat (:dataset-format options))))
+  (if (= kind :clj-streamable)
+    (doto (ClojureStreamFilter. (:process options))
+      (.setInputFormat (:dataset-format options)))
+    (doto (.newInstance (kind filter-aliases))
+      (.setOptions (into-array String (make-filter-options kind options)))
+      (.setInputFormat (:dataset-format options)))))
 
 ;; Processing the filtering of data
 
