@@ -17,9 +17,15 @@ public class ClojureStreamFilter
   extends SimpleStreamFilter {
 
   public IFn processFn;
+  public IFn determineOutputFormatFn;
 
   public ClojureStreamFilter(IFn processFn) {
     this.processFn = processFn;
+  }
+
+  public ClojureStreamFilter(IFn processFn, IFn determineOutputFormatFn) {
+    this.processFn = processFn;
+    this.determineOutputFormatFn = determineOutputFormatFn;
   }
 
   public String globalInfo() {
@@ -35,11 +41,12 @@ public class ClojureStreamFilter
     return result;
   }
 
-  protected Instances determineOutputFormat(Instances inputFormat) {
-      return inputFormat;
-      //Instances result = new Instances(inputFormat, 0);
-      //result.insertAttributeAt(new Attribute("bla"), result.numAttributes());
-      //return result;
+  protected Instances determineOutputFormat(Instances inputFormat)  throws Exception {
+    if (this.determineOutputFormatFn == null) {
+        return inputFormat;
+    } else {
+      return (Instances) determineOutputFormatFn.invoke((Object) inputFormat);
+    }
   }
 
   protected Instance process(Instance instance) throws Exception {

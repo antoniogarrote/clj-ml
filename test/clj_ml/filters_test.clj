@@ -145,15 +145,19 @@
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
+
+        rename-attributes (fn [^weka.core.Instances input-format]
+                            (doto (weka.core.Instances. input-format 0)
+                              (.renameAttribute 0 "foo")
+                              (.renameAttribute 1 "bar")))
         inc-nums (fn [^weka.core.Instance instance]
                    (doto (.copy instance)
                      (.setValue 0 (inc (.value instance 0)))
-                     (.setValue 1 (+ (.value instance 0) (.value instance 1)))
-                     (prn)))
-        res (make-apply-filter :clj-streamable {:process inc-nums} ds)
-        _ (prn ds)
-        _ (prn res)]
+                     (.setValue 1 (+ (.value instance 0) (.value instance 1)))))
+        res (make-apply-filter :clj-streamable
+                               {:process inc-nums
+                                :determine-dataset-format rename-attributes} ds)]
     (is (= (map clj-ml.data/instance-to-map (clj-ml.data/dataset-seq res))
-           [{:a 2 :b 3 :c :g}
-            {:a 3 :b 5 :c :m}
-            {:a 5 :b 9 :c :g}]))))
+           [{:foo 2 :bar 3 :c :g}
+            {:foo 3 :bar 5 :c :m}
+            {:foo 5 :bar 9 :c :g}]))))

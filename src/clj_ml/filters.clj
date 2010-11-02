@@ -321,7 +321,7 @@
             Invert the selection of columns. Sample value: true"
   [kind options]
   (if (= kind :clj-streamable)
-    (doto (ClojureStreamFilter. (:process options))
+    (doto (ClojureStreamFilter. (:process options) (:determine-dataset-format options))
       (.setInputFormat (:dataset-format options)))
     (doto (.newInstance (kind filter-aliases))
       (.setOptions (into-array String (make-filter-options kind options)))
