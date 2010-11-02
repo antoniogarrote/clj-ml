@@ -65,9 +65,7 @@
            (loop [vs vector
                   c 0]
              (if (empty? vs)
-               (do
-                 (.setWeight inst (double weight))
-                 inst)
+               (doto inst (.setWeight (double weight)))
                (do
                  (if (or (keyword? (first vs)) (string? (first vs)))
                    ;; this is a nominal entry in keyword or string form
