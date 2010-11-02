@@ -3,6 +3,7 @@
   :repositories {"leadtune-repo" "http://c0026236.cdn1.cloudfiles.rackspacecloud.com/repo"}
   :java-source-path "src/java"
   :javac-fork "true"
+  :warn-on-reflection true
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [org.mongodb/mongo-java-driver "1.0"]
