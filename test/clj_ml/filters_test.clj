@@ -44,22 +44,22 @@
          4 "-A")))
 
 (deftest make-filter-remove-useless-attributes
-  (let [ds (clj-ml.data/make-dataset :foo [:a] [[1] [2]])
+  (let [ds (make-dataset :foo [:a] [[1] [2]])
         filter (make-filter :remove-useless-attributes {:dataset-format ds :max-variance 95})]
     (is (= (.getMaximumVariancePercentageAllowed filter) 95))))
 
 (deftest make-filter-discretize-sup
-  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
-        _ (clj-ml.data/dataset-set-class ds 2)
+        _ (dataset-set-class ds 2)
         f (make-filter :supervised-discretize {:dataset-format ds :attributes [0]})]
     (is (= weka.filters.supervised.attribute.Discretize
            (class f)))))
 
 (deftest make-filter-discretize-unsup
-  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
@@ -68,17 +68,17 @@
            (class f)))))
 
 (deftest make-filter-nominal-to-binary-sup
-  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
-        foo1(clj-ml.data/dataset-set-class ds 2)
+        foo1(dataset-set-class ds 2)
         f (make-filter :supervised-nominal-to-binary {:dataset-format ds})]
     (is (= weka.filters.supervised.attribute.NominalToBinary
            (class f)))))
 
 (deftest make-filter-nominal-to-binary-unsup
-  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
@@ -87,7 +87,7 @@
            (class f)))))
 
 (deftest make-filter-remove-attributes
-  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
@@ -99,7 +99,7 @@
              [:b {:c '(:m :g)}])))))
 
 (deftest make-apply-filter-remove-attributes
-  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
@@ -109,7 +109,7 @@
 
 
 (deftest make-apply-filter-numeric-to-nominal
-  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
@@ -120,7 +120,7 @@
 
 
 (deftest make-apply-filter-add-attribute
-  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
@@ -129,7 +129,7 @@
            [:a {:pet '(:cat :dog)} :b {:c '(:m :g)}]))))
 
 ;(deftest make-apply-filters-test
-;  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+;  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
 ;                                     [ [1 2 :g]
 ;                                       [2 3 :m]
 ;                                       [4 5 :g]])
@@ -140,8 +140,8 @@
 ;    (is (= (dataset-format res)
 ;           [{:pet '(:cat :dog)} :b {:c '(:m :g)}]))))
 
-(deftest make-apply-filter-map
-  (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:g :m]}]
+(deftest make-apply-filter-clj-streamable
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
@@ -157,7 +157,37 @@
         res (make-apply-filter :clj-streamable
                                {:process inc-nums
                                 :determine-dataset-format rename-attributes} ds)]
-    (is (= (map clj-ml.data/instance-to-map (clj-ml.data/dataset-seq res))
+    (is (= (map instance-to-map (dataset-seq res))
            [{:foo 2 :bar 3 :c :g}
             {:foo 3 :bar 5 :c :m}
             {:foo 5 :bar 9 :c :g}]))))
+
+
+(deftest make-apply-filter-clj-batch
+  (let [ds (make-dataset :test [:a]
+                                     [ [1]
+                                       [2]
+                                       [4]])
+        max-diff-attr (weka.core.Attribute. "max-diff")
+        add-max-diff-attr (fn [^weka.core.Instances input-format]
+                            (doto (weka.core.Instances. input-format 0)
+                              (.insertAttributeAt max-diff-attr 1)))
+        add-max-diff-values (fn [^weka.core.Instances instances]
+                              (let [ds-seq (dataset-seq instances)
+                                    a-max (apply max (map #(.value % 0) ds-seq))
+                                    result (add-max-diff-attr instances)
+                                    add-instance #(.add result %)]
+                                (doseq [instance ds-seq]
+                                  (-> instance
+                                      instance-to-vector
+                                      (conj (- a-max (.value instance 0)))
+                                      (#(weka.core.Instance. 1 (into-array Double/TYPE %)))
+                                      add-instance))
+                                result))
+        res (make-apply-filter :clj-batch
+                               {:process add-max-diff-values
+                                :determine-dataset-format add-max-diff-attr} ds)]
+    (is (= (map instance-to-map (dataset-seq res))
+           [{:a 1 :max-diff 3}
+            {:a 2 :max-diff 2}
+            {:a 4 :max-diff 0}]))))
