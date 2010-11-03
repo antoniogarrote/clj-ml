@@ -320,14 +320,13 @@
         - :invert
             Invert the selection of columns. Sample value: true"
   [kind options]
-  (if (#{:clj-streamable :clj-batch} kind) ; TODO: Refactor
-    (doto (if (= :clj-streamable kind)
-            (ClojureStreamFilter. (:process options) (:determine-dataset-format options))
-            (ClojureBatchFilter. (:process options) (:determine-dataset-format options)))
-      (.setInputFormat (:dataset-format options)))
-    (doto (.newInstance (kind filter-aliases))
-      (.setOptions (into-array String (make-filter-options kind options)))
-      (.setInputFormat (:dataset-format options)))))
+  (let [filter (if (kind filter-aliases)
+                 (doto (.newInstance (kind filter-aliases))
+                   (.setOptions (into-array String (make-filter-options kind options))))
+                 (case kind
+                   :clj-streamable (ClojureStreamFilter. (:process options) (:determine-dataset-format options))
+                   :clj-batch (ClojureBatchFilter. (:process options) (:determine-dataset-format options))))]
+    (doto filter (.setInputFormat (:dataset-format options)))))
 
 ;; Processing the filtering of data
 
