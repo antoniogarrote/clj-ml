@@ -149,11 +149,18 @@
      - :remove-useless-attributes
      - :select-append-attributes
      - :project-attributes
+     - :clj-streamable
+     - :clj-batch
 
-    The second parameter is a map of attributes
-    for the filter to be built.
+    The second parameter is a map of attributes for the filter.
+    All filters require a :dataset-format parameter:
 
-    An example of usage could be:
+        - :dataset-format
+            The dataset where the filter is going to be applied or a
+            description of the format of its attributes. Sample value:
+            dataset, (dataset-format dataset)
+
+    An example of usage:
 
       (make-filter :remove {:attributes [0 1] :dataset-format dataset})
 
@@ -183,10 +190,6 @@
 
         - :attributes
             Index of the attributes to be discretized, sample value: [0,4,6]
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
         - :unset-class
             Does not take class attribute into account for the application
             of the filter, sample-value: true
@@ -207,10 +210,6 @@
       is transformed into k binary attributes if the class is nominal.
 
       Parameters:
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
         - :also-binary
             Sets if binary attributes are to be coded as nominal ones, sample value: true
         - :for-each-nominal
@@ -225,10 +224,6 @@
 
         - :attributes
             Index of the attributes to be binarized. Sample value: [0 1 2]
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
         - :also-binary
             Sets if binary attributes are to be coded as nominal ones, sample value: true
         - :for-each-nominal
@@ -272,10 +267,6 @@
 
       Parameters:
 
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
         - :attributes
             Index of the attributes to remove. Sample value: [0 1 2]
 
@@ -298,10 +289,6 @@
 
       Parameters:
 
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
         - :attributes
             Index of the attributes to remove. Sample value: [1 2 3]
         - :invert
@@ -313,12 +300,51 @@
 
       Parameters:
 
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
         - :invert
-            Invert the selection of columns. Sample value: true"
+            Invert the selection of columns. Sample value: true
+
+      * :clj-streamable
+
+      Allows you to create a custom streamable filter with clojure functions.
+      A streamable filter is appropriate when you don't need to iterate over
+      the entire dataset before processing it.
+
+      Parameters:
+
+        - :process
+            This function will receive individual weka.core.Instance objects (rows
+            of the dataset) and should return a newly processed Instance. The
+            actual Instance is passed in and you may change it directly. However, a better
+            approach is to copy the Instance with the copy method or Instance
+            constructor and return a modified version of the copy.
+        - :determine-dataset-format
+            This function will receive the dataset's weka.core.Instances object.
+            You must return a Instances object that contains the new format of the
+            filtered dataset.  Passing this fn is optional.  If you are not changing
+            the format of the dataset then by omitting a function will use the
+            current format.
+
+      * :clj-batch
+
+      Allows you to create a custom batch filter with clojure functions.
+      A batch filter is appropriate when you need to iterate over
+      the entire dataset before processing it.
+
+      Parameters:
+
+        - :process
+            This function will receive the entire dataset as a weka.core.Instances
+            objects.  A processed Instances object should be returned with the
+            new Instance objects added to it.
+        - :determine-dataset-format
+            This function will receive the dataset's weka.core.Instances object.
+            You must return a Instances object that contains the new format of the
+            filtered dataset.  Passing this fn is optional.  If you are not changing
+            the format of the dataset then by omitting a function will use the
+            current format.
+
+   For examples on how to use the filters, especially the clojure filters, you may
+   refer to filters_test.clj of clj-ml."
   [kind options]
   (let [filter (if (kind filter-aliases)
                  (doto (.newInstance (kind filter-aliases))
@@ -342,7 +368,7 @@
    The :dataset-format attribute for the making of the filter will be setup to the
    dataset passed as an argument if no other value is provided.
 
-   The application of this filter is equivalent a the consequetive application of
+   The application of this filter is equivalent to the consecutive application of
    make-filter and apply-filter."
   [kind options dataset]
   (let [opts (if (nil? (:dataset-format options)) (conj options {:dataset-format dataset}))

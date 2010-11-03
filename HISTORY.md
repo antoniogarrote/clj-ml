@@ -3,7 +3,9 @@
 ## v0.0.5 - ????-??-??
 
 ### New Features
-  * New filter wrapper added: RemoveUseless
+  * New filter wrappers added: `RemoveUseless` as `:remove-useless`, `Add` as `:add-attribute`
+  * Adds `:clj-streamable` and `:clj-batch` filters which allow for custom
+  functions to be provided for filtering the dataset.
 
 ## v0.0.4 - 2010-10-28
 
