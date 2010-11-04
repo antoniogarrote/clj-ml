@@ -117,3 +117,14 @@
     (is (not (is-dataset? "something else")))
     (is (is-instance? inst))
     (is (not (is-instance? ds)))))
+
+
+(deftest attributes-tests
+  (let [ds (make-dataset "test" [:a :b {:c [:d :e]}] [{:a 1 :b 2 :c :d} [4 5 :e]])
+        attrs (attributes ds)]
+    (is (every? #(instance? weka.core.Attribute %) attrs))
+    (is (= '("a" "b" "c") (map #(.name %) attrs)))
+    (is (= '("a" "b" "c") (map #(.name %) (attributes (dataset-at ds 0)))))
+    (is (= [(.attribute ds 2)]  (nominal-attributes ds)))
+    (is (= [(.attribute ds 0) (.attribute ds 1)]  (numeric-attributes ds)))
+    (is (= '(:a :b :c) (attribute-names ds)))))

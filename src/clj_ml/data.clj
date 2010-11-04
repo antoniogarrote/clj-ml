@@ -16,25 +16,29 @@
 
 ;; Common functions
 
-(defn is-instance? [instance]
+(defn is-instance?
   "Checks if the provided object is an instance"
+  [instance]
   (instance? weka.core.Instance instance))
 
-(defn is-dataset? [dataset]
+(defn is-dataset?
   "Checks if the provided object is a dataset"
+  [dataset]
   (instance? weka.core.Instances dataset))
 
 ;; Construction of individual data and datasets
 
-(defn attribute-name-at [dataset-or-instance pos]
+(defn attribute-name-at
   "Returns the name of an attribute situated at the provided position in
    the attributes definition of an instance or class"
+  [dataset-or-instance pos]
   (let [class-attr (.attribute dataset-or-instance pos)]
     (.name class-attr)))
 
-(defn index-attr [dataset-or-instance attr]
+(defn index-attr
   "Returns the index of an attribute in the attributes definition of an
    instance or dataset"
+  [dataset-or-instance attr]
   (let [max (.numAttributes dataset-or-instance)
         attrs (key-to-str attr)]
     (loop [c 0]
@@ -43,6 +47,36 @@
         (if (= attrs (attribute-name-at dataset-or-instance c))
           c
           (recur (+ c 1 )))))))
+
+(defn attributes
+  "Returns the attributes (weka.core.Attribute) of the dataset or instance"
+  [dataset-or-instance]
+  (map #(.attribute dataset-or-instance %) (range (.numAttributes dataset-or-instance))))
+
+(defn attribute-names
+  "Returns the attribute names, as keywords, of the dataset or instance"
+  [dataset-or-instance]
+  (map (comp keyword #(.name %)) (attributes dataset-or-instance)))
+
+(defn numeric-attributes
+  "Returns the numeric attributes (weka.core.Attribute) of the dataset or instance"
+  [dataset-or-instance]
+  (filter #(.isNumeric %) (attributes dataset-or-instance)))
+
+(defn nominal-attributes
+  "Returns the string attributes (weka.core.Attribute) of the dataset or instance"
+  [dataset-or-instance]
+  (filter #(.isNominal %) (attributes dataset-or-instance)))
+
+(defn string-attributes
+  "Returns the string attributes (weka.core.Attribute) of the dataset or instance"
+  [dataset-or-instance]
+  (filter #(.isString %) (attributes dataset-or-instance)))
+
+(defn nominal-attribute
+  "Creates a nominal weka.core.Attribute with the given name and values"
+  [attr-name values]
+  (Attribute. (name attr-name) (into-fast-vector (map name values))))
 
 (defn dataset-index-attr [dataset attr]
   (index-attr dataset attr))
@@ -144,12 +178,14 @@
 
 ;; dataset information
 
-(defn dataset-name [dataset]
+(defn dataset-name
   "Returns the name of this dataset"
+  [dataset]
   (.relationName dataset))
 
-(defn dataset-class-values [dataset]
+(defn dataset-class-values
   "Returns the possible values for the class attribute"
+  [dataset]
   (let [class-attr (.classAttribute dataset)
         values (.enumerateValues class-attr)]
     (loop [continue (.hasMoreElements values)
@@ -176,8 +212,9 @@
                    (conj acum {(keyword val) index})))
           acum)))))
 
-(defn dataset-format [dataset]
+(defn dataset-format
   "Returns the definition of the attributes of this dataset"
+  [dataset]
   (let [max (.numAttributes dataset)]
     (loop [acum []
            c 0]
@@ -194,22 +231,26 @@
                  (+ c 1)))
         acum))))
 
-(defn dataset-get-class [dataset]
+(defn dataset-get-class
   "Returns the index of the class attribute for this dataset"
+  [dataset]
   (.classIndex dataset))
 
 ;; manipulation of instances
 
-(defn instance-set-class [instance pos]
+(defn instance-set-class
   "Sets the index of the class attribute for this instance"
+  [instance pos]
   (doto instance (.setClassValue pos)))
 
-(defn instance-get-class [instance]
+(defn instance-get-class
   "Get the index of the class attribute for this instance"
+   [instance]
   (.classValue instance))
 
-(defn instance-value-at [instance pos]
+(defn instance-value-at
   "Returns the value of an instance attribute"
+  [instance pos]
   (let [attr (.attribute instance pos)]
     (if (.isNominal attr)
       (let [val (.value instance pos)
@@ -248,23 +289,32 @@
 
 ;; manipulation of datasets
 
-(defn dataset-seq [dataset]
+(defn dataset-seq
   "Builds a new clojure sequence from this dataset"
+  [dataset]
   (if (= (class dataset)
          ClojureInstances)
     (seq dataset)
     (seq (new ClojureInstances dataset))))
 
-(defn dataset-set-class [dataset pos]
+(defn dataset-as-maps
+  "Returns a lazy sequence of the dataset represetned as maps."
+  [dataset]
+  (map instance-to-map (dataset-seq dataset)))
+
+(defn dataset-set-class
   "Sets the index of the attribute of the dataset that is the class of the dataset"
+  [dataset pos]
   (doto dataset (.setClassIndex pos)))
 
-(defn dataset-remove-class [dataset]
+(defn dataset-remove-class
   "Removes the class attribute from the dataset"
+  [dataset]
   (doto dataset (.setClassIndex -1)))
 
-(defn dataset-count [dataset]
+(defn dataset-count
   "Returns the number of elements in a dataset"
+  [dataset]
   (.numInstances dataset))
 
 (defn dataset-add
