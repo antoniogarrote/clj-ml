@@ -7,6 +7,9 @@
   * Adds `:clj-streamable` and `:clj-batch` filters which allow for custom
   functions to be provided for filtering the dataset.
 
+### Bug Fixes
+  * `is-dataset?` reports falses correctly now.
+
 ## v0.0.4 - 2010-10-28
 
 ### New Features

@@ -18,14 +18,11 @@
 
 (defn is-instance? [instance]
   "Checks if the provided object is an instance"
-  (if (= weka.core.Instance
-         (class instance))
-    true
-    false))
+  (instance? weka.core.Instance instance))
 
 (defn is-dataset? [dataset]
   "Checks if the provided object is a dataset"
-  (not (is-instance? dataset)))
+  (instance? weka.core.Instances dataset))
 
 ;; Construction of individual data and datasets
 

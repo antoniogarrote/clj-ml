@@ -114,5 +114,6 @@
         inst (dataset-at ds 0)]
     (is (is-dataset? ds))
     (is (not (is-dataset? inst)))
+    (is (not (is-dataset? "something else")))
     (is (is-instance? inst))
     (is (not (is-instance? ds)))))
