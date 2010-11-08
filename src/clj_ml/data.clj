@@ -10,7 +10,8 @@
    these data sets as well as their classes can be modified and assigned to
    the instances. Finally data sets can be transformed into Clojure sequences
    that can be transformed using usual Clojure functions like map, reduce, etc."
-  (:use [clj-ml utils])
+  (:use [clj-ml utils]
+        [clojure.contrib.seq :only [find-first]])
   (:import (weka.core Instance Instances FastVector Attribute)
            (cljml ClojureInstances)))
 
@@ -38,15 +39,9 @@
 (defn index-attr
   "Returns the index of an attribute in the attributes definition of an
    instance or dataset"
-  [dataset-or-instance attr]
-  (let [max (.numAttributes dataset-or-instance)
-        attrs (key-to-str attr)]
-    (loop [c 0]
-      (if (= c max)
-        (throw (.Exception (str "Attribute " attrs " not found")))
-        (if (= attrs (attribute-name-at dataset-or-instance c))
-          c
-          (recur (+ c 1 )))))))
+  [dataset attr-name]
+  (let [attr-name (name attr-name)]
+    (find-first #(= attr-name (.name (.attribute dataset %))) (range (.numAttributes dataset)))))
 
 (defn attributes
   "Returns the attributes (weka.core.Attribute) of the dataset or instance"
