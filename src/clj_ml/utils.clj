@@ -29,6 +29,13 @@
        default
        (first col))))
 
+(defn into-fast-vector
+  "Similar to into-array but returns a weka.core.FastVector"
+  [coll]
+  (let [fv (weka.core.FastVector.)]
+    (doseq [item coll]
+      (.addElement fv item))
+    fv))
 
 (defn update-in-when
   "Similar to update-in, but returns m unmodified if any levels do
