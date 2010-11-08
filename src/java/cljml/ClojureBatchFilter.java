@@ -51,7 +51,9 @@ public class ClojureBatchFilter
 
   protected Instances process(Instances instances) throws Exception {
    try {
-    return (Instances) processFn.invoke((Object) instances);
+    Instances result = (Instances) processFn.invoke((Object) instances);
+    this.setOutputFormat(result);
+    return result;
    } catch (Exception e) { 
      // Weka silently eats any exceptions in filters so we need to report on it...
      System.out.println("Unable to filter instances (dataset) with a clojure fn!  The exception was:\n" +

@@ -318,7 +318,8 @@
             approach is to copy the Instance with the copy method or Instance
             constructor and return a modified version of the copy.
         - :determine-dataset-format
-            This function will receive the dataset's weka.core.Instances object.
+            This function will receive the dataset's weka.core.Instances object with
+            no actual Instance objects (i.e. just the format enocded in the attributes).
             You must return a Instances object that contains the new format of the
             filtered dataset.  Passing this fn is optional.  If you are not changing
             the format of the dataset then by omitting a function will use the
@@ -335,13 +336,19 @@
         - :process
             This function will receive the entire dataset as a weka.core.Instances
             objects.  A processed Instances object should be returned with the
-            new Instance objects added to it.
+            new Instance objects added to it.  The format of the dataset (Instances)
+            that is returned from this will be returned from the filter (see below).
         - :determine-dataset-format
-            This function will receive the dataset's weka.core.Instances object.
+            This function will receive the dataset's weka.core.Instances object with
+            no actual Instance objects (i.e. just the format enocded in the attributes).
             You must return a Instances object that contains the new format of the
-            filtered dataset.  Passing this fn is optional.  If you are not changing
-            the format of the dataset then by omitting a function will use the
-            current format.
+            filtered dataset.  Passing this fn is optional.
+            For many batch filters you need to process the entire dataset to determine
+            the correct format (e.g. filters that operate on nominal attributes). For
+            this reason the clj-batch filter will *always* use format of the dataset
+            that the process fn outputs.  In other words, if you need to operate on the
+            entire dataset before determining the format then this should be done in the
+            process-fn and nothing needs to be passed for this fn.
 
    For examples on how to use the filters, especially the clojure filters, you may
    refer to filters_test.clj of clj-ml."
