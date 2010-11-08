@@ -128,3 +128,8 @@
     (is (= [(.attribute ds 2)]  (nominal-attributes ds)))
     (is (= [(.attribute ds 0) (.attribute ds 1)]  (numeric-attributes ds)))
     (is (= '(:a :b :c) (attribute-names ds)))))
+
+(deftest replacing-attributes
+  (let [ds (make-dataset "test" [:a {:b [:foo :bar]}] [[1 :foo] [2 :bar]])
+        _ (dataset-replace-attribute! ds :b (nominal-attribute :b [:baz :shaz]))]
+    (is (= [:a {:b [:shaz :baz]}] (dataset-format ds)))))

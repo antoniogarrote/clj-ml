@@ -342,3 +342,13 @@
   "Removes and returns the first instance in the dataset"
   [dataset]
   (dataset-extract-at dataset 0))
+
+(defn dataset-replace-attribute!
+  "Replaces the specified attribute with the given one. (The attribute should be a weka.core.Attribute)
+This function only modifies the format of the dataset and does not deal with any instances.
+The intention is for this to be used on data-formats and not on datasets with data."
+  [dataset attr-name new-attr]
+  (let [attr-pos (index-attr dataset attr-name)]
+    (doto dataset
+      (.deleteAttributeAt attr-pos)
+      (.insertAttributeAt new-attr attr-pos))))
