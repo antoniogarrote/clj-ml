@@ -28,7 +28,7 @@
            cols    (get dataset-opts :cols)
            cols-names (dataset-format dataset)
            vals-map (reduce (fn [acum col]
-                              (let [name (key-to-str (nth cols-names col))
+                              (let [name (name (nth cols-names col))
                                     vals (map #(nth (instance-to-vector %1) col) dataseq)]
                                 (conj acum {name vals})))
                             {}
@@ -44,8 +44,8 @@
              plot)
            (let [this-val (get vals-map (first ks))
                  the-plot (if (nil? plot)
-                            (box-plot this-val :title title :legend legend :series-label (key-to-str (first ks)))
-                            (do (add-box-plot plot this-val :series-label (key-to-str (first ks)))
+                            (box-plot this-val :title title :legend legend :series-label (name (first ks)))
+                            (do (add-box-plot plot this-val :series-label (name (first ks)))
                                 plot))]
              (recur the-plot (rest ks))))))))
 
@@ -84,8 +84,8 @@
                                  acum-map
                                  dataseq)
            title (or (get display-opts :title) (str "Dataset '" (dataset-name dataset) "' Scatter Plot ("
-                                                    (key-to-str (nth cols-names col-0)) " vs "
-                                                    (key-to-str (nth cols-names col-1)) ")"))
+                                                    (name (nth cols-names col-0)) " vs "
+                                                    (name (nth cols-names col-1)) ")"))
            legend (if (nil? (get display-opts :legend))  true (get display-opts :legend))
            should-display (get display-opts :visualize)]
        (loop [plot nil
@@ -100,11 +100,11 @@
                  the-plot (if (nil? plot)
                             (scatter-plot this-val-0 this-val-1
                                           :title title
-                                           :x-label (key-to-str (nth cols-names col-0))
-                                           :y-label (key-to-str (nth cols-names col-1))
-                                           :series-label (key-to-str (first ks))
+                                           :x-label (name (nth cols-names col-0))
+                                           :y-label (name (nth cols-names col-1))
+                                           :series-label (name (first ks))
                                            :legend legend)
-                             (do (add-points plot this-val-0 this-val-1 :series-label (key-to-str (first ks)))
+                             (do (add-points plot this-val-0 this-val-1 :series-label (name (first ks)))
                                  plot))]
               (recur the-plot (rest ks))))))))
 

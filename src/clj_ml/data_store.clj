@@ -14,13 +14,13 @@
 (defn keywords-to-strings [format]
   "Recursively transforms all keywords into strings"
   (if (keyword? format)
-    (key-to-str format)
+    (name format)
     (if (map? format)
       (loop [acum {}
              ks (keys format)]
         (if (empty? ks)
           acum
-          (recur (conj {(key-to-str (first ks))
+          (recur (conj {(name (first ks))
                         (keywords-to-strings (get format (first ks)))}
                        acum)
                  (rest ks))))

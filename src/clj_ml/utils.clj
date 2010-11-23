@@ -14,14 +14,6 @@
             MessageDigest)))
 
 
-(defn key-to-str
-  "transforms a keyword into a string"
-  ([k]
-     (if (= (class k) String)
-       k
-       (let [sk (str k)]
-         (.substring sk 1)))))
-
 (defn first-or-default
   "Returns the first element in the collection or the default value"
   ([col default]

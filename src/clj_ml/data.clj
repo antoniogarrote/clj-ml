@@ -95,15 +95,15 @@
                (do
                  (if (or (keyword? (first vs)) (string? (first vs)))
                    ;; this is a nominal entry in keyword or string form
-                   (.setValue inst c (key-to-str (first vs)))
+                   (.setValue inst c (name (first vs)))
                    (if (sequential? (first vs))
                      ;; this is a map of values
-                     (let [k (key-to-str (nth (first vs) 0))
+                     (let [k (name (nth (first vs) 0))
                            val (nth (first vs) 1)
                            ik  (index-attr inst k)]
                        (if (or (keyword? val) (string? val))
                          ;; this is a nominal entry in keyword or string form
-                         (.setValue inst ik (key-to-str val))
+                         (.setValue inst ik (name val))
                          (.setValue inst ik (double val))))
                      ;; A double value for the entry
                      (.setValue inst c (double (first vs)))))
@@ -124,24 +124,24 @@
                           (if (map? att)
                             (if (sequential? (first (vals att)))
                               (let [v (first (vals att))
-                                    vfa (reduce (fn [a i] (.addElement a (key-to-str i)) a)
+                                    vfa (reduce (fn [a i] (.addElement a (name i)) a)
                                                 (new FastVector) v)]
-                                (new Attribute (key-to-str (first (keys att))) vfa))
-                              (new Attribute (key-to-str (first (keys att))) (first (vals att))))
-                            (new Attribute (key-to-str att)))))
+                                (new Attribute (name (first (keys att))) vfa))
+                              (new Attribute (name (first (keys att))) (first (vals att))))
+                            (new Attribute (name att)))))
            (recur (rest atts)
                   fv))))))
 
 (defn make-dataset
   "Creates a new dataset, empty or with the provided instances and options"
-  ([name attributes capacity-or-values & opts]
+  ([ds-name attributes capacity-or-values & opts]
      (let [options (first-or-default opts {})
            weight (get options :weight 1)
            class-attribute (get options :class)
            ds (if (sequential? capacity-or-values)
                 ;; we have received a sequence instead of a number, so we initialize data
                 ;; instances in the dataset
-                (let [dataset (new ClojureInstances (key-to-str name) (parse-attributes attributes) (count capacity-or-values))]
+                (let [dataset (new ClojureInstances (name ds-name) (parse-attributes attributes) (count capacity-or-values))]
                   (loop [vs capacity-or-values]
                     (if (empty? vs)
                       dataset
@@ -150,7 +150,7 @@
                           (.add dataset inst))
                         (recur (rest vs))))))
                 ;; we haven't received a vector so we create an empty dataset
-                (new Instances (key-to-str name) (parse-attributes attributes) capacity-or-values))]
+                (new Instances (name ds-name) (parse-attributes attributes) capacity-or-values))]
        ;; we try to setup the class attribute if :class with a attribute name or
        ;; integer value is provided
        (when (not (nil? class-attribute))
