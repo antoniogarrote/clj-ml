@@ -187,7 +187,7 @@
         res (make-apply-filter :clj-batch
                                {:process add-max-diff-values
                                 :determine-dataset-format add-max-diff-attr} ds)]
-    (is (= (dataset-as-maps res)
-           [{:a 1 :max-diff 3}
+    (is (= [{:a 1 :max-diff 3}
             {:a 2 :max-diff 2}
-            {:a 4 :max-diff 0}]))))
+            {:a 4 :max-diff 0}]
+             (dataset-as-maps res)))))

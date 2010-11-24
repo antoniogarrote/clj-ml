@@ -100,14 +100,11 @@
     (is (sequential? seq))))
 
 
-(deftest working-sequences
+(deftest working-sequences-and-helpers
   (let [ds (make-dataset "test" [:a :b {:c [:d :e]}] [{:a 1 :b 2 :c :d} [4 5 :e]])]
     (is (= 2 (dataset-count ds)))
-    (let [dsm (map #(instance-to-map %1) (dataset-seq ds))]
-      (is (= 2 (count dsm)))
-      (is (= 1.0 (:a (first dsm))))
-      (let [dsb (make-dataset "test" [:a :b {:c [:d :e]}] dsm)]
-        (is (= 2 (dataset-count dsb)))))))
+    (is (= [{:a 1 :b 2 :c :d} {:a 4 :b 5 :c :e}] (dataset-as-maps ds)))
+    (is (= [{:a 1 :b 2 :c :d} {:a 4 :b 5 :c :e}] (map #(instance-to-map %1) (dataset-seq ds))))))
 
 (deftest dataset-instance-predicates
   (let [ds (make-dataset "test" [:a :b {:c [:d :e]}] [{:a 1 :b 2 :c :d} [4 5 :e]])

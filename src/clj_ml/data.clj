@@ -245,7 +245,7 @@
 
 (defn instance-value-at
   "Returns the value of an instance attribute"
-  [instance pos]
+  [^Instance instance pos]
   (let [attr (.attribute instance pos)]
     (if (.isNominal attr)
       (let [val (.value instance pos)
@@ -260,26 +260,16 @@
 
 (defn instance-to-vector
   "Builds a vector with the values of the instance"
-  [instance]
-  (let [max (.numValues instance)]
-    (loop [c 0
-           acum []]
-      (if (= c max)
-        acum
-        (recur (+ c 1)
-               (conj acum (instance-value-at instance c)))))))
+  [^Instance instance]
+  (vec (map (partial instance-value-at instance) (range (.numValues instance)))))
 
 (defn instance-to-map
   "Builds a vector with the values of the instance"
-  [instance]
-  (let [max (.numValues instance)]
-    (loop [c 0
-           acum {}]
-      (if (= c max)
-        acum
-        (recur (+ c 1)
-               (conj acum {(keyword (. (.attribute instance c) name))
-                           (instance-value-at instance c)} ))))))
+  [^Instance instance]
+  (reduce (fn [m i]
+            (assoc m (keyword (attribute-name-at instance i)) (instance-value-at instance i)))
+          {}
+          (range (.numValues instance))))
 
 
 ;; manipulation of datasets
