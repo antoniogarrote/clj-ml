@@ -258,10 +258,15 @@
         key-val)
       (.value instance pos))))
 
+(defn instance-to-list
+  "Builds a list with the values of the instance"
+  [^Instance instance]
+  (map (partial instance-value-at instance) (range (.numValues instance))))
+
 (defn instance-to-vector
   "Builds a vector with the values of the instance"
-  [^Instance instance]
-  (vec (map (partial instance-value-at instance) (range (.numValues instance)))))
+  [instance]
+  (vec (instance-to-list instance)))
 
 (defn instance-to-map
   "Builds a vector with the values of the instance"
@@ -283,9 +288,13 @@
     (seq (new ClojureInstances dataset))))
 
 (defn dataset-as-maps
-  "Returns a lazy sequence of the dataset represetned as maps."
+  "Returns a lazy sequence of the dataset represetned as maps.
+This fn is preferale to mapping over a seq yourself with instance-to-map
+becuase it avoids redundant string interning of the attribute names."
   [dataset]
-  (map instance-to-map (dataset-seq dataset)))
+  (let [attrs (attribute-names dataset)] ; we only want to intern the attribute names once!
+    (for [instance (map instance-to-list (dataset-seq dataset))]
+      (zipmap attrs instance))))
 
 (defn dataset-set-class
   "Sets the index of the attribute of the dataset that is the class of the dataset"
