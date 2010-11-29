@@ -62,12 +62,11 @@
 "
   (:use [clj-ml utils data kernel-functions])
   (:import (java.util Date Random)
+           (weka.core Instance Instances)
            (weka.classifiers.trees J48)
-           (weka.classifiers.bayes NaiveBayes)
-           (weka.classifiers.bayes NaiveBayesUpdateable)
-           (weka.classifiers.functions MultilayerPerceptron)
-           (weka.classifiers.functions SMO)
-           (weka.classifiers Evaluation)))
+           (weka.classifiers.bayes NaiveBayes NaiveBayesUpdateable)
+           (weka.classifiers.functions MultilayerPerceptron SMO)
+           (weka.classifiers Classifier Evaluation)))
 
 
 ;; Setting up classifier options
@@ -131,9 +130,9 @@
 
 (defn make-classifier-with
   #^{:skip-wiki true}
-  [kind algorithm classifier-class options]
+  [kind algorithm ^Class classifier-class options]
      (let [options-read (if (empty? options)  {} (first options))
-            classifier (.newInstance classifier-class)
+            ^Classifier classifier (.newInstance classifier-class)
            opts (into-array String (make-classifier-options kind algorithm options-read))]
        (.setOptions classifier opts)
         classifier))
@@ -294,25 +293,26 @@
 
 (defn classifier-train
   "Trains a classifier with the given dataset as the training data."
-  ([classifier dataset]
+  ([^Classifier classifier dataset]
      (do (.buildClassifier classifier dataset)
          classifier)))
 
 (defn classifier-update
   "If the classifier is updateable it updates the classifier with the given instance or set of instances."
-  ([classifier instance-s]
+  ([^Classifier classifier instance-s]
+     ;; Arg... weka doesn't provide a formal interface for updateClassifer- How do I type hint this?
      (if (is-dataset? instance-s)
-       (do (for [i (dataset-seq instance-s)]
-             (.updateClassifier classifier i))
+       (do (doseq [i (dataset-seq instance-s)]
+             (.updateClassifier classifier ^Instance i))
            classifier)
-       (do (.updateClassifier classifier instance-s)
+       (do (.updateClassifier classifier ^Instance instance-s)
            classifier))))
 
 ;; Evaluating classifiers
 
 (defn- collect-evaluation-results
    "Collects all the statistics from the evaluation of a classifier."
-  ([class-values evaluation]
+  ([class-values ^Evaluation evaluation]
      (do
        (println (.toMatrixString evaluation))
        (println "=== Summary ===")
@@ -345,7 +345,7 @@
         :evaluation-object evaluation})))
 
 (defmulti classifier-evaluate
-  "Evaluetes a trained classifier using the provided dataset or cross-validation.
+  "Evaluates a trained classifier using the provided dataset or cross-validation.
    The first argument must be the classifier to evaluate, the second argument is
    the kind of evaluation to do.
    Two possible evaluations ara availabe: dataset and cross-validations. The values
@@ -410,19 +410,15 @@
   (fn [classifier mode & evaluation-data] mode))
 
 (defmethod classifier-evaluate :dataset
-  ([classifier mode & evaluation-data]
-     (let [training-data (nth evaluation-data 0)
-           test-data (nth evaluation-data 1)
-           evaluation (new Evaluation training-data)
+  ([^Classifier classifier mode & [training-data test-data]]
+     (let [evaluation (new Evaluation training-data)
            class-values (dataset-class-values training-data)]
        (.evaluateModel evaluation classifier test-data (into-array []))
        (collect-evaluation-results class-values evaluation))))
 
 (defmethod classifier-evaluate :cross-validation
-  ([classifier mode & evaluation-data]
-     (let [training-data (nth evaluation-data 0)
-           folds (nth evaluation-data 1)
-           evaluation (new Evaluation training-data)
+  ([classifier mode & [training-data folds]]
+     (let [evaluation (new Evaluation training-data)
            class-values (dataset-class-values training-data)]
        (.crossValidateModel evaluation classifier training-data folds (new Random (.getTime (new Date))) (into-array []))
        (collect-evaluation-results class-values evaluation))))
@@ -434,7 +430,7 @@
   "Classifies an instance using the provided classifier.
    The value returned is the numeric attribute of that value for
    the list of valid values for the class."
-  ([classifier instance]
+  ([^Classifier classifier ^Instance instance]
      (.classifyInstance classifier instance)))
 
 (defn classifier-label
