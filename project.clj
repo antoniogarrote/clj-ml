@@ -10,10 +10,14 @@
                  [incanter/incanter-core "1.2.3"]
                  [incanter/incanter-charts "1.2.3"]
                  [lt/weka "3.6.3"]]
-  :dev-dependencies [[autodoc "0.7.0"]
-                     [lein-javac "1.2.1-SNAPSHOT"]
-                     [swank-clojure "1.2.1"]
-                     [lein-difftest "1.2.2"]]
+  :dev-dependencies [[autodoc "0.7.0"
+                      :exclusions [org.clojure/clojure org.clojure/clojure-contrib]]
+                     [lein-javac "1.2.1-SNAPSHOT"
+                      :exclusions [org.clojure/clojure]]
+                     [swank-clojure "1.2.1"
+                      :exclusions [org.clojure/clojure]]
+                     [lein-difftest "1.2.2"
+                      :exclusions [org.clojure/clojure org.clojure/clojure-contrib]]]
   :hooks [leiningen.hooks.difftest]
   :autodoc { :name "clj-ml", :page-title "clj-ml machine learning Clojure's style"
              :author "Antonio Garrote <antoniogarrote@gmail.com>"
