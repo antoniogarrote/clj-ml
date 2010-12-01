@@ -112,10 +112,16 @@
   (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
                                        [2 3 :m]
-                                       [4 5 :g]])
-        res (make-apply-filter :numeric-to-nominal {} ds)]
-    (is (= (dataset-format res)
-           [{:a '(:4 :2 :1)} {:b '(:5 :3 :2)} {:c '(:m :g)}]))))
+                                       [4 5 :g]])]
+    (testing "when no attributes are specified"
+      (is (= (dataset-format  (make-apply-filter :numeric-to-nominal {} ds))
+             [{:a '(:4 :2 :1)} {:b '(:5 :3 :2)} {:c '(:m :g)}])))
+    (testing "when attributes are specified by index"
+       (is (= (dataset-format  (make-apply-filter :numeric-to-nominal {:attributes [0]} ds))
+              [{:a '(:4 :2 :1)} :b {:c '(:m :g)}])))
+    (testing "when attributes are specified by name"
+       (is (= (dataset-format  (make-apply-filter :numeric-to-nominal {:attributes [:b]} ds))
+              [:a {:b '(:5 :3 :2)} {:c '(:m :g)}])))))
 
 
 

@@ -43,7 +43,7 @@
     (is (= 0 (.classIndex (dataset-set-class dataset 0))))
     (testing "when a string or symbol is passed in"
       (is (= 1 (.classIndex (dataset-set-class dataset "b"))))
-      (is (= 0 (.classIndex (dataset-set-class dataset :a)))))))
+      (is (= 0 (.classIndex (dataset-set-class dataset "a")))))))
 
 (deftest dataset-count-1
   (let [dataset (make-dataset :test

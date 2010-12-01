@@ -12,7 +12,8 @@
    A sample use of the API is shown below:
 
      ;; *ds* is the dataset where the first attribute is to be removed
-     (def *filter* (make-filter :remove-attributes {:dataset-format *ds* :attributes [0]}))
+     (def *filter* (make-filter :remove-attributes {:dataset-format *ds* :attributes [:name-of-attr]}))
+
 
      ;; We apply the filter to the original data set and obtain the new one
      (def *filtered-ds* (filter-apply *filter* *ds*))
@@ -40,7 +41,9 @@
 (defn- extract-attributes
   "Transforms the :attributes value from m into the appropriate weka flag"
   [m]
-  ["-R" (str/join "," (map inc (:attributes m)))])
+  ["-R" (str/join ","
+                  (for [attr (:attributes m)]
+                    (inc (index-attr (:dataset-format m) attr))))])
 
 (defmethod make-filter-options :supervised-discretize
   ([kind m]
@@ -176,6 +179,7 @@
 
         - :attributes
             Index of the attributes to be discretized, sample value: [0,4,6]
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
         - :invert
             Invert mathcing sense of the columns, sample value: true
         - :kononenko
@@ -190,6 +194,7 @@
 
         - :attributes
             Index of the attributes to be discretized, sample value: [0,4,6]
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
         - :unset-class
             Does not take class attribute into account for the application
             of the filter, sample-value: true
@@ -224,6 +229,7 @@
 
         - :attributes
             Index of the attributes to be binarized. Sample value: [0 1 2]
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
         - :also-binary
             Sets if binary attributes are to be coded as nominal ones, sample value: true
         - :for-each-nominal
@@ -238,6 +244,7 @@
 
         - :attributes
             Index of the attributes to be transformed. Sample value: [0 1 2]
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
         - :invert
             Invert the selection of the columns. Sample value: true
 
@@ -269,6 +276,7 @@
 
         - :attributes
             Index of the attributes to remove. Sample value: [0 1 2]
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
 
     * :remove-useless-attributes
 
@@ -290,7 +298,8 @@
       Parameters:
 
         - :attributes
-            Index of the attributes to remove. Sample value: [1 2 3]
+            Index of the attributes. Sample value: [1 2 3]
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
         - :invert
             Invert the selection of the columns. Sample value: true
 
