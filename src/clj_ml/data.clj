@@ -40,8 +40,10 @@
   "Returns the index of an attribute in the attributes definition of an
    instance or dataset"
   [dataset attr-name]
-  (let [attr-name (name attr-name)]
-    (find-first #(= attr-name (.name (.attribute dataset %))) (range (.numAttributes dataset)))))
+  (if (number? attr-name)
+    attr-name
+    (let [attr-name (name attr-name)]
+      (find-first #(= attr-name (.name (.attribute dataset %))) (range (.numAttributes dataset))))))
 
 (defn attributes
   "Returns the attributes (weka.core.Attribute) of the dataset or instance"
@@ -228,7 +230,7 @@
 
 (defn dataset-get-class
   "Returns the index of the class attribute for this dataset"
-  [dataset]
+  [^Instances dataset]
   (.classIndex dataset))
 
 ;; manipulation of instances
@@ -298,12 +300,12 @@ becuase it avoids redundant string interning of the attribute names."
 
 (defn dataset-set-class
   "Sets the index of the attribute of the dataset that is the class of the dataset"
-  [dataset pos]
-  (doto dataset (.setClassIndex pos)))
+  [^Instances dataset index-or-name]
+  (doto dataset (.setClassIndex ^int (index-attr dataset index-or-name))))
 
 (defn dataset-remove-class
   "Removes the class attribute from the dataset"
-  [dataset]
+  [^Instances dataset]
   (doto dataset (.setClassIndex -1)))
 
 (defn dataset-count
