@@ -390,3 +390,15 @@
   (let [opts (if (nil? (:dataset-format options)) (conj options {:dataset-format dataset}))
         filter (make-filter kind opts)]
     (filter-apply filter dataset)))
+
+(defn make-apply-filters
+  "Creates new filters with the provided options and applies them to the provided dataset.
+   The :dataset-format attribute for the making of the filter will be setup to the
+   dataset passed as an argument if no other value is provided."
+  [filter-options dataset]
+  ;TODO: Consider using Weka's MultiFilter instead.. could be faster for streamable filters.
+  (reduce
+   (fn [ds [kind options]]
+     (make-apply-filter kind options ds))
+   dataset
+   filter-options))

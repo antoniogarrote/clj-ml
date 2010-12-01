@@ -134,17 +134,16 @@
     (is (= (dataset-format res)
            [:a {:pet '(:cat :dog)} :b {:c '(:m :g)}]))))
 
-;(deftest make-apply-filters-test
-;  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
-;                                     [ [1 2 :g]
-;                                       [2 3 :m]
-;                                       [4 5 :g]])
-;        res (make-apply-filters
-;             [:add-attribute {:type :nominal, :column 1, :name "pet", :labels ["dog" "cat"]}]
-;             [:map-attribute {:type :nominal, :column 1, :name "pet", :labels ["dog" "cat"], :fn}]
-;             [:remove-attributes {:attributes [0]}] ds)]
-;    (is (= (dataset-format res)
-;           [{:pet '(:cat :dog)} :b {:c '(:m :g)}]))))
+(deftest make-apply-filters-test
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
+                                     [ [1 2 :g]
+                                       [2 3 :m]
+                                       [4 5 :g]])
+        res (make-apply-filters
+             [[:add-attribute {:type :nominal, :column 1, :name "pet", :labels ["dog" "cat"]}]
+              [:remove-attributes {:attributes [:a :c]}]] ds)]
+    (is (= (dataset-format res)
+           [{:pet '(:cat :dog)} :b]))))
 
 (deftest make-apply-filter-clj-streamable
   (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
