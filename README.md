@@ -96,10 +96,15 @@ API documenation can be found [here](http://antoniogarrote.github.com/clj-ml/ind
     REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
 
     REPL>; Discretizing a numeric attribute using an unsupervised filter
-    REPL>(def  discretize (make-filter :unsupervised-discretize {:dataset-format ds :attributes [0 2]}))
+    REPL>(def  discretize (make-filter :unsupervised-discretize {:dataset-format ds :attributes [:sepallength :petallength]}))
 
 
     REPL>(def filtered-ds (filter-apply discretize ds))
+    
+    REPL>; You can also use the filter's fn directly which will create and apply the filter:
+    REPL>(def filtered-ds (unsupervised-discretize ds {:attributes [:sepallength :petallength]}))
+    REPL>; The above way lends itself to the -> macro and is useful when using multiple filters.
+
 
     REPL>; The eqivalent operation can be done with the ->> macro and make-apply-filter fn:
     REPL>(def filtered-ds (->> "file:///Applications/weka-3-6-2/data/iris.arff")

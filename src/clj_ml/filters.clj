@@ -9,21 +9,33 @@
    dataset in some way: transforming nominal attributes into binary attributes, removing
    attributes etc.
 
-   A sample use of the API is shown below:
+   There are a number of ways to use the filtering API.  The most straight forward and
+   idomatic clojure way is to use the provided filter fns:
 
-     ;; *ds* is the dataset where the first attribute is to be removed
-     (def *filter* (make-filter :remove-attributes {:dataset-format *ds* :attributes [:name-of-attr]}))
+     ;; ds is the dataset
+     (def ds (make-dataset :test [:a :b {:c [:g :m]}]
+                                     [ [1 2 :g]
+                                       [2 3 :m]
+                                       [4 5 :g]]))
+     (def filtered-ds
+        (-> ds
+            (add-attribute {:type :nominal, :column 1, :name \"pet\", :labels [\"dog\" \"cat\"]})
+            (remove-attributes {:attributes [:a :c]})))
+    
+
+   The above functions rely on lower level fns that create and apply the filters which you may
+   also use if you need more control over the actual filter objects:
+
+     (def filter (make-filter :remove-attributes {:dataset-format ds :attributes [:a :c]}))
 
 
      ;; We apply the filter to the original data set and obtain the new one
-     (def *filtered-ds* (filter-apply *filter* *ds*))
+     (def filtered-ds (filter-apply filter ds))
 
 
    The previous sample of code could be rewritten with the make-apply-filter function:
 
-     ;; There is no necessity of passing the :dataset-format option, *ds* format is used
-     ;; automatically
-     (def *filtered-ds* (make-apply-filter :remove-attributes {:attributes [0]} *ds*))"
+     (def filtered-ds (make-apply-filter :remove-attributes {:attributes [:a :c]} ds))"
   (:use [clj-ml data utils]
         [clojure.contrib [def :only [defvar defvar-]]])
   (:require [clojure.contrib [string :as str]])
@@ -45,6 +57,20 @@
                   (for [attr (:attributes m)]
                     (inc (index-attr (:dataset-format m) attr))))])
 
+(declare make-apply-filter)
+;TODO: consider passing in the make-filter-options body here as well in additon to the docstring.
+(defmacro deffilter
+  "Defines the filter's fn that creates a fn to make and apply the filter."
+  [filter-name]
+  (let [filter-keyword (keyword filter-name)]
+    `(do
+       (defn ~filter-name
+         ([ds#]
+            (make-apply-filter ~filter-keyword {} ds#))
+         ([ds# attributes#]
+            (make-apply-filter ~filter-keyword attributes# ds#))))))
+
+
 (defmethod make-filter-options :supervised-discretize
   ([kind m]
      (->> (extract-attributes m)
@@ -52,6 +78,8 @@
                             :binary "-D"
                             :better-encoding "-E"
                             :kononenko "-K"}))))
+
+(deffilter supervised-discretize)
 
 (defmethod make-filter-options :unsupervised-discretize
   ([kind m]
@@ -64,9 +92,14 @@
           (check-option-values m {:number-bins "-B"
                                   :weight-bins "-M"}))))
 
+(deffilter unsupervised-discretize)
+
 (defmethod make-filter-options :supervised-nominal-to-binary
   ([kind m]
      (check-options m {:also-binary "-N" :for-each-nominal "-A"})))
+
+
+(deffilter unsupervised-discretize)
 
 (defmethod make-filter-options :unsupervised-nominal-to-binary
   ([kind m]
@@ -75,14 +108,14 @@
                             :also-binary "-N"
                             :for-each-nominal "-A"}))))
 
+(deffilter unsupervised-nominal-to-binary)
+
 (defmethod make-filter-options :numeric-to-nominal
   ([kind m]
      (->> (extract-attributes m) (check-options m {:invert "-V"}))))
 
-(defmethod make-filter-options :add-attribute
-  ([kind m]
-     (->> (extract-attributes m)
-          (check-options m {:invert "-V"}))))
+(deffilter numeric-to-nominal)
+
 
 (defvar- attribute-types {:numeric "NUM" :nominal "NOM" :string "STR" :date "DAT"}
   "Mapping of Weka's attribute types from clj-ml keywords to the -T flag's representation.")
@@ -99,19 +132,27 @@
                                 :column "-C"
                                 :date-format "-F"}))))
 
+(deffilter add-attribute)
+
 (defmethod make-filter-options :remove-attributes
   ([kind m]
      (->> (extract-attributes m)
           (check-options m {:invert "-V"}))))
 
+(deffilter remove-attributes)
+
 (defmethod make-filter-options :remove-useless-attributes
   ([kind m]
      (check-option-values m {:max-variance "-M"})))
+
+(deffilter remove-useless-attributes)
 
 (defmethod make-filter-options :select-append-attributes
   ([kind m]
      (->> (extract-attributes m)
           (check-options m {:invert "-V"}))))
+
+(deffilter select-append-attributes)
 
 (defmethod make-filter-options :project-attributes
   ([kind options]
@@ -120,6 +161,10 @@
                   (dissoc options :invert))]
        (make-filter-options :remove-attributes opts))))
 
+(deffilter project-attributes)
+
+(deffilter clj-streamable)
+(deffilter clj-batch)
 
 ;; Creation of filters
 

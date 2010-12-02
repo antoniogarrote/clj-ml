@@ -130,7 +130,7 @@
                                      [ [1 2 :g]
                                        [2 3 :m]
                                        [4 5 :g]])
-        res (make-apply-filter :add-attribute {:type :nominal, :column 1, :name "pet", :labels ["dog" "cat"]} ds)]
+        res (add-attribute ds {:type :nominal, :column 1, :name "pet", :labels ["dog" "cat"]})]
     (is (= (dataset-format res)
            [:a {:pet '(:cat :dog)} :b {:c '(:m :g)}]))))
 
@@ -142,6 +142,17 @@
         res (make-apply-filters
              [[:add-attribute {:type :nominal, :column 1, :name "pet", :labels ["dog" "cat"]}]
               [:remove-attributes {:attributes [:a :c]}]] ds)]
+    (is (= (dataset-format res)
+           [{:pet '(:cat :dog)} :b]))))
+
+(deftest using-regular-filter-fns-with-threading
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
+                                     [ [1 2 :g]
+                                       [2 3 :m]
+                                       [4 5 :g]])
+        res (-> ds
+                (add-attribute {:type :nominal, :column 1, :name "pet", :labels ["dog" "cat"]})
+                (remove-attributes {:attributes [:a :c]}))]
     (is (= (dataset-format res)
            [{:pet '(:cat :dog)} :b]))))
 
@@ -189,9 +200,9 @@
                                       (#(weka.core.Instance. 1 (into-array Double/TYPE %)))
                                       add-instance))
                                 result))
-        res (make-apply-filter :clj-batch
-                               {:process add-max-diff-values
-                                :determine-dataset-format add-max-diff-attr} ds)]
+        res (clj-batch ds
+                       {:process add-max-diff-values
+                        :determine-dataset-format add-max-diff-attr})]
     (is (= [{:a 1 :max-diff 3}
             {:a 2 :max-diff 2}
             {:a 4 :max-diff 0}]
