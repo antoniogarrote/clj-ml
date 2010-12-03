@@ -310,7 +310,7 @@ becuase it avoids redundant string interning of the attribute names."
 
 (defn dataset-count
   "Returns the number of elements in a dataset"
-  [dataset]
+  [^Instances dataset]
   (.numInstances dataset))
 
 (defn dataset-add
