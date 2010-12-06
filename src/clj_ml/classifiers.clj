@@ -297,6 +297,16 @@
      (do (.buildClassifier classifier dataset)
          classifier)))
 
+(defn classifier-copy
+  "Performs a deep copy of the classifier"
+  [^Classifier classifier]
+  (Classifier/makeCopy classifier))
+
+(defn classifier-copy-and-train
+  "Performs a deep copy of the classifier, trains the copy, and returns it."
+  [classifier dataset]
+  (classifier-train (classifier-copy classifier) dataset))
+
 (defn classifier-update
   "If the classifier is updateable it updates the classifier with the given instance or set of instances."
   ([^Classifier classifier instance-s]
