@@ -71,9 +71,9 @@
   (filter #(.isString %) (attributes dataset-or-instance)))
 
 (defn nominal-attribute
-  "Creates a nominal weka.core.Attribute with the given name and values"
-  [attr-name values]
-  (Attribute. (name attr-name) (into-fast-vector (map name values))))
+  "Creates a nominal weka.core.Attribute with the given name and labels"
+  [attr-name labels]
+  (Attribute. (name attr-name) (into-fast-vector (map name labels))))
 
 (defn dataset-index-attr [dataset attr]
   (index-attr dataset attr))
@@ -99,7 +99,7 @@
                    ;; this is a nominal entry in keyword or string form
                    (.setValue inst c (name (first vs)))
                    (if (sequential? (first vs))
-                     ;; this is a map of values
+                     ;; this is a map of labels
                      (let [k (name (nth (first vs) 0))
                            val (nth (first vs) 1)
                            ik  (index-attr inst k)]
@@ -136,15 +136,15 @@
 
 (defn make-dataset
   "Creates a new dataset, empty or with the provided instances and options"
-  ([ds-name attributes capacity-or-values & opts]
+  ([ds-name attributes capacity-or-labels & opts]
      (let [options (first-or-default opts {})
            weight (get options :weight 1)
            class-attribute (get options :class)
-           ds (if (sequential? capacity-or-values)
+           ds (if (sequential? capacity-or-labels)
                 ;; we have received a sequence instead of a number, so we initialize data
                 ;; instances in the dataset
-                (let [dataset (new ClojureInstances (name ds-name) (parse-attributes attributes) (count capacity-or-values))]
-                  (loop [vs capacity-or-values]
+                (let [dataset (new ClojureInstances (name ds-name) (parse-attributes attributes) (count capacity-or-labels))]
+                  (loop [vs capacity-or-labels]
                     (if (empty? vs)
                       dataset
                       (do
@@ -152,7 +152,7 @@
                           (.add dataset inst))
                         (recur (rest vs))))))
                 ;; we haven't received a vector so we create an empty dataset
-                (new Instances (name ds-name) (parse-attributes attributes) capacity-or-values))]
+                (new Instances (name ds-name) (parse-attributes attributes) capacity-or-labels))]
        ;; we try to setup the class attribute if :class with a attribute name or
        ;; integer value is provided
        (when (not (nil? class-attribute))
@@ -180,8 +180,8 @@
   [dataset]
   (.relationName dataset))
 
-(defn dataset-class-values
-  "Returns the possible values for the class attribute"
+(defn dataset-class-labels
+  "Returns the possible labels for the class attribute"
   [dataset]
   (let [class-attr (.classAttribute dataset)
         values (.enumerateValues class-attr)]
@@ -194,8 +194,8 @@
                  (conj acum {(keyword val) index})))
         acum))))
 
-(defn dataset-values-at [dataset-or-instance pos]
-  "Returns the possible values for a nominal attribute at the provided position"
+(defn dataset-labels-at [dataset-or-instance pos]
+  "Returns the lables (possible values) for a nominal attribute at the provided position"
   (let [class-attr (.attribute dataset-or-instance pos)
         values (.enumerateValues class-attr)]
     (if (nil? values)
@@ -211,7 +211,7 @@
 
 (defn dataset-format
   "Returns the definition of the attributes of this dataset"
-  [dataset]
+  [^Instances dataset]
   (let [max (.numAttributes dataset)]
     (loop [acum []
            c 0]
@@ -221,7 +221,7 @@
               name (keyword (.name attr))
               nominal? (.isNominal attr)
               to-add (if nominal?
-                       (let [vals (dataset-values-at dataset index)]
+                       (let [vals (dataset-labels-at dataset index)]
                          {name (keys vals)})
                        name)]
           (recur (conj acum to-add)
@@ -251,7 +251,7 @@
   (let [attr (.attribute instance pos)]
     (if (.isNominal attr)
       (let [val (.value instance pos)
-            key-vals (dataset-values-at instance pos)
+            key-vals (dataset-labels-at instance pos)
             key-val (loop [ks (keys key-vals)]
                       (if (= (get key-vals (first ks))
                              val)

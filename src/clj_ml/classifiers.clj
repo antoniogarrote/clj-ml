@@ -322,7 +322,7 @@
 
 (defn- collect-evaluation-results
    "Collects all the statistics from the evaluation of a classifier."
-  ([class-values ^Evaluation evaluation]
+  ([class-labels ^Evaluation evaluation]
      (do
        (println (.toMatrixString evaluation))
        (println "=== Summary ===")
@@ -346,12 +346,12 @@
         :kb-relative-information (try-metric #(.KBRelativeInformation evaluation))
         :sf-entropy-gain (try-metric #(.SFEntropyGain evaluation))
         :sf-mean-entropy-gain (try-metric #(.SFMeanEntropyGain evaluation))
-        :roc-area (try-multiple-values-metric class-values (fn [i] (try-metric #(.areaUnderROC evaluation i))))
-        :false-positive-rate (try-multiple-values-metric class-values (fn [i] (try-metric #(.falsePositiveRate evaluation i))))
-        :false-negative-rate (try-multiple-values-metric class-values (fn [i] (try-metric #(.falseNegativeRate evaluation i))))
-        :f-measure (try-multiple-values-metric class-values (fn [i] (try-metric #(.fMeasure evaluation i))))
-        :precision (try-multiple-values-metric class-values (fn [i] (try-metric #(.precision evaluation i))))
-        :recall (try-multiple-values-metric class-values (fn [i] (try-metric #(.recall evaluation i))))
+        :roc-area (try-multiple-values-metric class-labels (fn [i] (try-metric #(.areaUnderROC evaluation i))))
+        :false-positive-rate (try-multiple-values-metric class-labels (fn [i] (try-metric #(.falsePositiveRate evaluation i))))
+        :false-negative-rate (try-multiple-values-metric class-labels (fn [i] (try-metric #(.falseNegativeRate evaluation i))))
+        :f-measure (try-multiple-values-metric class-labels (fn [i] (try-metric #(.fMeasure evaluation i))))
+        :precision (try-multiple-values-metric class-labels (fn [i] (try-metric #(.precision evaluation i))))
+        :recall (try-multiple-values-metric class-labels (fn [i] (try-metric #(.recall evaluation i))))
         :evaluation-object evaluation})))
 
 (defmulti classifier-evaluate
@@ -422,16 +422,16 @@
 (defmethod classifier-evaluate :dataset
   ([^Classifier classifier mode & [training-data test-data]]
      (let [evaluation (new Evaluation training-data)
-           class-values (dataset-class-values training-data)]
+           class-labels (dataset-class-labels training-data)]
        (.evaluateModel evaluation classifier test-data (into-array []))
-       (collect-evaluation-results class-values evaluation))))
+       (collect-evaluation-results class-labels evaluation))))
 
 (defmethod classifier-evaluate :cross-validation
   ([classifier mode & [training-data folds]]
      (let [evaluation (new Evaluation training-data)
-           class-values (dataset-class-values training-data)]
+           class-labels (dataset-class-labels training-data)]
        (.crossValidateModel evaluation classifier training-data folds (new Random (.getTime (new Date))) (into-array []))
-       (collect-evaluation-results class-values evaluation))))
+       (collect-evaluation-results class-labels evaluation))))
 
 
 ;; Classifying instances
