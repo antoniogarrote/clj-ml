@@ -30,13 +30,6 @@
   (instance? weka.core.Instances dataset))
 
 
-(defn attribute-name-at
-  "Returns the name of an attribute situated at the provided position in
-   the attributes definition of an instance or class"
-  [dataset-or-instance pos]
-  (let [class-attr (.attribute dataset-or-instance pos)]
-    (.name class-attr)))
-
 (defn index-attr
   "Returns the index of an attribute in the attributes definition of an
    instance or dataset"
@@ -45,6 +38,19 @@
     attr-name
     (let [attr-name (name attr-name)]
       (find-first #(= attr-name (.name (.attribute dataset %))) (range (.numAttributes dataset))))))
+
+(defn attribute-at
+  "Returns the name of an attribute situated at the provided position in
+   the attributes definition of an instance or class"
+  [dataset-or-instance index-or-name]
+  (.attribute dataset-or-instance (index-attr dataset-or-instance index-or-name)))
+
+(defn attribute-name-at
+  "Returns the name of an attribute situated at the provided position in
+   the attributes definition of an instance or class"
+  [dataset-or-instance index-or-name]
+  (let [^Attribute class-attr (attribute-at dataset-or-instance index-or-name)]
+    (.name class-attr)))
 
 (defn attributes
   "Returns the attributes (weka.core.Attribute) of the dataset or instance"
@@ -196,17 +202,32 @@
                  (conj acum {(keyword val) index})))
         acum))))
 
-(defn dataset-labels-at [dataset-or-instance pos]
+(defn dataset-labels-at [dataset-or-instance index-or-name]
   "Returns the lables (possible values) for a nominal attribute at the provided position"
-  (let [class-attr (.attribute dataset-or-instance pos)
-        values (.enumerateValues class-attr)]
+  (let [attr (attribute-at dataset-or-instance index-or-name)
+        values (.enumerateValues attr)]
     (if (nil? values)
       :not-nominal
       (loop [continue (.hasMoreElements values)
              acum {}]
         (if continue
           (let [val (.nextElement values)
-                index (.indexOfValue class-attr val)]
+                index (.indexOfValue attr val)]
+            (recur (.hasMoreElements values)
+                   (conj acum {(keyword val) index})))
+          acum)))))
+
+#_(defn dataset-labels-at [dataset-or-instance index-or-name]
+  "Returns the lables (possible values) for a nominal attribute at the provided position"
+  (let [attr (attribute-at dataset-or-instance index-or-name)
+        values (.enumerateValues attr)]
+    (if (nil? values)
+      :not-nominal
+      (loop [continue (.hasMoreElements values)
+             acum {}]
+        (if continue
+          (let [val (.nextElement values)
+                index (.indexOfValue attr val)]
             (recur (.hasMoreElements values)
                    (conj acum {(keyword val) index})))
           acum)))))

@@ -136,6 +136,7 @@
   (let [ds (make-dataset "test" [:a :b {:c [:d :e]}] [{:a 1 :b 2 :c :d} [4 5 :e]])
         attrs (attributes ds)]
     (is (every? #(instance? weka.core.Attribute %) attrs))
+    (is (= (first attrs) (attribute-at ds 0) (attribute-at ds :a)))
     (is (= '("a" "b" "c") (map #(.name %) attrs)))
     (is (= '("a" "b" "c") (map #(.name %) (attributes (dataset-at ds 0)))))
     (is (= [(.attribute ds 2)]  (nominal-attributes ds)))
@@ -151,4 +152,4 @@
   (let [ds (make-dataset "test" [:a :b {:c [:d :e]}]
                          [{:a 1 :b 2 :c :d} [4 5 :e]])]
     (dataset-set-class ds :c)
-    (is (= {:d 0 :e 1} (dataset-class-labels ds) (dataset-labels-at ds 2)))))
+    (is (= {:d 0 :e 1} (dataset-class-labels ds) (dataset-labels-at ds :c)))))
