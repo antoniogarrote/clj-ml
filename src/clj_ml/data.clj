@@ -184,8 +184,8 @@
 
 (defn dataset-class-labels
   "Returns the possible labels for the class attribute"
-  [dataset]
-  (let [class-attr (.classAttribute dataset)
+  [^Instances dataset]
+  (let [^Attribute class-attr (.classAttribute dataset)
         values (.enumerateValues class-attr)]
     (loop [continue (.hasMoreElements values)
            acum {}]
