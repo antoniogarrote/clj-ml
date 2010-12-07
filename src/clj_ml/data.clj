@@ -15,6 +15,8 @@
   (:import (weka.core Instance Instances FastVector Attribute)
            (cljml ClojureInstances)))
 
+(declare dataset-seq)
+
 ;; Common functions
 
 (defn is-instance?
@@ -27,7 +29,6 @@
   [dataset]
   (instance? weka.core.Instances dataset))
 
-;; Construction of individual data and datasets
 
 (defn attribute-name-at
   "Returns the name of an attribute situated at the provided position in
@@ -81,6 +82,7 @@
 (defn instance-index-attr [instance attr]
   (index-attr instance attr))
 
+;; Construction of individual data and datasets
 
 (defn make-instance
   "Creates a new dataset instance from a vector"
@@ -232,6 +234,16 @@
   "Returns the index of the class attribute for this dataset"
   [^Instances dataset]
   (.classIndex dataset))
+
+(defn dataset-class-values
+  "Returns a lazy-seq of the values for the dataset's class attribute.
+If the class is nominal then the string value (not keyword) is returned."
+  [^Instances dataset]
+  (let [^Attribute class-attr (.classAttribute dataset)
+        class-value (if (.isNominal class-attr)
+                      (fn [^Instance i] (.stringValue i class-attr))
+                      (fn [^Instance i] (.classValue i)))] ;classValue returns the double
+    (map class-value (dataset-seq dataset))))
 
 ;; manipulation of instances
 

@@ -45,6 +45,19 @@
       (is (= 1 (.classIndex (dataset-set-class dataset "b"))))
       (is (= 0 (.classIndex (dataset-set-class dataset "a")))))))
 
+(deftest dataset-class-values-test
+  (let [dataset (make-dataset :test
+                              [:age :iq {:favorite-color [:red :blue :green]}]
+                              [[12 100 :red]
+                               [14 110 :blue]
+                               [ 25 120 :green]])]
+    (testing "when the class is numeric"
+      (dataset-set-class dataset :iq)
+      (is (= [100 110 120] (dataset-class-values dataset))))
+    (testing "when the class is nominal"
+      (dataset-set-class dataset :favorite-color)
+      (is (= ["red" "blue" "green"] (dataset-class-values dataset))))))
+
 (deftest dataset-count-1
   (let [dataset (make-dataset :test
                               [:a :b]
