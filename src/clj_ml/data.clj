@@ -235,6 +235,12 @@
   [^Instances dataset]
   (.classIndex dataset))
 
+(defn dataset-nominal?
+  "Returns boolean indicating if the class attribute is nominal"
+  [^Instances dataset]
+  (let [^Attribute class-attr (.classAttribute dataset)]
+    (.isNominal class-attr)))
+
 (defn dataset-class-values
   "Returns a lazy-seq of the values for the dataset's class attribute.
 If the class is nominal then the string value (not keyword) is returned."
