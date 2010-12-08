@@ -187,49 +187,22 @@
   [dataset]
   (.relationName dataset))
 
-(defn dataset-class-labels
-  "Returns the possible labels for the class attribute"
-  [^Instances dataset]
-  (let [^Attribute class-attr (.classAttribute dataset)
-        values (.enumerateValues class-attr)]
-    (loop [continue (.hasMoreElements values)
-           acum {}]
-      (if continue
-        (let [val (.nextElement values)
-              index (.indexOfValue class-attr val)]
-          (recur (.hasMoreElements values)
-                 (conj acum {(keyword val) index})))
-        acum))))
 
 (defn dataset-labels-at [dataset-or-instance index-or-name]
   "Returns the lables (possible values) for a nominal attribute at the provided position"
-  (let [attr (attribute-at dataset-or-instance index-or-name)
-        values (.enumerateValues attr)]
-    (if (nil? values)
+  (let [^Attribute attr (attribute-at dataset-or-instance index-or-name)
+        values (enumeration-seq (.enumerateValues attr))]
+    (if (empty? values)
       :not-nominal
-      (loop [continue (.hasMoreElements values)
-             acum {}]
-        (if continue
-          (let [val (.nextElement values)
-                index (.indexOfValue attr val)]
-            (recur (.hasMoreElements values)
-                   (conj acum {(keyword val) index})))
-          acum)))))
+      (reduce (fn [m ^String val]
+                (assoc m (keyword val) (.indexOfValue attr val)))
+              {}
+              values))))
 
-#_(defn dataset-labels-at [dataset-or-instance index-or-name]
-  "Returns the lables (possible values) for a nominal attribute at the provided position"
-  (let [attr (attribute-at dataset-or-instance index-or-name)
-        values (.enumerateValues attr)]
-    (if (nil? values)
-      :not-nominal
-      (loop [continue (.hasMoreElements values)
-             acum {}]
-        (if continue
-          (let [val (.nextElement values)
-                index (.indexOfValue attr val)]
-            (recur (.hasMoreElements values)
-                   (conj acum {(keyword val) index})))
-          acum)))))
+(defn dataset-class-labels
+  "Returns the possible labels for the class attribute"
+  [^Instances dataset]
+  (dataset-labels-at dataset (.classIndex dataset)))
 
 (defn dataset-format
   "Returns the definition of the attributes of this dataset"
