@@ -65,7 +65,7 @@
            (weka.core Instance Instances)
            (weka.classifiers.trees J48)
            (weka.classifiers.bayes NaiveBayes NaiveBayesUpdateable)
-           (weka.classifiers.functions MultilayerPerceptron SMO)
+           (weka.classifiers.functions MultilayerPerceptron SMO LinearRegression Logistic)
            (weka.classifiers Classifier Evaluation)))
 
 
@@ -125,6 +125,21 @@
                                 :random-seed "-W"}))))
 
 
+(defmethod make-classifier-options [:regression :linear]
+  ([kind algorithm m]
+     (->> (check-options m {:debug "-D"
+                            :keep-colinear "-C"})
+          (check-option-values m
+                               {:attribute-selection "-S"
+                                :ridge "-R"}))))
+
+(defmethod make-classifier-options [:regression :logistic]
+  ([kind algorithm m]
+     (->> (check-options m {:debug "-D"})
+          (check-option-values m
+                               {:max-iterations "-S"
+                                :ridge "-R"}))))
+
 ;; Building classifiers
 
 
@@ -149,6 +164,7 @@
      - :bayes :naive
      - :neural-network :mutilayer-perceptron
      - :support-vector-machine :smo
+     - :regression :linear
 
    Optionally, a map of options can also be passed as an argument with
    a set of classifier specific options.
@@ -255,6 +271,26 @@
         - :random-seed
             Value of the seed for the random generator. Values should be longs greater than
             0. Default value: 1
+
+     * :regression :linear
+
+      Parameters:
+
+        - :attribute-selection
+            Set the attribute selection method to use. 1 = None, 2 = Greedy. (default 0 = M5' method)
+        - :keep-colinear
+            Do not try to eliminate colinear attributes.
+        - :ridge
+            Set ridge parameter (default 1.0e-8).
+
+     * :regression :logistic
+
+      Parameters:
+
+        - :max-iterations
+            Set the maximum number of iterations (default -1, until convergence).
+        - :ridge
+            Set the ridge in the log-likelihood.
 "
   (fn [kind algorithm & options] [kind algorithm]))
 
@@ -288,6 +324,14 @@
                              kernel)]
             (.setKernel classifier real-kernel)))
         classifier)))
+
+(defmethod make-classifier [:regression :linear]
+  ([kind algorithm & options]
+     (make-classifier-with kind algorithm LinearRegression options)))
+
+(defmethod make-classifier [:regression :logistic]
+  ([kind algorithm & options]
+     (make-classifier-with kind algorithm Logistic options)))
 
 ;; Training classifiers
 
