@@ -40,8 +40,7 @@
       (find-first #(= attr-name (.name (.attribute dataset %))) (range (.numAttributes dataset))))))
 
 (defn attribute-at
-  "Returns the name of an attribute situated at the provided position in
-   the attributes definition of an instance or class"
+  "Returns attribute situated at the provided position or the provided name."
   [dataset-or-instance index-or-name]
   (.attribute dataset-or-instance (index-attr dataset-or-instance index-or-name)))
 
@@ -289,14 +288,7 @@ If the class is nominal then the string value (not keyword) is returned."
   [^Instance instance pos]
   (let [attr (.attribute instance pos)]
     (if (.isNominal attr)
-      (let [val (.value instance pos)
-            key-vals (dataset-labels-at instance pos)
-            key-val (loop [ks (keys key-vals)]
-                      (if (= (get key-vals (first ks))
-                             val)
-                        (first ks)
-                        (recur (rest ks))))]
-        key-val)
+      (keyword (.stringValue instance pos))
       (.value instance pos))))
 
 (defn instance-to-list
