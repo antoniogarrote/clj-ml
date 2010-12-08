@@ -256,12 +256,12 @@ If the class is nominal then the string value (not keyword) is returned."
   (.classValue instance))
 
 (defn instance-value-at
-  "Returns the value of an instance attribute"
+  "Returns the value of an instance attribute. A string, not a keyword is returned."
   [^Instance instance pos]
   (let [pos (int pos)
         attr (.attribute instance pos)]
     (if (.isNominal attr)
-      (keyword (.stringValue instance pos))
+      (.stringValue instance pos)
       (.value instance pos))))
 
 (defn instance-to-list

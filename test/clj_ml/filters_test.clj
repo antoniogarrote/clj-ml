@@ -174,9 +174,9 @@
                                {:process inc-nums
                                 :determine-dataset-format rename-attributes} ds)]
     (is (= (map instance-to-map (dataset-seq res))
-           [{:foo 2 :bar 3 :c :g}
-            {:foo 3 :bar 5 :c :m}
-            {:foo 5 :bar 9 :c :g}]))))
+           [{:foo 2 :bar 3 :c "g"}
+            {:foo 3 :bar 5 :c "m"}
+            {:foo 5 :bar 9 :c "g"}]))))
 
 
 (deftest make-apply-filter-clj-batch
