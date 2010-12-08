@@ -231,14 +231,13 @@
 (defn dataset-nominal?
   "Returns boolean indicating if the class attribute is nominal"
   [^Instances dataset]
-  (let [^Attribute class-attr (.classAttribute dataset)]
-    (.isNominal class-attr)))
+  (.. dataset classAttribute isNominal))
 
 (defn dataset-class-values
   "Returns a lazy-seq of the values for the dataset's class attribute.
 If the class is nominal then the string value (not keyword) is returned."
   [^Instances dataset]
-  (let [^Attribute class-attr (.classAttribute dataset)
+  (let [class-attr (.classAttribute dataset)
         class-value (if (.isNominal class-attr)
                       (fn [^Instance i] (.stringValue i class-attr))
                       (fn [^Instance i] (.classValue i)))] ;classValue returns the double
@@ -248,18 +247,19 @@ If the class is nominal then the string value (not keyword) is returned."
 
 (defn instance-set-class
   "Sets the index of the class attribute for this instance"
-  [instance pos]
-  (doto instance (.setClassValue pos)))
+  [^Instance instance pos]
+  (doto instance (.setClassValue (int pos))))
 
 (defn instance-get-class
   "Get the index of the class attribute for this instance"
-   [instance]
+   [^Instance instance]
   (.classValue instance))
 
 (defn instance-value-at
   "Returns the value of an instance attribute"
   [^Instance instance pos]
-  (let [attr (.attribute instance pos)]
+  (let [pos (int pos)
+        attr (.attribute instance pos)]
     (if (.isNominal attr)
       (keyword (.stringValue instance pos))
       (.value instance pos))))
@@ -291,7 +291,7 @@ If the class is nominal then the string value (not keyword) is returned."
   (if (= (class dataset)
          ClojureInstances)
     (seq dataset)
-    (seq (new ClojureInstances dataset))))
+    (seq (new ClojureInstances ^Instances dataset))))
 
 (defn dataset-as-maps
   "Returns a lazy sequence of the dataset represetned as maps.
