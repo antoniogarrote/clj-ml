@@ -260,7 +260,7 @@ If the class is nominal then the string value (not keyword) is returned."
   [^Instance instance pos]
   (let [pos (int pos)
         attr (.attribute instance pos)]
-    (if (.isNominal attr)
+    (if (.isNominal attr) ; This ignores the fact that weka can have date and other attribute types...
       (.stringValue instance pos)
       (.value instance pos))))
 
