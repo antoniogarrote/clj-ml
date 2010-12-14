@@ -6,7 +6,7 @@
 (ns #^{:author "Antonio Garrote <antoniogarrote@gmail.com>"}
   clj-ml.classifiers
   "This namespace contains several functions for building classifiers using different
-   classification algorithms: Bayes networks, multilayer perceptron, decission tree or
+   classification algorithms: Bayes networks, multilayer perceptron, decision tree or
    support vector machines are available. Some of these classifiers have incremental
    versions so they can be built without having all the dataset instances in memory.
 
@@ -17,8 +17,8 @@
 
     (use 'clj-ml.classifiers)
 
-    ; Building a classifier using a  C4.5 decission tree
-    (def *classifier* (make-classifier :decission-tree :c45))
+    ; Building a classifier using a  C4.5 decision tree
+    (def *classifier* (make-classifier :decision-tree :c45))
 
     ; We set the class attribute for the loaded dataset.
     ; *dataset* is supposed to contain a set of instances.
@@ -63,9 +63,10 @@
   (:use [clj-ml utils data kernel-functions])
   (:import (java.util Date Random)
            (weka.core Instance Instances)
-           (weka.classifiers.trees J48)
+           (weka.classifiers.trees J48 RandomForest M5P)
+           (weka.classifiers.meta LogitBoost)
            (weka.classifiers.bayes NaiveBayes NaiveBayesUpdateable)
-           (weka.classifiers.functions MultilayerPerceptron SMO LinearRegression Logistic)
+           (weka.classifiers.functions MultilayerPerceptron SMO LinearRegression Logistic PaceRegression)
            (weka.classifiers Classifier Evaluation)))
 
 
@@ -76,7 +77,7 @@
   "Creates the right parameters for a classifier. Returns the parameters as a Clojure vector."
   (fn [kind algorithm map] [kind algorithm]))
 
-(defmethod make-classifier-options [:decission-tree :c45]
+(defmethod make-classifier-options [:decision-tree :c45]
   ([kind algorithm m]
      (->> (check-options m
                          {:unpruned "-U"
@@ -112,7 +113,8 @@
                                 :epochs "-N"
                                 :percentage-validation-set "-V"
                                 :random-seed "-S"
-                                :threshold-number-errors "-E"}))))
+                                :threshold-number-errors "-E"
+                                :hidden-layers-string "-H"}))))
 
 (defmethod make-classifier-options [:support-vector-machine :smo]
   ([kind algorithm m]
@@ -140,6 +142,40 @@
                                {:max-iterations "-S"
                                 :ridge "-R"}))))
 
+(defmethod make-classifier-options [:regression :pace]
+  ([kind algorithm m]
+     (->> (check-options m {:debug "-D"})
+          (check-option-values m
+                               {:threshold "-S"
+                                :estimator "-E"}))))
+
+(defmethod make-classifier-options [:decision-tree :boosted-stump]
+  ([kind algorithm m]
+     (->> (check-options m {:debug "-D"
+                            :resampling "-Q"})
+          (check-option-values m
+                               {:weak-learning-class "-W"
+                                :num-iterations "-I"
+                                :random-seed "-S"
+                                :percentage-weight-mass "-P"
+                                :folds-for-cross-validation "-F"
+                                :runs-for-cross-validation "-R"
+                                :log-likelihood-improvement-threshold "-L"
+                                :shrinkage-parameter "-H"}))))
+
+(defmethod make-classifier-options [:decision-tree :random-forest]
+  ([kind algorithm m]
+     (->> (check-option-values m
+                               {:num-trees-in-forest "-I"
+                                :num-features-to-consider "-K"
+                                :random-seed "-S"}))))
+
+(defmethod make-classifier-options [:decision-tree :m5p]
+  ([kind algorithm m]
+     (->> (check-options m {:unsmoothed-predictions "-U"}))))
+
+
+
 ;; Building classifiers
 
 
@@ -156,15 +192,20 @@
   "Creates a new classifier for the given kind algorithm and options.
 
    The first argument identifies the kind of classifier and the second
-   argument the algorithm to use, e.g. :decission-tree :c45.
+   argument the algorithm to use, e.g. :decision-tree :c45.
 
    The classifiers currently supported are:
 
-     - :decission-tree :c45
+     - :decision-tree :c45
+     - :decision-tree :boosted-stump
+     - :decision-tree :M5P
+     - :decision-tree :random-forest
      - :bayes :naive
      - :neural-network :mutilayer-perceptron
      - :support-vector-machine :smo
      - :regression :linear
+     - :regression :logistic
+     - :regression :pace
 
    Optionally, a map of options can also be passed as an argument with
    a set of classifier specific options.
@@ -172,9 +213,9 @@
    This is the description of the supported classifiers and the accepted
    option parameters for each of them:
 
-    * :decission-tree :c45
+    * :decision-tree :c45
 
-      A classifier building a pruned or unpruned C 4.5 decission tree using
+      A classifier building a pruned or unpruned C 4.5 decision tree using
       Weka J 4.8 implementation.
 
       Parameters:
@@ -294,7 +335,7 @@
 "
   (fn [kind algorithm & options] [kind algorithm]))
 
-(defmethod make-classifier [:decission-tree :c45]
+(defmethod make-classifier [:decision-tree :c45]
   ([kind algorithm & options]
      (make-classifier-with kind algorithm J48 options)))
 
@@ -332,6 +373,22 @@
 (defmethod make-classifier [:regression :logistic]
   ([kind algorithm & options]
      (make-classifier-with kind algorithm Logistic options)))
+
+(defmethod make-classifier [:regression :pace]
+  ([kind algorithm & options]
+     (make-classifier-with kind algorithm PaceRegression options)))
+
+(defmethod make-classifier [:decision-tree :boosted-stump]
+  ([kind algorithm & options]
+     (make-classifier-with kind algorithm LogitBoost options)))
+
+(defmethod make-classifier [:decision-tree :random-forest]
+  ([kind algorithm & options]
+     (make-classifier-with kind algorithm RandomForest options)))
+
+(defmethod make-classifier [:decision-tree :m5p]
+  ([kind algorithm & options]
+     (make-classifier-with kind algorithm M5P options)))
 
 ;; Training classifiers
 
