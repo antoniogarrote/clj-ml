@@ -121,6 +121,7 @@
      (->> (check-options m {:fit-logistic-models "-M"})
           (check-option-values m
                                {:complexity-constant "-C"
+                                :normalize "-N"
                                 :tolerance "-L"
                                 :epsilon-roundoff "-P"
                                 :folds-for-cross-validation "-V"
@@ -165,14 +166,21 @@
 
 (defmethod make-classifier-options [:decision-tree :random-forest]
   ([kind algorithm m]
-     (->> (check-option-values m
+     (->>
+       (check-options m {:debug "-D"})
+       (check-option-values m
                                {:num-trees-in-forest "-I"
                                 :num-features-to-consider "-K"
-                                :random-seed "-S"}))))
+                                :random-seed "-S"
+                                :depth "-depth"}))))
 
 (defmethod make-classifier-options [:decision-tree :m5p]
   ([kind algorithm m]
-     (->> (check-options m {:unsmoothed-predictions "-U"}))))
+     (->>
+       (check-options m {:unsmoothed-predictions "-U"
+                         :regression "-R"
+                         :unpruned "-N"})
+       (check-option-values m {:minimum-instances "-M"}))))
 
 
 
