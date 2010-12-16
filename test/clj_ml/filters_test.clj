@@ -96,7 +96,7 @@
            (class f)))
     (let [res (filter-apply f ds)]
       (is (= (dataset-format res)
-             [:b {:c '(:m :g)}])))))
+             [:b {:c '(:g :m)}])))))
 
 (deftest make-apply-filter-remove-attributes
   (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
@@ -105,7 +105,7 @@
                                        [4 5 :g]])
         res (make-apply-filter :remove-attributes {:attributes [0]} ds)]
     (is (= (dataset-format res)
-           [:b {:c '(:m :g)}]))))
+           [:b {:c '(:g :m)}]))))
 
 
 (deftest make-apply-filter-numeric-to-nominal
@@ -115,13 +115,13 @@
                                        [4 5 :g]])]
     (testing "when no attributes are specified"
       (is (= (dataset-format  (make-apply-filter :numeric-to-nominal {} ds))
-             [{:a '(:4 :2 :1)} {:b '(:5 :3 :2)} {:c '(:m :g)}])))
+             [{:a '(:1 :2 :4)} {:b '(:2 :3 :5)} {:c '(:g :m)}])))
     (testing "when attributes are specified by index"
        (is (= (dataset-format  (make-apply-filter :numeric-to-nominal {:attributes [0]} ds))
-              [{:a '(:4 :2 :1)} :b {:c '(:m :g)}])))
+              [{:a '(:1 :2 :4)} :b {:c '(:g :m)}])))
     (testing "when attributes are specified by name"
        (is (= (dataset-format  (make-apply-filter :numeric-to-nominal {:attributes [:b]} ds))
-              [:a {:b '(:5 :3 :2)} {:c '(:m :g)}])))))
+              [:a {:b '(:2 :3 :5)} {:c '(:g :m)}])))))
 
 
 
@@ -132,7 +132,7 @@
                                        [4 5 :g]])
         res (add-attribute ds {:type :nominal, :column 1, :name "pet", :labels ["dog" "cat"]})]
     (is (= (dataset-format res)
-           [:a {:pet '(:cat :dog)} :b {:c '(:m :g)}]))))
+           [:a {:pet '(:dog :cat)} :b {:c '(:g :m)}]))))
 
 (deftest make-apply-filters-test
   (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
@@ -143,7 +143,7 @@
              [[:add-attribute {:type :nominal, :column 1, :name "pet", :labels ["dog" "cat"]}]
               [:remove-attributes {:attributes [:a :c]}]] ds)]
     (is (= (dataset-format res)
-           [{:pet '(:cat :dog)} :b]))))
+           [{:pet '(:dog :cat)} :b]))))
 
 (deftest using-regular-filter-fns-with-threading
   (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
@@ -154,7 +154,7 @@
                 (add-attribute {:type :nominal, :column 1, :name "pet", :labels ["dog" "cat"]})
                 (remove-attributes {:attributes [:a :c]}))]
     (is (= (dataset-format res)
-           [{:pet '(:cat :dog)} :b]))))
+           [{:pet '(:dog :cat)} :b]))))
 
 (deftest make-apply-filter-clj-streamable
   (let [ds (make-dataset :test [:a :b {:c [:g :m]}]

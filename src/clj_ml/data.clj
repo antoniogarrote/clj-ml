@@ -56,10 +56,13 @@
   [dataset-or-instance]
   (map #(.attribute dataset-or-instance %) (range (.numAttributes dataset-or-instance))))
 
+(defn keyword-name [^Attribute attr]
+  (keyword (.name attr)))
+
 (defn attribute-names
   "Returns the attribute names, as keywords, of the dataset or instance"
   [dataset-or-instance]
-  (map (comp keyword #(.name %)) (attributes dataset-or-instance)))
+  (map keyword-name (attributes dataset-or-instance)))
 
 (defn numeric-attributes
   "Returns the numeric attributes (weka.core.Attribute) of the dataset or instance"
@@ -206,22 +209,15 @@
 
 (defn dataset-format
   "Returns the definition of the attributes of this dataset"
-  [^Instances dataset]
-  (let [max (.numAttributes dataset)]
-    (loop [acum []
-           c 0]
-      (if (< c max)
-        (let [attr (.attribute dataset c)
-              index c
-              name (keyword (.name attr))
-              nominal? (.isNominal attr)
-              to-add (if nominal?
-                       (let [vals (dataset-labels-at dataset index)]
-                         {name (keys vals)})
-                       name)]
-          (recur (conj acum to-add)
-                 (+ c 1)))
-        acum))))
+  [dataset]
+   (reduce
+    (fn [so-far ^Attribute attr]
+      (conj so-far
+            (if (.isNominal attr)
+              {(keyword-name attr) (map keyword (enumeration-seq (.enumerateValues attr)))}
+              (keyword-name attr))))
+    []
+    (attributes dataset)))
 
 (defn dataset-get-class
   "Returns the index of the class attribute for this dataset"

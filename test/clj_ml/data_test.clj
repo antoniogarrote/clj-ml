@@ -146,10 +146,14 @@
 (deftest replacing-attributes
   (let [ds (make-dataset "test" [:a {:b [:foo :bar]}] [[1 :foo] [2 :bar]])
         _ (dataset-replace-attribute! ds :b (nominal-attribute :b [:baz :shaz]))]
-    (is (= [:a {:b [:shaz :baz]}] (dataset-format ds)))))
+    (is (= [:a {:b [:baz :shaz]}] (dataset-format ds)))))
 
 (deftest dataset-label-helpers
   (let [ds (make-dataset "test" [:a :b {:c [:d :e]}]
                          [{:a 1 :b 2 :c :d} [4 5 :e]])]
     (dataset-set-class ds :c)
     (is (= {:d 0 :e 1} (dataset-class-labels ds) (dataset-labels-at ds :c)))))
+
+(deftest dataset-format-test
+  (let [ds (make-dataset "test" [:a {:b [:foo :bar]}] [[1 :foo] [2 :bar]])]
+    (is (= [:a {:b [:foo :bar]}] (dataset-format ds)))))
