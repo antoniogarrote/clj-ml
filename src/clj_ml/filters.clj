@@ -99,7 +99,7 @@
      (check-options m {:also-binary "-N" :for-each-nominal "-A"})))
 
 
-(deffilter unsupervised-discretize)
+(deffilter supervised-nominal-to-binary)
 
 (defmethod make-filter-options :unsupervised-nominal-to-binary
   ([kind m]
