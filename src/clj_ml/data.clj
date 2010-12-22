@@ -187,7 +187,7 @@
 
 (defn dataset-name
   "Returns the name of this dataset"
-  [dataset]
+  [^Instances dataset]
   (.relationName dataset))
 
 
@@ -218,6 +218,11 @@
               (keyword-name attr))))
     []
     (attributes dataset)))
+
+(defn headers-only
+  "Returns a new weka dataset (Instances) with the same headers as the given one"
+  [^Instances ds]
+  (Instances. ds 0))
 
 (defn dataset-get-class
   "Returns the index of the class attribute for this dataset"

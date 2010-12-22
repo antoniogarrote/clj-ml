@@ -154,6 +154,10 @@
     (dataset-set-class ds :c)
     (is (= {:d 0 :e 1} (dataset-class-labels ds) (dataset-labels-at ds :c)))))
 
-(deftest dataset-format-test
+(deftest dataset-format-and-headers-test
   (let [ds (make-dataset "test" [:a {:b [:foo :bar]}] [[1 :foo] [2 :bar]])]
-    (is (= [:a {:b [:foo :bar]}] (dataset-format ds)))))
+    (is (= [:a {:b [:foo :bar]}] (dataset-format ds)))
+    (let [headers  (headers-only ds)]
+      (is (= 0 (dataset-count headers)))
+      (is (= "test" (dataset-name headers)))
+      (is (= [:a {:b [:foo :bar]}] (dataset-format headers))))))
