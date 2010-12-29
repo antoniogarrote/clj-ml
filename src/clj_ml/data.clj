@@ -190,8 +190,9 @@
   [^Instances dataset]
   (.relationName dataset))
 
-(defn attribute-labels
-  "Returns the labels (possible values) for the given nominal attribute"
+(defn attribute-labels-indexes
+  "Returns map of the labels (possible values) for the given nominal attribute as the keys
+   with the values being the attributes index. "
   [^Attribute attr]
    (let [values (enumeration-seq (.enumerateValues attr))]
     (if (empty? values)
@@ -201,9 +202,14 @@
               {}
               values))))
 
+(defn attribute-labels
+  "Returns the labels (possible values) for the given nominal attribute"
+  [attr]
+  (-> attr attribute-labels-indexes keys set))
+
 (defn dataset-labels-at [dataset-or-instance index-or-name]
   "Returns the lables (possible values) for a nominal attribute at the provided position"
-  (attribute-labels
+  (attribute-labels-indexes
    (attribute-at dataset-or-instance index-or-name)))
 
 (defn dataset-class-labels

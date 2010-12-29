@@ -152,7 +152,8 @@
   (let [ds (make-dataset "test" [:a :b {:c [:d :e]}]
                          [{:a 1 :b 2 :c :d} [4 5 :e]])]
     (dataset-set-class ds :c)
-    (is (= {:d 0 :e 1} (dataset-class-labels ds) (dataset-labels-at ds :c)))))
+    (is (= {:d 0 :e 1} (dataset-class-labels ds) (dataset-labels-at ds :c)))
+    (is (= #{:d :e} (attribute-labels (first (nominal-attributes ds)))))))
 
 (deftest dataset-format-and-headers-test
   (let [ds (make-dataset "test" [:a {:b [:foo :bar]}] [[1 :foo] [2 :bar]])]
