@@ -234,10 +234,16 @@
   [^Instances ds]
   (Instances. ds 0))
 
-(defn dataset-get-class
+(defn dataset-class-index
   "Returns the index of the class attribute for this dataset"
   [^Instances dataset]
   (.classIndex dataset))
+
+(defn dataset-class-name
+  "Returns the name of the class attribute in keyword form.  Returns nil if not set."
+  [^Instances dataset]
+  (when (> (dataset-class-index dataset) -1)
+    (keyword-name (.classAttribute dataset))))
 
 (defn dataset-nominal?
   "Returns boolean indicating if the class attribute is nominal"

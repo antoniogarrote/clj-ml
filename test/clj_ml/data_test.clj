@@ -28,9 +28,9 @@
 (deftest dataset-make-dataset-with-default-class
   (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:d :e]}] [] {:class :c})
         ds2 (clj-ml.data/make-dataset :test [:a :b {:c [:d :e]}] [] {:class 2})]
-    (is (= (clj-ml.data/dataset-get-class ds)
-           2))
-    (is (= (clj-ml.data/dataset-get-class ds2)
+    (is (= (clj-ml.data/dataset-class-name ds)
+           :c))
+    (is (= (clj-ml.data/dataset-class-index ds2)
            2))))
  
  
@@ -162,3 +162,10 @@
       (is (= 0 (dataset-count headers)))
       (is (= "test" (dataset-name headers)))
       (is (= [:a {:b [:foo :bar]}] (dataset-format headers))))))
+
+
+(deftest dataset-class-helpers
+  (let [ds (make-dataset "test" [:a {:b [:foo :bar]}] [[1 :foo] [2 :bar]])]
+    (is (= nil (dataset-class-name ds)))
+    (dataset-set-class ds :b)
+    (is (= :b (dataset-class-name ds)))))
