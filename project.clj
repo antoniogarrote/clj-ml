@@ -18,7 +18,7 @@
                       :exclusions [org.clojure/clojure]]
                      [lein-difftest "1.2.2"
                       :exclusions [org.clojure/clojure org.clojure/clojure-contrib]]]
-  :hooks [leiningen.hooks.difftest]
+  ;:hooks [leiningen.hooks.difftest]
   :autodoc { :name "clj-ml", :page-title "clj-ml machine learning Clojure's style"
              :author "Antonio Garrote <antoniogarrote@gmail.com>"
              :copyright "2010 (c) Antonio Garrote, under the MIT license"})
