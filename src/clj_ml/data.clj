@@ -99,7 +99,7 @@
   [^Instances dataset attr]
   (if (number? attr)
     attr
-    (find-first #(= (name attr) (attr-name (.attribute dataset %))) (range (.numAttributes dataset)))))
+    (find-first #(= (name attr) (attr-name (.attribute dataset (int %)))) (range (.numAttributes dataset)))))
 
 (defn instance-index-attr
   "Returns the index of an attribute in the attributes definition of an
@@ -107,7 +107,7 @@
   [^Instance instance attr]
   (if (number? attr)
     attr
-    (find-first #(= (name attr) (attr-name (.attribute instance %))) (range (.numAttributes instance)))))
+    (find-first #(= (name attr) (attr-name (.attribute instance (int %)))) (range (.numAttributes instance)))))
 
 ;; Construction of individual data and datasets
 
@@ -116,7 +116,7 @@
   ([dataset vector]
      (make-instance dataset 1 vector))
   ([dataset weight vector]
-     (let [inst (new Instance
+     (let [^Instance inst (new Instance
                      (count vector))]
        (do (.setDataset inst dataset)
            (loop [vs vector
@@ -126,18 +126,18 @@
                (do
                  (if (or (keyword? (first vs)) (string? (first vs)))
                    ;; this is a nominal entry in keyword or string form
-                   (.setValue inst c (name (first vs)))
+                   (.setValue inst (int c) (name (first vs)))
                    (if (sequential? (first vs))
                      ;; this is a map of labels
                      (let [k (name (nth (first vs) 0))
                            val (nth (first vs) 1)
-                           ik  (instance-index-attr inst k)]
+                           ik  (int (instance-index-attr inst k))]
                        (if (or (keyword? val) (string? val))
                          ;; this is a nominal entry in keyword or string form
-                         (.setValue inst ik (name val))
+                         (.setValue inst ik ^String (name val))
                          (.setValue inst ik (double val))))
                      ;; A double value for the entry
-                     (.setValue inst c (double (first vs)))))
+                     (.setValue inst (int c) (double (first vs)))))
                  (recur (rest vs)
                         (+ c 1)))))))))
 
