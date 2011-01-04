@@ -49,12 +49,12 @@
 (defn dataset-attributes
   "Returns the attributes (weka.core.Attribute) of the dataset or instance"
   [^Instances dataset]
-  (map #(.attribute dataset %) (range (.numAttributes dataset))))
+  (map #(.attribute dataset (int %)) (range (.numAttributes dataset))))
 
 (defn instance-attributes
   "Returns the attributes (weka.core.Attribute) of the dataset or instance"
   [^Instance instance]
-  (map #(.attribute instance %) (range (.numAttributes instance))))
+  (map #(.attribute instance (int %)) (range (.numAttributes instance))))
 
 (defn attributes
   "Returns the attributes (weka.core.Attribute) of the dataset or instance"
