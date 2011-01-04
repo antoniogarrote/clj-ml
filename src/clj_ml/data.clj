@@ -319,6 +319,20 @@ becuase it avoids redundant string interning of the attribute names."
     (for [instance (map instance-to-list (dataset-seq dataset))]
       (zipmap attrs instance))))
 
+(defn dataset-as-lists
+  "Returns a lazy sequence of the dataset represented as lists.  The values
+   are the actual values (i.e. the string values) and not weka's internal
+   double representation or clj-ml's keyword representation."
+  [dataset]
+  (map instance-to-list (dataset-seq dataset)))
+
+(defn dataset-as-vecs
+  "Returns a lazy sequence of the dataset represented as lists.  The values
+   are the actual values (i.e. the string values) and not weka's internal
+   double representation or clj-ml's keyword representation."
+  [dataset]
+  (map instance-to-vector (dataset-seq dataset)))
+
 (defn dataset-set-class
   "Sets the index of the attribute of the dataset that is the class of the dataset"
   [^Instances dataset index-or-name]
