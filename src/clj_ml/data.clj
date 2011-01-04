@@ -203,9 +203,14 @@
               values))))
 
 (defn attribute-labels
-  "Returns the labels (possible values) for the given nominal attribute"
+  "Returns the labels (possible values) for the given nominal attribute as keywords."
   [^Attribute attr]
   (set (map keyword (enumeration-seq (.enumerateValues attr)))))
+
+(defn attribute-labels-as-strings
+  "Returns the labels (possible values) for the given nominal attribute as strings."
+  [^Attribute attr]
+  (set (enumeration-seq (.enumerateValues attr))))
 
 (defn dataset-labels-at [dataset-or-instance index-or-name]
   "Returns the lables (possible values) for a nominal attribute at the provided position"
