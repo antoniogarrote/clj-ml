@@ -46,11 +46,22 @@
   (let [^Attribute class-attr (attribute-at dataset-or-instance index-or-name)]
     (.name class-attr)))
 
+(defn dataset-attributes
+  "Returns the attributes (weka.core.Attribute) of the dataset or instance"
+  [^Instances dataset]
+  (map #(.attribute dataset %) (range (.numAttributes dataset))))
+
+(defn instance-attributes
+  "Returns the attributes (weka.core.Attribute) of the dataset or instance"
+  [^Instance instance]
+  (map #(.attribute instance %) (range (.numAttributes instance))))
+
 (defn attributes
   "Returns the attributes (weka.core.Attribute) of the dataset or instance"
   [dataset-or-instance]
-  (map #(.attribute dataset-or-instance %) (range (.numAttributes dataset-or-instance))))
-
+  (if (is-instance? dataset-or-instance)
+    (instance-attributes dataset-or-instance)
+    (dataset-attributes dataset-or-instance)))
 
 (defn attr-name [^Attribute attr]
   (.name attr))
