@@ -16,6 +16,7 @@
            (cljml ClojureInstances)))
 
 (declare dataset-seq)
+(declare instance-index-attr dataset-index-attr)
 
 ;; Common functions
 
@@ -30,19 +31,13 @@
   (instance? weka.core.Instances dataset))
 
 
-(defn index-attr
-  "Returns the index of an attribute in the attributes definition of an
-   instance or dataset"
-  [dataset attr-name]
-  (if (number? attr-name)
-    attr-name
-    (let [attr-name (name attr-name)]
-      (find-first #(= attr-name (.name (.attribute dataset %))) (range (.numAttributes dataset))))))
-
 (defn attribute-at
   "Returns attribute situated at the provided position or the provided name."
   [dataset-or-instance index-or-name]
-  (.attribute dataset-or-instance (index-attr dataset-or-instance index-or-name)))
+  (.attribute dataset-or-instance
+              (if (is-instance? dataset-or-instance)
+                (instance-index-attr dataset-or-instance index-or-name)
+                (dataset-index-attr dataset-or-instance index-or-name))))
 
 (defn attribute-name-at
   "Returns the name of an attribute situated at the provided position in
@@ -56,8 +51,12 @@
   [dataset-or-instance]
   (map #(.attribute dataset-or-instance %) (range (.numAttributes dataset-or-instance))))
 
-(defn keyword-name [^Attribute attr]
-  (keyword (.name attr)))
+
+(defn attr-name [^Attribute attr]
+  (.name attr))
+
+(defn keyword-name [attr]
+  (keyword (attr-name attr)))
 
 (defn attribute-names
   "Returns the attribute names, as keywords, of the dataset or instance"
@@ -84,11 +83,20 @@
   [attr-name labels]
   (Attribute. (name attr-name) (into-fast-vector (map name labels))))
 
-(defn dataset-index-attr [dataset attr]
-  (index-attr dataset attr))
+(defn dataset-index-attr
+  "Returns the index of an attribute in the attributes definition of a dataset."
+  [^Instances dataset attr]
+  (if (number? attr)
+    attr
+    (find-first #(= (name attr) (attr-name (.attribute dataset %))) (range (.numAttributes dataset)))))
 
-(defn instance-index-attr [instance attr]
-  (index-attr instance attr))
+(defn instance-index-attr
+  "Returns the index of an attribute in the attributes definition of an
+   instance or dataset"
+  [^Instance instance attr]
+  (if (number? attr)
+    attr
+    (find-first #(= (name attr) (attr-name (.attribute instance %))) (range (.numAttributes instance)))))
 
 ;; Construction of individual data and datasets
 
@@ -112,7 +120,7 @@
                      ;; this is a map of labels
                      (let [k (name (nth (first vs) 0))
                            val (nth (first vs) 1)
-                           ik  (index-attr inst k)]
+                           ik  (instance-index-attr inst k)]
                        (if (or (keyword? val) (string? val))
                          ;; this is a nominal entry in keyword or string form
                          (.setValue inst ik (name val))
@@ -341,7 +349,7 @@ becuase it avoids redundant string interning of the attribute names."
 (defn dataset-set-class
   "Sets the index of the attribute of the dataset that is the class of the dataset"
   [^Instances dataset index-or-name]
-  (doto dataset (.setClassIndex ^int (index-attr dataset index-or-name))))
+  (doto dataset (.setClassIndex ^int (dataset-index-attr dataset index-or-name))))
 
 (defn dataset-remove-class
   "Removes the class attribute from the dataset"
@@ -354,7 +362,7 @@ becuase it avoids redundant string interning of the attribute names."
   (.numInstances dataset))
 
 (defn dataset-add
-  "Adds a new instance to a dataset. A clojure vector or an Instance
+  "Adds a new instance to a dataset. A clojure vector, map, or an Instance
    can be passed as arguments"
   ([dataset vector]
      (dataset-add dataset 1 vector))
@@ -389,7 +397,7 @@ becuase it avoids redundant string interning of the attribute names."
 This function only modifies the format of the dataset and does not deal with any instances.
 The intention is for this to be used on data-formats and not on datasets with data."
   [dataset attr-name new-attr]
-  (let [attr-pos (index-attr dataset attr-name)]
+  (let [attr-pos (dataset-index-attr dataset attr-name)]
     (doto dataset
       (.deleteAttributeAt attr-pos)
       (.insertAttributeAt new-attr attr-pos))))

@@ -55,7 +55,7 @@
   [m]
   ["-R" (str/join ","
                   (for [attr (:attributes m)]
-                    (inc (index-attr (:dataset-format m) attr))))])
+                    (inc (dataset-index-attr (:dataset-format m) attr))))])
 
 (declare make-apply-filter)
 ;TODO: consider passing in the make-filter-options body here as well in additon to the docstring.

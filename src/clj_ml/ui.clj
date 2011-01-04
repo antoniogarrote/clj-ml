@@ -113,15 +113,15 @@
 
 (defn dataset-display-numeric-attributes [dataset attributes & visualization-options]
   "Displays the provided attributes into a box plot"
-  (let [attr (map #(if (keyword? %1) (index-attr dataset %1) %1) attributes)
+  (let [attr (map #(if (keyword? %1) (dataset-index-attr dataset %1) %1) attributes)
         options-pre (first-or-default visualization-options {})
         options (if (nil? (:visualize options-pre)) (conj options-pre {:visualize true}) options-pre)]
     (display-object :dataset :boxplot {:dataset dataset :cols attr} options)))
 
 (defn dataset-display-class-for-attributes [dataset attribute-x attribute-y & visualization-options]
   "Displays how a pair of attributes are distributed for each class"
-  (let [attr-x (if (keyword? attribute-x) (index-attr dataset attribute-x) attribute-x)
-        attr-y (if (keyword? attribute-y) (index-attr dataset attribute-y) attribute-y)
+  (let [attr-x (if (keyword? attribute-x) (dataset-index-attr dataset attribute-x) attribute-x)
+        attr-y (if (keyword? attribute-y) (dataset-index-attr dataset attribute-y) attribute-y)
         options-pre (first-or-default visualization-options {})
         opts (if (nil? (:visualize options-pre)) (conj options-pre {:visualize true}) options-pre)
         class-index (dataset-get-class dataset)]
@@ -129,8 +129,8 @@
 
 (defn dataset-display-attributes [dataset attribute-x attribute-y & visualization-options]
   "Displays the distribution of a set of attributes for a dataset"
-    (let [attr-x (if (keyword? attribute-x) (index-attr dataset attribute-x) attribute-x)
-        attr-y (if (keyword? attribute-y) (index-attr dataset attribute-y) attribute-y)
+    (let [attr-x (if (keyword? attribute-x) (datset-index-attr dataset attribute-x) attribute-x)
+        attr-y (if (keyword? attribute-y) (datset-index-attr dataset attribute-y) attribute-y)
         options-pre (first-or-default visualization-options {})
         opts (if (nil? (:visualize options-pre)) (conj options-pre {:visualize true}) options-pre)
         class-index (dataset-get-class dataset)]
@@ -144,8 +144,8 @@
 
 (defmethod clusterer-display-for-attributes SimpleKMeans
   ([clusterer dataset attribute-x attribute-y & visualization-options]
-     (let [attr-x (if (keyword? attribute-x) (instance-index-attr dataset attribute-x) attribute-x)
-           attr-y (if (keyword? attribute-y) (instance-index-attr dataset attribute-y) attribute-y)
+     (let [attr-x (if (keyword? attribute-x) (dataset-index-attr dataset attribute-x) attribute-x)
+           attr-y (if (keyword? attribute-y) (dataset-index-attr dataset attribute-y) attribute-y)
            opts (first-or-default visualization-options {})
            display? (if (= (get visualization-options :visualize) false)
                       false
