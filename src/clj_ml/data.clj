@@ -34,7 +34,7 @@
 (defn attribute-at
   "Returns attribute situated at the provided position or the provided name."
   [dataset-or-instance index-or-name]
-  (.attribute dataset-or-instance
+  (.attribute dataset-or-instance ;; This still needs to be type hinted...
               (if (is-instance? dataset-or-instance)
                 (instance-index-attr dataset-or-instance index-or-name)
                 (dataset-index-attr dataset-or-instance index-or-name))))
@@ -77,17 +77,17 @@
 (defn numeric-attributes
   "Returns the numeric attributes (weka.core.Attribute) of the dataset or instance"
   [dataset-or-instance]
-  (filter #(.isNumeric %) (attributes dataset-or-instance)))
+  (filter #(.isNumeric ^Attribute %) (attributes dataset-or-instance)))
 
 (defn nominal-attributes
   "Returns the string attributes (weka.core.Attribute) of the dataset or instance"
   [dataset-or-instance]
-  (filter #(.isNominal %) (attributes dataset-or-instance)))
+  (filter #(.isNominal ^Attribute %) (attributes dataset-or-instance)))
 
 (defn string-attributes
   "Returns the string attributes (weka.core.Attribute) of the dataset or instance"
   [dataset-or-instance]
-  (filter #(.isString %) (attributes dataset-or-instance)))
+  (filter #(.isString ^Attribute %) (attributes dataset-or-instance)))
 
 (defn nominal-attribute
   "Creates a nominal weka.core.Attribute with the given name and labels"
