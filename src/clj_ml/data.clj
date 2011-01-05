@@ -31,13 +31,18 @@
   (instance? weka.core.Instances dataset))
 
 
+(defn instance-attribute-at [^Instance instance index-or-name]
+  (.attribute instance (int (instance-index-attr instance index-or-name))))
+
+(defn dataset-attribute-at [^Instances dataset index-or-name]
+  (.attribute dataset (int (dataset-index-attr dataset index-or-name))))
+
 (defn attribute-at
   "Returns attribute situated at the provided position or the provided name."
   [dataset-or-instance index-or-name]
-  (.attribute dataset-or-instance ;; This still needs to be type hinted...
-              (if (is-instance? dataset-or-instance)
-                (instance-index-attr dataset-or-instance index-or-name)
-                (dataset-index-attr dataset-or-instance index-or-name))))
+  (if (is-instance? dataset-or-instance)
+    (instance-attribute-at dataset-or-instance index-or-name)
+    (dataset-attribute-at dataset-or-instance index-or-name)))
 
 (defn attribute-name-at
   "Returns the name of an attribute situated at the provided position in
@@ -92,7 +97,7 @@
 (defn nominal-attribute
   "Creates a nominal weka.core.Attribute with the given name and labels"
   [attr-name labels]
-  (Attribute. (name attr-name) (into-fast-vector (map name labels))))
+  (Attribute. ^String (name attr-name) ^FastVector (into-fast-vector (map name labels))))
 
 (defn dataset-index-attr
   "Returns the index of an attribute in the attributes definition of a dataset."
@@ -377,26 +382,24 @@ becuase it avoids redundant string interning of the attribute names."
    can be passed as arguments"
   ([dataset vector]
      (dataset-add dataset 1 vector))
-  ([dataset weight vector]
-     (do
-       (if (= (class vector) weka.core.Instance)
-         (.add dataset vector)
-         (let [instance (make-instance dataset weight vector)]
-           (.add dataset instance)))
-       dataset)))
+  ([^Instances dataset weight vector]
+     (doto dataset
+       (.add ^Instance (if (is-instance? vector)
+                         vector
+                         (make-instance dataset weight vector))))))
 
 (defn dataset-extract-at
   "Removes and returns the instance at a certain position from the dataset"
-  [dataset pos]
-  (let [inst (.instance dataset pos)]
+  [^Instances dataset pos]
+  (let [inst (.instance dataset (int pos))]
     (do
-      (.delete dataset pos)
+      (.delete dataset (int pos))
       inst)))
 
 (defn dataset-at
   "Returns the instance at a certain position from the dataset"
-  [dataset pos]
-  (.instance dataset pos))
+  [^Instances dataset pos]
+  (.instance dataset (int pos)))
 
 (defn dataset-pop
   "Removes and returns the first instance in the dataset"
@@ -407,8 +410,8 @@ becuase it avoids redundant string interning of the attribute names."
   "Replaces the specified attribute with the given one. (The attribute should be a weka.core.Attribute)
 This function only modifies the format of the dataset and does not deal with any instances.
 The intention is for this to be used on data-formats and not on datasets with data."
-  [dataset attr-name new-attr]
+  [^Instances dataset attr-name ^Attribute new-attr]
   (let [attr-pos (dataset-index-attr dataset attr-name)]
     (doto dataset
-      (.deleteAttributeAt attr-pos)
-      (.insertAttributeAt new-attr attr-pos))))
+      (.deleteAttributeAt (int attr-pos))
+      (.insertAttributeAt new-attr (int attr-pos)))))
