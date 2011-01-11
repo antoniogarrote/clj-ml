@@ -139,7 +139,9 @@
                            ik  (int (instance-index-attr inst k))]
                        (if (or (keyword? val) (string? val))
                          ;; this is a nominal entry in keyword or string form
-                         (.setValue inst ik ^String (name val))
+                         (do
+                           (prn {:val val :inst inst :doubles (vec (.toDoubleArray inst)) :ik ik})
+                           (.setValue inst ik ^String (name val)))
                          (.setValue inst ik (double val))))
                      ;; A double value for the entry
                      (.setValue inst (int c) (double (first vs)))))
@@ -292,9 +294,9 @@ If the class is nominal then the string value (not keyword) is returned."
 ;; manipulation of instances
 
 (defn instance-set-class
-  "Sets the index of the class attribute for this instance"
-  [^Instance instance pos]
-  (doto instance (.setClassValue (int pos))))
+  "Sets the value (label) of the class attribute for this instance"
+  [^Instance instance ^String val]
+  (doto instance (.setClassValue val)))
 
 (defn instance-get-class
   "Get the index of the class attribute for this instance"
