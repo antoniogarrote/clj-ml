@@ -216,6 +216,11 @@
   [^Instances dataset]
   (.relationName dataset))
 
+(defn dataset-set-name
+  "Sets the dataset's name"
+  [^Instances dataset ^String new-name]
+  (.setRelationName dataset new-name))
+
 (defn attribute-labels-indexes
   "Returns map of the labels (possible values) for the given nominal attribute as the keys
    with the values being the attributes index. "
