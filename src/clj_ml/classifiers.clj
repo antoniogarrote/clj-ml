@@ -64,7 +64,7 @@
   (:import (java.util Date Random)
            (weka.core Instance Instances)
            (weka.classifiers.trees J48 RandomForest M5P)
-           (weka.classifiers.meta LogitBoost)
+           (weka.classifiers.meta LogitBoost AdditiveRegression)
            (weka.classifiers.bayes NaiveBayes NaiveBayesUpdateable)
            (weka.classifiers.functions MultilayerPerceptron SMO LinearRegression Logistic PaceRegression)
            (weka.classifiers Classifier Evaluation)))
@@ -147,8 +147,16 @@
   ([kind algorithm m]
      (->> (check-options m {:debug "-D"})
           (check-option-values m
-                               {:threshold "-S"
+                               {:shrinkage "-S"
                                 :estimator "-E"}))))
+
+(defmethod make-classifier-options [:regression :boosted-regression]
+  ([kind algorithm m]
+     (->> (check-options m {:debug "-D"})
+          (check-option-values m
+                               {:threshold "-S"
+                                :num-iterations "-I"
+                                :weak-learning-class "-W"}))))
 
 (defmethod make-classifier-options [:decision-tree :boosted-stump]
   ([kind algorithm m]
@@ -206,6 +214,7 @@
 
      - :decision-tree :c45
      - :decision-tree :boosted-stump
+     - :decision-tree :boosted-decision-tree
      - :decision-tree :M5P
      - :decision-tree :random-forest
      - :bayes :naive
@@ -385,6 +394,10 @@
 (defmethod make-classifier [:regression :pace]
   ([kind algorithm & options]
      (make-classifier-with kind algorithm PaceRegression options)))
+
+(defmethod make-classifier [:regression :boosted-regression]
+  ([kind algorithm & options]
+     (make-classifier-with kind algorithm AdditiveRegression options)))
 
 (defmethod make-classifier [:decision-tree :boosted-stump]
   ([kind algorithm & options]
