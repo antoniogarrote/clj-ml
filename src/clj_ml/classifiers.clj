@@ -64,7 +64,7 @@
   (:import (java.util Date Random)
            (weka.core Instance Instances)
            (weka.classifiers.trees J48 RandomForest M5P)
-           (weka.classifiers.meta LogitBoost AdditiveRegression)
+           (weka.classifiers.meta LogitBoost AdditiveRegression RotationForest)
            (weka.classifiers.bayes NaiveBayes NaiveBayesUpdateable)
            (weka.classifiers.functions MultilayerPerceptron SMO LinearRegression Logistic PaceRegression)
            (weka.classifiers Classifier Evaluation)))
@@ -182,6 +182,20 @@
                                 :random-seed "-S"
                                 :depth "-depth"}))))
 
+(defmethod make-classifier-options [:decision-tree :rotation-forest]
+  ([kind algorithm m]
+     (->>
+       (check-options m {:debug "-D"})
+       (check-option-values m
+                               {:num-iterations "-I"
+                                :use-number-of-groups "-N"
+                                :min-attribute-group-size "-G"
+                                :max-attribute-group-size "-H"
+                                :percentage-of-instances-to-remove "-P"
+                                :filter "-F"
+                                :random-seed "-S"
+                                :weak-learning-class "-W"}))))
+
 (defmethod make-classifier-options [:decision-tree :m5p]
   ([kind algorithm m]
      (->>
@@ -217,6 +231,7 @@
      - :decision-tree :boosted-decision-tree
      - :decision-tree :M5P
      - :decision-tree :random-forest
+     - :decision-tree :rotation-forest
      - :bayes :naive
      - :neural-network :mutilayer-perceptron
      - :support-vector-machine :smo
@@ -406,6 +421,10 @@
 (defmethod make-classifier [:decision-tree :random-forest]
   ([kind algorithm & options]
      (make-classifier-with kind algorithm RandomForest options)))
+
+(defmethod make-classifier [:decision-tree :rotation-forest]
+  ([kind algorithm & options]
+     (make-classifier-with kind algorithm RotationForest options)))
 
 (defmethod make-classifier [:decision-tree :m5p]
   ([kind algorithm & options]
