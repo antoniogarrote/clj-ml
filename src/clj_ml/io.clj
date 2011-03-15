@@ -10,7 +10,7 @@
   (:require clj-ml.data-store)
   (:import (weka.core.converters CSVLoader ArffLoader XRFFLoader)
            (weka.core.converters CSVSaver ArffSaver XRFFSaver)
-           (java.io File)
+           (java.io File InputStream)
            (java.net URL URI)))
 
 
@@ -22,10 +22,11 @@
 
 (defmacro m-load-instances [loader source]
   `(do
-     (if (= (class ~source) java.lang.String)
-       (.setSource ~loader (new URL ~source))
-       (if (= (class ~source) java.io.File)
-         (.setFile ~loader ~source)))
+     (if (= (class ~source)  java.io.File)
+       (.setFile ~loader ~source)
+       (.setSource ~loader (if (= (class ~source) java.lang.String)
+                             (new URL ~source)
+                             ^InputStream ~source)))
      (.getDataSet ~loader)))
 
 (defmethod load-instances :arff
