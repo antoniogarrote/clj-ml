@@ -66,7 +66,7 @@
            (weka.classifiers.trees J48 RandomForest M5P)
            (weka.classifiers.meta LogitBoost AdditiveRegression RotationForest)
            (weka.classifiers.bayes NaiveBayes NaiveBayesUpdateable)
-           (weka.classifiers.functions MultilayerPerceptron SMO LinearRegression Logistic PaceRegression)
+           (weka.classifiers.functions MultilayerPerceptron SMO LinearRegression Logistic PaceRegression SPegasos)
            (weka.classifiers Classifier Evaluation)))
 
 
@@ -126,6 +126,14 @@
                                 :epsilon-roundoff "-P"
                                 :folds-for-cross-validation "-V"
                                 :random-seed "-W"}))))
+
+(defmethod make-classifier-options [:support-vector-machine :spegasos]
+  ([kind algorithm m]
+     (->> (check-options m {:no-normalization "-N"
+                            :no-replace-missing"-M"})
+          (check-option-values m
+                               {:epochs "-E"
+                                :lambda "-L"}))))
 
 
 (defmethod make-classifier-options [:regression :linear]
@@ -397,6 +405,10 @@
                              kernel)]
             (.setKernel classifier real-kernel)))
         classifier)))
+
+(defmethod make-classifier [:support-vector-maching :spegasos]
+  ([kind algorithm & options]
+     (make-classifier-with kind algorithm SPegasos options)))
 
 (defmethod make-classifier [:regression :linear]
   ([kind algorithm & options]
