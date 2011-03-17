@@ -406,7 +406,7 @@
             (.setKernel classifier real-kernel)))
         classifier)))
 
-(defmethod make-classifier [:support-vector-maching :spegasos]
+(defmethod make-classifier [:support-vector-machine :spegasos]
   ([kind algorithm & options]
      (make-classifier-with kind algorithm SPegasos options)))
 
