@@ -132,7 +132,8 @@
      (->> (check-options m {:no-normalization "-N"
                             :no-replace-missing"-M"})
           (check-option-values m
-                               {:epochs "-E"
+                               {:loss-fn "-F"
+                                :epochs "-E"
                                 :lambda "-L"}))))
 
 
