@@ -59,11 +59,10 @@
 
 (defmacro m-save-instances [saver destiny instances]
   `(do
-     (prn ~destiny)
      (condp #(isa? %2 %1) (class ~destiny)
-         String (do (println "I'm a string!") (.setFile ~saver (File. (URI. ~destiny))))
-         File (do (println "I'm a file!") (.setFile ~saver ~destiny))
-         OutputStream (do (println "I'm a stream!") (.setDestination ~saver ~destiny)))
+       String (.setFile ~saver (File. (URI. ~destiny)))
+       File (.setFile ~saver ~destiny)
+       OutputStream (.setDestination ~saver ~destiny))
      (.setInstances ~saver ~instances)
      (.writeBatch ~saver)))
 
