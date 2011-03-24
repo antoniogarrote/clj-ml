@@ -10,7 +10,7 @@
   (:require clj-ml.data-store)
   (:import (weka.core.converters CSVLoader ArffLoader XRFFLoader)
            (weka.core.converters CSVSaver ArffSaver XRFFSaver)
-           (java.io File InputStream)
+           (java.io File InputStream OutputStream)
            (java.net URL URI)))
 
 
@@ -59,10 +59,11 @@
 
 (defmacro m-save-instances [saver destiny instances]
   `(do
-     (if (= (class ~destiny) java.lang.String)
-       (.setFile ~saver (new File (new URI ~destiny)))
-       (if (= (class ~destiny) java.io.File)
-         (.setFile ~saver ~destiny)))
+     (prn ~destiny)
+     (condp #(isa? %2 %1) (class ~destiny)
+         String (do (println "I'm a string!") (.setFile ~saver (File. (URI. ~destiny))))
+         File (do (println "I'm a file!") (.setFile ~saver ~destiny))
+         OutputStream (do (println "I'm a stream!") (.setDestination ~saver ~destiny)))
      (.setInstances ~saver ~instances)
      (.writeBatch ~saver)))
 
