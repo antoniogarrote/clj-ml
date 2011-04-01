@@ -219,7 +219,7 @@
 (defn dataset-set-name
   "Sets the dataset's name"
   [^Instances dataset ^String new-name]
-  (.setRelationName dataset new-name))
+  (doto dataset (.setRelationName new-name)))
 
 (defn attribute-labels-indexes
   "Returns map of the labels (possible values) for the given nominal attribute as the keys
