@@ -313,10 +313,13 @@ If the class is nominal then the string value (not keyword) is returned."
   "Returns the value of an instance attribute. A string, not a keyword is returned."
   [^Instance instance pos]
   (let [pos (int pos)
-        attr (.attribute instance pos)]
-    (if (.isNominal attr) ; This ignores the fact that weka can have date and other attribute types...
-      (.stringValue instance pos)
-      (.value instance pos))))
+        attr (.attribute instance pos)
+        val (.value instance pos)]
+    (if (Double/isNaN val)
+      nil
+      (if (.isNominal attr) ; This ignores the fact that weka can have date and other attribute types...
+        (.stringValue instance pos)
+        val))))
 
 (defn instance-to-list
   "Builds a list with the values of the instance"
