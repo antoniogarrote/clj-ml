@@ -116,6 +116,9 @@
 
 ;; Construction of individual data and datasets
 
+(defn- double-or-nan [x]
+  (if (nil? x) Double/NaN (double x)))
+
 (defn make-instance
   "Creates a new dataset instance from a vector"
   ([dataset vector]
@@ -140,9 +143,9 @@
                        (if (or (keyword? val) (string? val))
                          ;; this is a nominal entry in keyword or string form
                          (.setValue inst ik ^String (name val))
-                         (.setValue inst ik (double val))))
+                         (.setValue inst ik (double-or-nan val))))
                      ;; A double value for the entry
-                     (.setValue inst (int c) (double (first vs)))))
+                     (.setValue inst (int c) (double-or-nan (first vs)))))
                  (recur (rest vs)
                         (+ c 1)))))))))
 

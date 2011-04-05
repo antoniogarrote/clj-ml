@@ -12,7 +12,7 @@
   (is (= 2 (.numValues inst)))
   (is (= 1.0 (.value inst 0)))
   (is (= 2.0 (.value inst 1)))))
- 
+
 (deftest make-instance-ord
   (let [dataset (make-dataset :test
                               [:a {:b [:b1 :b2]}]
@@ -23,8 +23,18 @@
   (is (= 2 (.numValues inst)))
   (is (= 1.0 (.value inst 0)))
   (is (= "b1" (.stringValue inst 1)))))
- 
- 
+
+(deftest make-instance-nils
+  (let [dataset (make-dataset :test
+                              [:a :b]
+                              1)
+        inst (make-instance dataset [1 nil])]
+  (is (= (class inst)
+         weka.core.Instance))
+  (is (= 2 (.numValues inst)))
+  (is (= 1.0 (.value inst 0)))
+  (is (Double/isNaN (.value inst 1)))))
+
 (deftest dataset-make-dataset-with-default-class
   (let [ds (clj-ml.data/make-dataset :test [:a :b {:c [:d :e]}] [] {:class :c})
         ds2 (clj-ml.data/make-dataset :test [:a :b {:c [:d :e]}] [] {:class 2})]
@@ -32,8 +42,8 @@
            :c))
     (is (= (clj-ml.data/dataset-class-index ds2)
            2))))
- 
- 
+
+
 (deftest dataset-change-class
   (let [dataset (make-dataset :test
                               [:a :b]
@@ -44,7 +54,7 @@
     (testing "when a string or symbol is passed in"
       (is (= 1 (.classIndex (dataset-set-class dataset "b"))))
       (is (= 0 (.classIndex (dataset-set-class dataset "a")))))))
- 
+
 (deftest dataset-class-values-test
   (let [dataset (make-dataset :test
                               [:age :iq {:favorite-color [:red :blue :green]}]
@@ -57,14 +67,14 @@
     (testing "when the class is nominal"
       (dataset-set-class dataset :favorite-color)
       (is (= ["red" "blue" "green"] (dataset-class-values dataset))))))
- 
+
 (deftest dataset-count-1
   (let [dataset (make-dataset :test
                               [:a :b]
                               2)]
     (dataset-add dataset [1 2])
     (is (= 1 (dataset-count dataset)))))
- 
+
 (deftest dataset-add-1
   (let [dataset (make-dataset :test
                               [:a :b]
@@ -73,7 +83,7 @@
     (let [inst (.lastInstance dataset)]
       (is (= 1.0 (.value inst 0)))
       (is (= 2.0 (.value inst 1))))))
- 
+
 (deftest dataset-add-2
   (let [dataset (make-dataset :test
                               [:a :b]
@@ -83,7 +93,7 @@
     (let [inst (.lastInstance dataset)]
       (is (= 1.0 (.value inst 0)))
       (is (= 2.0 (.value inst 1))))))
- 
+
 (deftest dataset-extract-at-1
   (let [dataset (make-dataset :test
                               [:a :b]
@@ -96,7 +106,7 @@
         (is (= 0 (.numInstances dataset)))
         (is (= 1.0 (.value inst-ext 0)))
         (is (= 2.0 (.value inst-ext 1)))))))
- 
+
 (deftest dataset-pop-1
   (let [dataset (make-dataset :test
                               [:a :b]
@@ -109,20 +119,20 @@
         (is (= 0 (.numInstances dataset)))
         (is (= 1.0 (.value inst-ext 0)))
         (is (= 2.0 (.value inst-ext 1)))))))
- 
+
 (deftest dataset-seq-1
   (let [dataset (make-dataset :test [:a :b {:c [:e :f]}] [[1 2 :e] [3 4 :f]])
         seq (dataset-seq dataset)]
     (is (sequential? seq))))
- 
- 
+
+
 (deftest working-sequences-and-helpers
   (let [ds (make-dataset "test" [:a :b {:c [:d :e]}] [{:a 1 :b 2 :c :d} [4 5 :e]])]
     (is (= 2 (dataset-count ds)))
     (is (= [{:a 1 :b 2 :c "d"} {:a 4 :b 5 :c "e"}] (dataset-as-maps ds)))
     (is (= [[1 2 "d"] [4 5 "e"]] (dataset-as-vecs ds)))
     (is (= [{:a 1 :b 2 :c "d"} {:a 4 :b 5 :c "e"}] (map #(instance-to-map %1) (dataset-seq ds))))))
- 
+
 (deftest dataset-instance-predicates
   (let [ds (make-dataset "test" [:a :b {:c [:d :e]}] [{:a 1 :b 2 :c :d} [4 5 :e]])
         inst (dataset-at ds 0)]
@@ -131,8 +141,8 @@
     (is (not (is-dataset? "something else")))
     (is (is-instance? inst))
     (is (not (is-instance? ds)))))
- 
- 
+
+
 (deftest attributes-tests
   (let [ds (make-dataset "test" [:a :b {:c [:d :e]}] [{:a 1 :b 2 :c :d} [4 5 :e]])
         attrs (attributes ds)]
@@ -143,7 +153,7 @@
     (is (= [(.attribute ds 2)]  (nominal-attributes ds)))
     (is (= [(.attribute ds 0) (.attribute ds 1)]  (numeric-attributes ds)))
     (is (= '(:a :b :c) (attribute-names ds)))))
- 
+
 (deftest replacing-attributes
   (let [ds (make-dataset "test" [:a {:b [:foo :bar]}] [[1 :foo] [2 :bar]])
         _ (dataset-replace-attribute! ds :b (nominal-attribute :b [:baz :shaz]))]
