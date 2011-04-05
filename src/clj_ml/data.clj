@@ -139,9 +139,7 @@
                            ik  (int (instance-index-attr inst k))]
                        (if (or (keyword? val) (string? val))
                          ;; this is a nominal entry in keyword or string form
-                         (do
-                           (prn {:val val :inst inst :doubles (vec (.toDoubleArray inst)) :ik ik})
-                           (.setValue inst ik ^String (name val)))
+                         (.setValue inst ik ^String (name val))
                          (.setValue inst ik (double val))))
                      ;; A double value for the entry
                      (.setValue inst (int c) (double (first vs)))))
