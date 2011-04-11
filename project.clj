@@ -1,4 +1,4 @@
-(defproject org.clojars.bmabey/clj-ml "0.1.0"
+(defproject com.leadtune/clj-ml "0.1.1-SNAPSHOT"
   :description "Machine Learning library for Clojure built around Weka and friends"
   :repositories {"leadtune-repo" "http://c0026236.cdn1.cloudfiles.rackspacecloud.com/repo"}
   :java-source-path "src/java"
