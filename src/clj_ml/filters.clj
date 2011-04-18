@@ -21,7 +21,7 @@
         (-> ds
             (add-attribute {:type :nominal, :column 1, :name \"pet\", :labels [\"dog\" \"cat\"]})
             (remove-attributes {:attributes [:a :c]})))
-    
+
 
    The above functions rely on lower level fns that create and apply the filters which you may
    also use if you need more control over the actual filter objects:
@@ -40,6 +40,7 @@
         [clojure.contrib [def :only [defvar defvar-]]])
   (:require [clojure.contrib [string :as str]])
   (:import (weka.filters Filter)
+           (weka.core OptionHandler)
            (cljml ClojureStreamFilter ClojureBatchFilter)))
 
 
@@ -407,9 +408,10 @@
    For examples on how to use the filters, especially the clojure filters, you may
    refer to filters_test.clj of clj-ml."
   [kind options]
-  (let [filter (if (kind filter-aliases)
-                 (doto (.newInstance (kind filter-aliases))
-                   (.setOptions (into-array String (make-filter-options kind options))))
+  (let [^Filter filter (if-let [^Class class (kind filter-aliases)]
+                         (let [^OptionHandler f (.newInstance class)]
+                           (.setOptions f (into-array String (make-filter-options kind options)))
+                           f)
                  (case kind
                    :clj-streamable (ClojureStreamFilter. (:process options) (:determine-dataset-format options))
                    :clj-batch (ClojureBatchFilter. (:process options) (:determine-dataset-format options))))]
