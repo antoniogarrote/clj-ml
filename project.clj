@@ -9,7 +9,8 @@
                  [org.mongodb/mongo-java-driver "1.0"]
                  [incanter/incanter-core "1.2.3"]
                  [incanter/incanter-charts "1.2.3"]
-                 [lt/weka "3.6.3"]]
+                 [lt/weka "3.6.3"]
+                 [hr.irb/fastRandomForest "0.98"]]
   :dev-dependencies [[autodoc "0.7.0"
                       :exclusions [org.clojure/clojure org.clojure/clojure-contrib]]
                      [lein-javac "1.2.1-SNAPSHOT"
