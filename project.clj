@@ -12,13 +12,12 @@
                  [lt/weka "3.6.3"]
                  [hr.irb/fastRandomForest "0.98"]]
   :dev-dependencies [[autodoc "0.7.0"
-                      :exclusions [org.clojure/clojure org.clojure/clojure-contrib]]
+                      :exclusions [org.clojure/clojure org.clojure/clojure-contrib
+                                   ant/ant ant/ant-launcher]] ;; older ant breaks newer lein
                      [lein-javac "1.2.1-SNAPSHOT"
                       :exclusions [org.clojure/clojure]]
                      [swank-clojure "1.2.1"
-                      :exclusions [org.clojure/clojure]]
-                     [lein-difftest "1.2.2"
-                      :exclusions [org.clojure/clojure org.clojure/clojure-contrib]]]
+                      :exclusions [org.clojure/clojure]]]
   ;:hooks [leiningen.hooks.difftest]
   :autodoc { :name "clj-ml", :page-title "clj-ml machine learning Clojure's style"
              :author "Antonio Garrote <antoniogarrote@gmail.com>"
