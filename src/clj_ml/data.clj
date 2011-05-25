@@ -348,7 +348,7 @@ If the class is nominal then the string value (not keyword) is returned."
   (if (= (class dataset)
          ClojureInstances)
     (seq dataset)
-    (seq (new ClojureInstances ^Instances dataset))))
+    (seq (enumeration-seq (.enumerateInstances ^Instances dataset)))))
 
 (defn dataset-as-maps
   "Returns a lazy sequence of the dataset represetned as maps.
