@@ -297,6 +297,11 @@ If the class is nominal then the string value (not keyword) is returned."
                       (fn [^Instance i] (.classValue i)))] ;classValue returns the double
     (map class-value (dataset-seq dataset))))
 
+(defn dataset-weights
+  "Returns a lazy-seq of the weights of the dataset instances."
+  [^Instances dataset]
+  (map (fn [^Instance i] (.weight i)) (dataset-seq dataset)))
+
 ;; manipulation of instances
 
 (defn instance-set-class
