@@ -1,5 +1,13 @@
 # clj-ml History
 
+## v0.1.1 - 2011-06-14
+
+### New Features
+  * added FastRandomForests which are more space and time efficient that Weka's default implementation.
+
+### Bug Fixes
+  * More typehinting for filter creation.
+
 ## v0.1.0 - 2011-04-11
 
 ### New Features
