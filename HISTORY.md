@@ -1,5 +1,13 @@
 # clj-ml History
 
+## v0.1.2 - 2011-06-14
+
+### New Features
+  * added `dataset-weights` function
+
+### Bug Fixes
+  * Does not create new `ClojureInstances` with `dataset-seq`, just uses weka's built in enumerator.
+
 ## v0.1.1 - 2011-06-14
 
 ### New Features
