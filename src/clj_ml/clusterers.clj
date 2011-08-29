@@ -13,7 +13,7 @@
    having the full data set in main memory. Functions for evaluating the clusterer
    as well as for clustering new instances are also supported
 "
-  (:use [clj-ml utils data distance-functions])
+  (:use [clj-ml utils data distance-functions options-utils])
   (:import (java.util Date Random)
            (weka.clusterers ClusterEvaluation SimpleKMeans Cobweb EM)))
 

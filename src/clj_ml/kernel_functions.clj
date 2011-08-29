@@ -8,7 +8,7 @@
   "Kernel functions that can be passed as parameters to support vector machines classifiers.
 
    Polynomic, radial basis and string kernels are supported"
-  (:use [clj-ml utils data])
+  (:use [clj-ml utils data options-utils])
   (:import (weka.classifiers.functions.supportVector PolyKernel RBFKernel StringKernel)))
 
 (defmulti make-kernel-function-options

@@ -67,51 +67,6 @@
       (catch NoSuchAlgorithmException e
         (throw (new RuntimeException e))))))
 
-;; Manipulation of array of options
-
-(defn check-option [opts val flag map]
-  "Sets an option for a filter"
-  (let [val-in-map (get map val)]
-    (if (nil? val-in-map)
-      opts
-      (conj opts flag))))
-
-(defn check-option-value [opts val flag map]
-  "Sets an option with value for a filter"
-  (let [val-in-map (get map val)]
-    (if (nil? val-in-map)
-      opts
-      (conj  (conj opts flag) (str val-in-map)))))
-
-; TODO: Raise a helpful exception when the keys don't match up with the provided flags.
-(defn check-options
-  "Checks the presence of a set of options for a filter"
-  ([args-map opts-map] (check-options args-map opts-map []))
-  ( [args-map opts-map tmp]
-      (loop [rem (keys opts-map)
-             acum tmp]
-        (if (empty? rem)
-          acum
-          (let [k (first rem)
-                vk (get opts-map k)
-                rst (rest rem)]
-            (recur rst
-                   (check-option acum k vk args-map)))))))
-
-(defn check-option-values
-  "Checks the presence of a set of options with value for a filter"
-  ([args-map opts-map] (check-option-values args-map opts-map []))
-  ([args-map opts-map val]
-      (loop [rem (keys opts-map)
-             acum val]
-        (if (empty? rem)
-          acum
-          (let [k (first rem)
-                vk (get opts-map k)
-                rst (rest rem)]
-            (recur rst
-                   (check-option-value acum k vk args-map)))))))
-
 ;; Serializing classifiers
 
 (defn serialize

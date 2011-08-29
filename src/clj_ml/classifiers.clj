@@ -60,7 +60,7 @@
     (serialize-to-file *classifier*
      \"/Users/antonio.garrote/Desktop/classifier.bin\")
 "
-  (:use [clj-ml utils data kernel-functions])
+  (:use [clj-ml utils data kernel-functions options-utils])
   (:import (java.util Date Random)
            (hr.irb.fastRandomForest FastRandomForest)
            (weka.core Instance Instances)

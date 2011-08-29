@@ -9,7 +9,7 @@
    classifiers and clusterers like K-Means.
 
    Euclidean, Manhattan and Chebysev distance functions are supported."
-  (:use [clj-ml utils data])
+  (:use [clj-ml utils data options-utils])
   (:import (weka.core EuclideanDistance ManhattanDistance ChebyshevDistance)))
 
 

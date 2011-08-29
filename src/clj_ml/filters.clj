@@ -36,7 +36,7 @@
    The previous sample of code could be rewritten with the make-apply-filter function:
 
      (def filtered-ds (make-apply-filter :remove-attributes {:attributes [:a :c]} ds))"
-  (:use [clj-ml data utils]
+  (:use [clj-ml data utils options-utils]
         [clojure.contrib [def :only [defvar defvar-]]])
   (:require [clojure.contrib [string :as str]])
   (:import (weka.filters Filter)
@@ -50,13 +50,6 @@
   make-filter-options
   "Creates the right parameters for a filter. Returns a clojure vector."
   (fn [kind map] kind))
-
-(defn- extract-attributes
-  "Transforms the :attributes value from m into the appropriate weka flag"
-  [m]
-  ["-R" (str/join ","
-                  (for [attr (:attributes m)]
-                    (inc (dataset-index-attr (:dataset-format m) attr))))])
 
 (declare make-apply-filter)
 ;TODO: consider passing in the make-filter-options body here as well in additon to the docstring.
