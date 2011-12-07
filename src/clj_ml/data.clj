@@ -433,6 +433,15 @@ The intention is for this to be used on data-formats and not on datasets with da
       (.deleteAttributeAt (int attr-pos))
       (.insertAttributeAt new-attr (int attr-pos)))))
 
+(defn randomize-dataset!
+  "Randomizes the dataset in place and returns the dataset.
+   When no seed is provided then a randmon seed is created."
+  ([ds]
+     (randomize-dataset! ds (java.util.Random.)))
+  ([^Instances ds seed]
+     (let [seed (if (number? seed) (java.util.Random. seed) seed)]
+       (doto ds (.randomize seed)))))
+
 (defn split-dataset
   "Splits the dataset into two parts based on the percentage given.
 The first dataset returned will have 'percentage ammount of the original dataset and the second has the
