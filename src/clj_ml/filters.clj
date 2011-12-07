@@ -36,7 +36,7 @@
    The previous sample of code could be rewritten with the make-apply-filter function:
 
      (def filtered-ds (make-apply-filter :remove-attributes {:attributes [:a :c]} ds))"
-  (:use [clj-ml data utils options-utils]
+  (:use [clj-ml utils options-utils]
         [clojure.contrib [def :only [defvar defvar-]]])
   (:require [clojure.contrib [string :as str]])
   (:import (weka.filters Filter)
@@ -135,6 +135,13 @@
 
 (deffilter remove-attributes)
 
+(defmethod make-filter-options :remove-percentage
+  ([kind m]
+     (->> (check-option-values m {:percentage "-P"})
+          (check-options m {:invert "-V"}))))
+
+(deffilter remove-percentage)
+
 (defmethod make-filter-options :remove-useless-attributes
   ([kind m]
      (check-option-values m {:max-variance "-M"})))
@@ -170,6 +177,7 @@
    :numeric-to-nominal weka.filters.unsupervised.attribute.NumericToNominal
    :add-attribute weka.filters.unsupervised.attribute.Add
    :remove-attributes weka.filters.unsupervised.attribute.Remove
+   :remove-percentage weka.filters.unsupervised.instance.RemovePercentage
    :remove-useless-attributes weka.filters.unsupervised.attribute.RemoveUseless
    :select-append-attributes weka.filters.unsupervised.attribute.Copy
    :project-attributes weka.filters.unsupervised.attribute.Remove}
@@ -188,6 +196,7 @@
      - :numeric-to-nominal
      - :add-attribute
      - :remove-attributes
+     - :remove-percentage
      - :remove-useless-attributes
      - :select-append-attributes
      - :project-attributes

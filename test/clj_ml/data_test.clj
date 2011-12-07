@@ -180,3 +180,23 @@
     (is (= nil (dataset-class-name ds)))
     (dataset-set-class ds :b)
     (is (= :b (dataset-class-name ds)))))
+
+(deftest split-dataset-test
+  (let [ds (make-dataset "test" [:a {:b [:foo :bar]}]
+                         [[1 :foo]
+                          [2 :bar]
+                          [3 :bar]
+                          [4 :foo]])
+        [a b] (split-dataset ds 25)]
+    (is (= (dataset-count @a) 1))
+    (is (= (dataset-count @b) 3))))
+
+(deftest do-split-dataset-test
+  (let [ds (make-dataset "test" [:a {:b [:foo :bar]}]
+                         [[1 :foo]
+                          [2 :bar]
+                          [3 :bar]
+                          [4 :foo]])
+        [a b] (do-split-dataset ds 25)]
+    (is (= (dataset-count a) 1))
+    (is (= (dataset-count b) 3))))

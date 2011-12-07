@@ -107,6 +107,13 @@
     (is (= (dataset-format res)
            [:b {:c '(:g :m)}]))))
 
+(deftest remove-precentage-test
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
+                                     [ [1 2 :g]
+                                       [2 3 :m]
+                                       [4 2 :m]
+                                       [4 5 :g]])]
+    (is (= (dataset-count (remove-percentage ds {:percentage 75})) 1))))
 
 (deftest make-apply-filter-numeric-to-nominal
   (let [ds (make-dataset :test [:a :b {:c [:g :m]}]

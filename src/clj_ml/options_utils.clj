@@ -6,7 +6,7 @@
 (ns #^{:author "Ben Mabey <ben@benmabey.com>"
        :skip-wiki true}
   clj-ml.options-utils
-  (:use [clj-ml data])
+  (:use     [clojure.contrib.seq :only [find-first]])
   (:require [clojure.contrib [string :as str]]))
 
 ;; Manipulation of array of options
@@ -25,6 +25,18 @@
       opts
       (conj  (conj opts flag) (str val-in-map)))))
 
+
+;; attr-name and dataset-index-attr copy and pasted from data due to Clojure's inability
+;; to handle circular dependencies. :(
+(defn- attr-name [^weka.core.Attribute attr]
+  (.name attr))
+
+(defn- dataset-index-attr
+  "Returns the index of an attribute in the attributes definition of a dataset."
+  [^weka.core.Instances dataset attr]
+  (if (number? attr)
+    attr
+    (find-first #(= (name attr) (attr-name (.attribute dataset (int %)))) (range (.numAttributes dataset)))))
 
 (defn extract-attributes
   "Transforms the :attributes value from m into the appropriate weka flag"

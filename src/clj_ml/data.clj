@@ -12,6 +12,7 @@
    that can be transformed using usual Clojure functions like map, reduce, etc."
   (:use [clj-ml utils]
         [clojure.contrib.seq :only [find-first]])
+  (:require [clj-ml.filters :as filters])
   (:import (weka.core Instance Instances FastVector Attribute)
            (cljml ClojureInstances)))
 
@@ -431,3 +432,18 @@ The intention is for this to be used on data-formats and not on datasets with da
     (doto dataset
       (.deleteAttributeAt (int attr-pos))
       (.insertAttributeAt new-attr (int attr-pos)))))
+
+(defn split-dataset
+  "Splits the dataset into two parts based on the percentage given.
+The first dataset returned will have 'percentage ammount of the original dataset and the second has the
+remaining portion. Both datasets are Delay objects that need to be dereffed.  If you want to have the
+split immediately you can use do-split-dataset."
+  [ds percentage]
+  [(delay (filters/remove-percentage ds {:percentage percentage :invert true}))
+   (delay (filters/remove-percentage ds {:percentage percentage}))])
+
+(defn do-split-dataset
+  "Splits the dataset into two parts based on the percentage given. The same as split-dataset but
+actual datasets are returned and not Delay objects that need dereffing."
+  [ds percentage]
+  (map deref (split-dataset ds percentage)))
