@@ -38,6 +38,12 @@
 (defn dataset-attribute-at [^Instances dataset index-or-name]
   (.attribute dataset (int (dataset-index-attr dataset index-or-name))))
 
+(defn copy-dataset
+  "Uses the Instances constructor to copy a given dataset.  Each Instance (row) will be shallow copied. So, while
+   not all the data is copied you will be creating n new Instance objects, where n is the number of training examples."
+  [^Instances ds]
+  (Instances. ds))
+
 (defn attribute-at
   "Returns attribute situated at the provided position or the provided name."
   [dataset-or-instance index-or-name]
@@ -441,6 +447,11 @@ The intention is for this to be used on data-formats and not on datasets with da
   ([^Instances ds seed]
      (let [seed (if (number? seed) (java.util.Random. seed) seed)]
        (doto ds (.randomize seed)))))
+
+(defn randomize-dataset
+  "Copies the given dataset and returns randomized version."
+  ([ds] (randomize-dataset! (copy-dataset ds)))
+  ([ds seed] (randomize-dataset! (copy-dataset ds) seed)))
 
 (defn split-dataset
   "Splits the dataset into two parts based on the percentage given.
