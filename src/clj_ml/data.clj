@@ -471,3 +471,8 @@ split immediately you can use do-split-dataset."
   "The same as split-dataset but actual datasets are returned and not Delay objects that need dereffing."
   [ds & options]
   (map deref (apply split-dataset ds options)))
+
+(defn take-dataset
+  "Returns a subset of the given dataset containing the first 'num' instances."
+  [ds num]
+  (filters/remove-range ds {:range (str "first-" num) :invert true}))

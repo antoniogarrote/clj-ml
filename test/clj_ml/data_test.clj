@@ -210,3 +210,11 @@
         [a b] (do-split-dataset ds :percentage 25)]
     (is (= (dataset-count a) 1))
     (is (= (dataset-count b) 3))))
+
+(deftest take-dataset-test
+  (let [ds (make-dataset "test" [:a {:b [:foo :bar]}]
+                         [[1 :foo]
+                          [2 :bar]
+                          [3 :bar]
+                          [4 :foo]])]
+    (is (= (dataset-as-vecs (take-dataset ds 2)) [[1.0 "foo"] [2.0 "bar"]]))))
