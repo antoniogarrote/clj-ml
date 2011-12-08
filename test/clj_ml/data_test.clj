@@ -181,13 +181,23 @@
     (dataset-set-class ds :b)
     (is (= :b (dataset-class-name ds)))))
 
-(deftest split-dataset-test
+(deftest split-dataset-percentage-test
   (let [ds (make-dataset "test" [:a {:b [:foo :bar]}]
                          [[1 :foo]
                           [2 :bar]
                           [3 :bar]
                           [4 :foo]])
-        [a b] (split-dataset ds 25)]
+        [a b] (split-dataset ds :percentage 25)]
+    (is (= (dataset-count @a) 1))
+    (is (= (dataset-count @b) 3))))
+
+(deftest split-dataset-num-test
+  (let [ds (make-dataset "test" [:a {:b [:foo :bar]}]
+                         [[1 :foo]
+                          [2 :bar]
+                          [3 :bar]
+                          [4 :foo]])
+        [a b] (split-dataset ds :num 1)]
     (is (= (dataset-count @a) 1))
     (is (= (dataset-count @b) 3))))
 
@@ -197,6 +207,6 @@
                           [2 :bar]
                           [3 :bar]
                           [4 :foo]])
-        [a b] (do-split-dataset ds 25)]
+        [a b] (do-split-dataset ds :percentage 25)]
     (is (= (dataset-count a) 1))
     (is (= (dataset-count b) 3))))

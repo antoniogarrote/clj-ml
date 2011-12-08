@@ -454,16 +454,20 @@ The intention is for this to be used on data-formats and not on datasets with da
   ([ds seed] (randomize-dataset! (copy-dataset ds) seed)))
 
 (defn split-dataset
-  "Splits the dataset into two parts based on the percentage given.
+  "Splits the dataset into two parts based on either the ':percentage' given or the ':num' of instances.
 The first dataset returned will have 'percentage ammount of the original dataset and the second has the
 remaining portion. Both datasets are Delay objects that need to be dereffed.  If you want to have the
 split immediately you can use do-split-dataset."
-  [ds percentage]
-  [(delay (filters/remove-percentage ds {:percentage percentage :invert true}))
-   (delay (filters/remove-percentage ds {:percentage percentage}))])
+  [ds & [& {:keys [percentage num]}]]
+  {:pre (= 1 (->> [percentage num] (remove nil?) count))} ;; must provide exactly one of these options
+  ;; pattern matching would be really nice here...
+  (if percentage
+    [(delay (filters/remove-percentage ds {:percentage percentage :invert true}))
+     (delay (filters/remove-percentage ds {:percentage percentage}))]
+    [(delay (filters/remove-range ds {:range (str "first-" num) :invert true}))
+     (delay (filters/remove-range ds {:range (str "first-" num)}))]))
 
 (defn do-split-dataset
-  "Splits the dataset into two parts based on the percentage given. The same as split-dataset but
-actual datasets are returned and not Delay objects that need dereffing."
-  [ds percentage]
-  (map deref (split-dataset ds percentage)))
+  "The same as split-dataset but actual datasets are returned and not Delay objects that need dereffing."
+  [ds & options]
+  (map deref (apply split-dataset ds options)))

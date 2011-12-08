@@ -142,6 +142,13 @@
 
 (deffilter remove-percentage)
 
+(defmethod make-filter-options :remove-range
+  ([kind m]
+     (->> (check-option-values m {:range "-R"})
+          (check-options m {:invert "-V"}))))
+
+(deffilter remove-range)
+
 (defmethod make-filter-options :remove-useless-attributes
   ([kind m]
      (check-option-values m {:max-variance "-M"})))
@@ -178,6 +185,7 @@
    :add-attribute weka.filters.unsupervised.attribute.Add
    :remove-attributes weka.filters.unsupervised.attribute.Remove
    :remove-percentage weka.filters.unsupervised.instance.RemovePercentage
+   :remove-range weka.filters.unsupervised.instance.RemoveRange
    :remove-useless-attributes weka.filters.unsupervised.attribute.RemoveUseless
    :select-append-attributes weka.filters.unsupervised.attribute.Copy
    :project-attributes weka.filters.unsupervised.attribute.Remove}
@@ -197,6 +205,7 @@
      - :add-attribute
      - :remove-attributes
      - :remove-percentage
+     - :remove-range
      - :remove-useless-attributes
      - :select-append-attributes
      - :project-attributes

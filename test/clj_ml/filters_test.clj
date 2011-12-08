@@ -115,6 +115,15 @@
                                        [4 5 :g]])]
     (is (= (dataset-count (remove-percentage ds {:percentage 75})) 1))))
 
+(deftest remove-range-test
+  (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
+                                     [ [1 2 :g]
+                                       [2 3 :m]
+                                       [4 2 :m]
+                                       [4 5 :g]])]
+    (is (= (dataset-count (remove-range ds {:range "first-3"})) 1)
+        (= (dataset-count (remove-range ds {:range "first-3" :invert true})) 3))))
+
 (deftest make-apply-filter-numeric-to-nominal
   (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
                                      [ [1 2 :g]
