@@ -229,6 +229,11 @@
   [^Instances dataset ^String new-name]
   (doto dataset (.setRelationName new-name)))
 
+(defn dataset-append-name
+  "Sets the dataset's name"
+  [^Instances dataset ^String name-addition]
+  (doto dataset (.setRelationName ^String (str (.relationName dataset) name-addition))))
+
 (defn attribute-labels-indexes
   "Returns map of the labels (possible values) for the given nominal attribute as the keys
    with the values being the attributes index. "
@@ -446,7 +451,9 @@ The intention is for this to be used on data-formats and not on datasets with da
      (randomize-dataset! ds (java.util.Random.)))
   ([^Instances ds seed]
      (let [seed (if (number? seed) (java.util.Random. seed) seed)]
-       (doto ds (.randomize seed)))))
+       (doto ds (.randomize seed) (dataset-append-name (str "-Randomized("
+                                                            (.hashCode ^Object seed)
+                                                            ")"))))))
 
 (defn randomize-dataset
   "Copies the given dataset and returns randomized version."

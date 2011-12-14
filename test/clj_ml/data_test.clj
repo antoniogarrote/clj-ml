@@ -68,6 +68,16 @@
       (dataset-set-class dataset :favorite-color)
       (is (= ["red" "blue" "green"] (dataset-class-values dataset))))))
 
+(deftest dataset-name-utils
+  (let [dataset (make-dataset :test
+                              [:age :iq {:favorite-color [:red :blue :green]}]
+                              [[12 100 :red]
+                               [14 110 :blue]
+                               [ 25 120 :green]])]
+    (is (= "test" (dataset-name dataset)))
+    (is (= "new-name" (dataset-name (dataset-set-name dataset "new-name"))))
+    (is (= "new-name-extra" (dataset-name (dataset-append-name dataset "-extra"))))))
+
 (deftest dataset-count-1
   (let [dataset (make-dataset :test
                               [:a :b]
@@ -173,7 +183,6 @@
       (is (= 0 (dataset-count headers)))
       (is (= "test" (dataset-name headers)))
       (is (= [:a {:b [:foo :bar]}] (dataset-format headers))))))
-
 
 (deftest dataset-class-helpers
   (let [ds (make-dataset "test" [:a {:b [:foo :bar]}] [[1 :foo] [2 :bar]])]
