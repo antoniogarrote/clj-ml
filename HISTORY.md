@@ -1,5 +1,19 @@
 # clj-ml History
 
+## v0.1.4 - 2011-12-14
+
+### New Features
+  * new filter wrappers: remove-range, remove-percentage
+  * new helpers: split-dataset, do-split-dataset, take-dataset,
+                 randomize-dataset!, randomize-dataset, map-fast-vec
+
+
+## v0.1.3 - 2011-10-07
+
+### New Features
+  * added new attribute selection namespace
+
+
 ## v0.1.2 - 2011-06-14
 
 ### New Features
