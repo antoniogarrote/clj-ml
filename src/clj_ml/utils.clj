@@ -29,6 +29,12 @@
       (.addElement fv item))
     fv))
 
+(defn map-fast-vec [^weka.core.FastVector fast-vector f]
+  (->> (.elements fast-vector)
+       enumeration-seq
+       (map f)
+       into-fast-vector))
+
 (defn update-in-when
   "Similar to update-in, but returns m unmodified if any levels do
   not exist"
