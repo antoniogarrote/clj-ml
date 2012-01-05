@@ -45,12 +45,6 @@
      (let [loader (new CSVLoader)]
        (m-load-instances loader source))))
 
-(defmethod load-instances :mongodb
-  ([kind source & options]
-     (let [database {:database source}
-           name {:dataset-name source}]
-       (clj-ml.data-store/data-store-load-dataset :mongodb database name options))))
-
 ;; Saving of instances
 
 (defmulti save-instances
@@ -80,7 +74,3 @@
   ([kind destiny instances & options]
      (let [saver (new CSVSaver)]
        (m-save-instances saver destiny instances))))
-
-(defmethod save-instances :mongodb
-  ([kind destiny instances & options]
-     (clj-ml.data-store/data-store-save-dataset :mongodb destiny instances options)))
