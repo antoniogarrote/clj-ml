@@ -13,18 +13,15 @@
 
 (defn check-option [opts val flag map]
   "Sets an option for a filter"
-  (let [val-in-map (get map val)]
-    (if (or (nil? val-in-map) (false? val-in-map))
-      opts
-      (conj opts flag))))
+  (if (get map val)
+    (conj opts flag)
+      opts))
 
 (defn check-option-value [opts val flag map]
   "Sets an option with value for a filter"
-  (let [val-in-map (get map val)]
-    (if (nil? val-in-map)
-      opts
-      (conj  (conj opts flag) (str val-in-map)))))
-
+  (if-let [val-in-map (get map val)]
+    (vec (concat opts [flag (str val-in-map)]))
+    opts))
 
 ;; attr-name and dataset-index-attr copy and pasted from data due to Clojure's inability
 ;; to handle circular dependencies. :(
