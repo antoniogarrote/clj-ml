@@ -14,7 +14,7 @@
 (defn check-option [opts val flag map]
   "Sets an option for a filter"
   (let [val-in-map (get map val)]
-    (if (nil? val-in-map)
+    (if (or (nil? val-in-map) (false? val-in-map))
       opts
       (conj opts flag))))
 
