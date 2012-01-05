@@ -10,8 +10,7 @@
    these data sets as well as their classes can be modified and assigned to
    the instances. Finally data sets can be transformed into Clojure sequences
    that can be transformed using usual Clojure functions like map, reduce, etc."
-  (:use [clj-ml utils]
-        [clojure.contrib.seq :only [find-first]])
+  (:use [clj-ml utils])
   (:require [clj-ml.filters :as filters])
   (:import (weka.core Instance Instances FastVector Attribute)
            (cljml ClojureInstances)))

@@ -1,51 +1,17 @@
 (ns clj-ml.clusterers-test
   (:use [clj-ml clusterers data] :reload-all)
-  (:use [clojure.test]))
+  (:use clojure.test midje.sweet))
 
 (deftest make-clusterers-options-k-means
-  (let [options (make-clusterer-options :k-means {:display-standard-deviation true :replace-missing-values true :preserve-instances-order true
-                                                  :number-clusters 3 :random-seed 2 :number-iterations 1})]
-    (is (= (aget options 0)
-           ""))
-    (is (= (aget options 1)
-           "-V"))
-    (is (= (aget options 2)
-           "-M"))
-    (is (= (aget options 3)
-           "-O"))
-    (is (= (aget options 4)
-           "-N"))
-    (is (= (aget options 5)
-           "3"))
-    (is (= (aget options 6)
-           "-S"))
-    (is (= (aget options 7)
-           "2"))
-    (is (= (aget options 8)
-           "-I"))
-    (is (= (aget options 9)
-           "1"))))
+  (fact
+    (let [options (vec (make-clusterer-options :k-means {:display-standard-deviation true :replace-missing-values true :preserve-instances-order true
+                                                         :number-clusters 3 :random-seed 2 :number-iterations 1}))]
+      options => (just ["" "-V" "-M" "-O" "-N" "3" "-S" "2" "-I" "1"] :in-any-order))))
 
 (deftest make-clusterers-options-expectation-maximization
-  (let [options (make-clusterer-options :expectation-maximization {:number-clusters 3 :maximum-iterations 10 :minimum-standard-deviation 0.001 :random-seed 30})]
-    (is (= (aget options 0)
-           ""))
-    (is (= (aget options 1)
-           "-N"))
-    (is (= (aget options 2)
-           "3"))
-    (is (= (aget options 3)
-           "-I"))
-    (is (= (aget options 4)
-           "10"))
-    (is (= (aget options 5)
-           "-M"))
-    (is (= (aget options 6)
-           "0.0010"))
-    (is (= (aget options 7)
-           "-S"))
-    (is (= (aget options 8)
-           "30"))))
+  (fact
+    (let [options (vec (make-clusterer-options :expectation-maximization {:number-clusters 3 :maximum-iterations 10 :minimum-standard-deviation 0.001 :random-seed 30}))]
+      options => (just ["" "-N" "3" "-I" "10" "-M" "0.0010" "-S" "30"] :in-any-order))))
 
 
 (deftest make-and-build-clusterer

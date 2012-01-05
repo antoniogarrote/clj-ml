@@ -6,8 +6,8 @@
 (ns #^{:author "Ben Mabey <ben@benmabey.com>"
        :skip-wiki true}
   clj-ml.options-utils
-  (:use     [clojure.contrib.seq :only [find-first]])
-  (:require [clojure.contrib [string :as str]]))
+  (:use [clj-ml utils])
+  (:require [clojure [string :as str]]))
 
 ;; Manipulation of array of options
 

@@ -1,13 +1,14 @@
 (ns clj-ml.classifiers-test
   (:use [clj-ml classifiers data] :reload-all)
-  (:use [clojure.test]))
+  (:use clojure.test midje.sweet))
 
 
 (deftest make-classifiers-options-c45
-  (let [options (make-classifier-options :decision-tree :c45 {:unpruned true :reduced-error-pruning true :only-binary-splits true :no-raising true
-                                                               :no-cleanup true :laplace-smoothing true :pruning-confidence 0.12 :minimum-instances 10
-                                                               :pruning-number-folds 5 :random-seed 1})]
-    (is (= options ["-U" "-R" "-B" "-S" "-L" "-A" "-C" "0.12" "-M" "10" "-N" "5" "-Q" "1"]))))
+  (fact
+    (let [options (make-classifier-options :decision-tree :c45 {:unpruned true :reduced-error-pruning true :only-binary-splits true :no-raising true
+                                                                :no-cleanup true :laplace-smoothing true :pruning-confidence 0.12 :minimum-instances 10
+                                                                :pruning-number-folds 5 :random-seed 1})]
+      options => (just ["-U" "-R" "-B" "-S" "-L" "-A" "-C" "0.12" "-M" "10" "-N" "5" "-Q" "1"] :in-any-order))))
 
 
 (deftest make-classifier-c45
@@ -23,10 +24,10 @@
     (is true)))
 
 (deftest make-classifier-bayes
-  (let [c (clj-ml.classifiers/make-classifier :bayes :naive {:kernel-estimator true :old-format true})
-        opts (.getOptions c)]
-    (is (= (aget opts 0) "-K"))
-    (is (= (aget opts 1) "-O"))))
+  (fact
+    (let [c (clj-ml.classifiers/make-classifier :bayes :naive {:kernel-estimator true :old-format true})
+          opts (vec (.getOptions c))]
+      opts => (contains ["-K" "-O"]))))
 
 (deftest make-classifier-bayes-updateable
   (let [c (clj-ml.classifiers/make-classifier :bayes :naive {:updateable true})]

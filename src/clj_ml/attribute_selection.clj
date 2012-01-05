@@ -1,9 +1,7 @@
 (ns #^{:author "Ben Mabey <ben@benmabey.com>"}
   clj-ml.attribute-selection
   ""
-  (:use [clj-ml data utils options-utils]
-        [clojure.contrib [def :only [defvar defvar-]]])
-  (:require [clojure.contrib [string :as str]])
+  (:use [clj-ml data utils options-utils])
   (:import weka.core.OptionHandler
            [weka.attributeSelection
             ASEvaluation ASSearch
@@ -409,7 +407,8 @@
                                 :folds "-N"
                                 :bucket-size "-B"}))))
 
-(defvar obj-aliases
+(def obj-aliases
+  "Mapping of cjl-ml keywords to actual Weka classes"
   {
    ;; Searches
    :greedy GreedyStepwise
@@ -425,8 +424,7 @@
    :chi-squared ChiSquaredAttributeEval
    :one-R OneRAttributeEval
    :relief ReliefFAttributeEval
-   }
-  "Mapping of cjl-ml keywords to actual Weka classes")
+   })
 
 (defn make-weka-obj [kind options]
   (let [^OptionHandler f (.newInstance  (kind obj-aliases))]

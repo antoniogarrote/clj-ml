@@ -36,9 +36,8 @@
    The previous sample of code could be rewritten with the make-apply-filter function:
 
      (def filtered-ds (make-apply-filter :remove-attributes {:attributes [:a :c]} ds))"
-  (:use [clj-ml utils options-utils]
-        [clojure.contrib [def :only [defvar defvar-]]])
-  (:require [clojure.contrib [string :as str]])
+  (:use [clj-ml utils options-utils])
+  (:require [clojure [string :as str]])
   (:import (weka.filters Filter)
            (weka.core OptionHandler)
            (cljml ClojureStreamFilter ClojureBatchFilter)))
@@ -110,9 +109,9 @@
 
 (deffilter numeric-to-nominal)
 
-
-(defvar- attribute-types {:numeric "NUM" :nominal "NOM" :string "STR" :date "DAT"}
-  "Mapping of Weka's attribute types from clj-ml keywords to the -T flag's representation.")
+(def attribute-types
+  "Mapping of Weka's attribute types from clj-ml keywords to the -T flag's representation."
+  {:numeric "NUM" :nominal "NOM" :string "STR" :date "DAT"})
 
 (defmethod make-filter-options :add-attribute
   ([kind m]
@@ -177,7 +176,8 @@
 
 ;; Creation of filters
 
-(defvar filter-aliases
+(def filter-aliases
+  "Mapping of cjl-ml keywords to actual Weka classes"
   {:supervised-discretize weka.filters.supervised.attribute.Discretize
    :unsupervised-discretize weka.filters.unsupervised.attribute.Discretize
    :supervised-nominal-to-binary weka.filters.supervised.attribute.NominalToBinary
@@ -189,8 +189,7 @@
    :remove-range weka.filters.unsupervised.instance.RemoveRange
    :remove-useless-attributes weka.filters.unsupervised.attribute.RemoveUseless
    :select-append-attributes weka.filters.unsupervised.attribute.Copy
-   :project-attributes weka.filters.unsupervised.attribute.Remove}
-  "Mapping of cjl-ml keywords to actual Weka classes")
+   :project-attributes weka.filters.unsupervised.attribute.Remove})
 
 
 (defn make-filter

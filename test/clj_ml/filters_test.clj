@@ -1,52 +1,33 @@
 (ns clj-ml.filters-test
   (:use [clj-ml filters data] :reload-all)
-  (:use [clojure.test]))
+  (:use clojure.test midje.sweet))
 
 (deftest make-filter-options-supervised-discretize
-  (let [options (make-filter-options :supervised-discretize {:attributes [1 2] :invert true :binary true :better-encoding true :kononenko true :nonexitent true})]
-    (are [index expected-flag] (is (= (get options index) expected-flag))
-         0 "-R"
-         1 "2,3"
-         2 "-V"
-         3 "-D"
-         4 "-E"
-         5 "-K")))
+  (fact
+    (let [options (make-filter-options :supervised-discretize {:attributes [1 2] :invert true :binary true :better-encoding true :kononenko true :nonexitent true})]
+      options => (just ["-R" "2,3" "-V" "-D" "-E" "-K"] :in-any-order))))
 
 (deftest make-filter-options-unsupervised-discretize
-  (let [options (make-filter-options :unsupervised-discretize {:attributes [1 2] :binary true
-                                                               :better-encoding true :equal-frequency true :optimize true
-                                                               :number-bins 4 :weight-bins 1})]
-    (are [index expected-flag] (is (= (get options index) expected-flag))
-         0 "-R"
-         1 "2,3"
-         2 "-D"
-         3 "-E"
-         4 "-F"
-         5 "-O"
-         6 "-B"
-         7 "4"
-         8 "-M"
-         9 "1")))
+  (fact
+    (let [options (make-filter-options :unsupervised-discretize {:attributes [1 2] :binary true
+                                                                 :better-encoding true :equal-frequency true :optimize true
+                                                                 :number-bins 4 :weight-bins 1})]
+      options => (just ["-R" "2,3" "-D" "-E" "-F" "-O" "-B" "4" "-M" "1"] :in-any-order))))
 
 (deftest make-filter-options-supervised-nominal-to-binary
-  (let [options (make-filter-options :supervised-nominal-to-binary {:also-binary true :for-each-nominal true})]
-    (are [index expected-flag] (is (= (get options index) expected-flag))
-         0 "-N"
-         1 "-A")))
+  (fact
+    (let [options (make-filter-options :supervised-nominal-to-binary {:also-binary true :for-each-nominal true})]
+      options => (just ["-N" "-A"] :in-any-order))))
 
 (deftest make-filter-options-unsupervised-nominal-to-binary
-  (let [options (make-filter-options :unsupervised-nominal-to-binary {:attributes [1,2] :also-binary true :for-each-nominal true :invert true})]
-    (are [index expected-flag] (is (= (get options index) expected-flag))
-         0 "-R"
-         1 "2,3"
-         2 "-V"
-         3 "-N"
-         4 "-A")))
+  (fact
+    (let [options (make-filter-options :unsupervised-nominal-to-binary {:attributes [1,2] :also-binary true :for-each-nominal true :invert true})]
+      options => (just ["-R" "2,3" "-V" "-N" "-A"] :in-any-order))))
 
 (deftest make-filter-remove-useless-attributes
   (let [ds (make-dataset :foo [:a] [[1] [2]])
         filter (make-filter :remove-useless-attributes {:dataset-format ds :max-variance 95})]
-    (is (= (.getMaximumVariancePercentageAllowed filter) 95))))
+    (is (== (.getMaximumVariancePercentageAllowed filter) 95))))
 
 (deftest make-filter-discretize-sup
   (let [ds (make-dataset :test [:a :b {:c [:g :m]}]
@@ -190,9 +171,9 @@
                                {:process inc-nums
                                 :determine-dataset-format rename-attributes} ds)]
     (is (= (map instance-to-map (dataset-seq res))
-           [{:foo 2 :bar 3 :c "g"}
-            {:foo 3 :bar 5 :c "m"}
-            {:foo 5 :bar 9 :c "g"}]))))
+           [{:foo 2.0 :bar 3.0 :c "g"}
+            {:foo 3.0 :bar 5.0 :c "m"}
+            {:foo 5.0 :bar 9.0 :c "g"}]))))
 
 
 (deftest make-apply-filter-clj-batch
@@ -219,7 +200,7 @@
         res (clj-batch ds
                        {:process add-max-diff-values
                         :determine-dataset-format add-max-diff-attr})]
-    (is (= [{:a 1 :max-diff 3}
-            {:a 2 :max-diff 2}
-            {:a 4 :max-diff 0}]
+    (is (= [{:a 1.0 :max-diff 3.0}
+            {:a 2.0 :max-diff 2.0}
+            {:a 4.0 :max-diff 0.0}]
              (dataset-as-maps res)))))
