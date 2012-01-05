@@ -53,28 +53,14 @@
 ; TODO: Raise a helpful exception when the keys don't match up with the provided flags.
 (defn check-options
   "Checks the presence of a set of options for a filter"
-  ([args-map opts-map] (check-options args-map opts-map []))
-  ( [args-map opts-map tmp]
-      (loop [rem (keys opts-map)
-             acum tmp]
-        (if (empty? rem)
-          acum
-          (let [k (first rem)
-                vk (get opts-map k)
-                rst (rest rem)]
-            (recur rst
-                   (check-option acum k vk args-map)))))))
+  ([args-map opts-map]
+     (check-options args-map opts-map []))
+  ([args-map opts-map options-so-far]
+     (reduce (fn [so-far [option flag]] (check-option so-far option flag args-map)) options-so-far opts-map)))
 
 (defn check-option-values
   "Checks the presence of a set of options with value for a filter"
-  ([args-map opts-map] (check-option-values args-map opts-map []))
-  ([args-map opts-map val]
-      (loop [rem (keys opts-map)
-             acum val]
-        (if (empty? rem)
-          acum
-          (let [k (first rem)
-                vk (get opts-map k)
-                rst (rest rem)]
-            (recur rst
-                   (check-option-value acum k vk args-map)))))))
+  ([args-map opts-map]
+     (check-option-values args-map opts-map []))
+  ([args-map opts-map options-so-far]
+     (reduce (fn [so-far [option flag]] (check-option-value so-far option flag args-map)) options-so-far opts-map)))
