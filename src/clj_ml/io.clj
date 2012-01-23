@@ -7,7 +7,6 @@
   clj-ml.io
   "Functions for reading and saving datasets, classifiers and clusterers to files and other
    persistence mechanisms."
-  (:require clj-ml.data-store)
   (:import (weka.core.converters CSVLoader ArffLoader XRFFLoader)
            (weka.core.converters CSVSaver ArffSaver XRFFSaver)
            (java.io File InputStream OutputStream)
