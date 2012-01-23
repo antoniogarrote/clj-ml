@@ -1,5 +1,17 @@
 # clj-ml History
 
+## v0.1.5 - 2012-01-23
+
+ * MongoDB support was removed (the original author has never
+ communicated with me and I have no intention on maintaining that
+ functionality)
+ 
+### New Features
+ * adds attribute-value-fn helper fn
+ 
+### Bug Fixes
+  * fixes bug in add-attribute filter, name can now be specified.
+    
 ## v0.1.4 - 2011-12-14
 
 ### New Features
