@@ -117,6 +117,7 @@
 (defmethod make-filter-options :add-attribute
   ([kind m]
      (-> m
+         (update-in-when [:name] name)
          (update-in-when [:type] attribute-types)
          (update-in-when [:labels] (partial str/join ","))
          (update-in-when [:column] #(if (number? %) (inc %) %))
