@@ -1,5 +1,9 @@
 # clj-ml History
 
+## v0.2.1 - 2012-03-26
+
+ * Weight information of an instance is attached as metadata when converting to a map.
+
 ## v0.2.0 - 2012-02-06
 
  * Upgraded to clojure 1.3.
