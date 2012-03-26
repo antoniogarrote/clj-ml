@@ -350,10 +350,11 @@ If the class is nominal then the string value (not keyword) is returned."
 (defn instance-to-map
   "Builds a vector with the values of the instance"
   [^Instance instance]
-  (reduce (fn [m i]
-            (assoc m (keyword (attribute-name-at instance i)) (instance-value-at instance i)))
-          {}
-          (range (.numValues instance))))
+  (with-meta (reduce (fn [m i]
+                       (assoc m (keyword (attribute-name-at instance i)) (instance-value-at instance i)))
+                     {}
+                     (range (.numValues instance)))
+    {:weight (.weight instance)}))
 
 
 ;; manipulation of datasets
@@ -372,8 +373,10 @@ This fn is preferale to mapping over a seq yourself with instance-to-map
 becuase it avoids redundant string interning of the attribute names."
   [dataset]
   (let [attrs (attribute-names dataset)] ; we only want to intern the attribute names once!
-    (for [instance (map instance-to-list (dataset-seq dataset))]
-      (zipmap attrs instance))))
+    (for [^Instance instance (dataset-seq dataset)]
+      (with-meta
+        (zipmap attrs (instance-to-list instance))
+        {:weight (.weight instance)}))))
 
 (defn dataset-as-lists
   "Returns a lazy sequence of the dataset represented as lists.  The values
