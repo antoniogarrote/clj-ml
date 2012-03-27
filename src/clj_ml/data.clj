@@ -460,8 +460,9 @@ The intention is for this to be used on data-formats and not on datasets with da
   "Takes a dataset and an attribute name, returns a function that will select the attribute value
    of a given instance from the dataset."
   [ds attr-name]
-  (let [idx (int (dataset-index-attr ds attr-name))]
-    #(instance-value-at % idx)))
+  (if-let [idx (dataset-index-attr ds attr-name)]
+    #(instance-value-at % (int idx))
+    (throw (Exception. (str "Could not find the attribute '" attr-name "' in the dataset!")))))
 
 (defn randomize-dataset
   "Copies the given dataset and returns randomized version."
