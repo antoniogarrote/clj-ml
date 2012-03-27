@@ -1,5 +1,9 @@
 # clj-ml History
 
+## v0.2.2 - 2012-03-27
+
+ * Maven repo changes.
+
 ## v0.2.1 - 2012-03-26
 
  * Weight information of an instance is attached as metadata when converting to a map.

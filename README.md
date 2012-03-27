@@ -16,7 +16,7 @@ git clone the project, then run:
 
 ### Installing from Clojars
 
-    [org.clojars.bmabey/clj-ml "0.1.4"]
+    [org.clojars.bmabey/clj-ml "0.2.2"]
 
 ### Installing from Maven
 
@@ -25,7 +25,7 @@ git clone the project, then run:
     <dependency>
       <groupId>clj-ml</groupId>
       <artifactId>clj-ml</artifactId>
-      <version>0.1.4</version>
+      <version>0.2.2</version>
     </dependency>
 
 ## Supported algorithms
