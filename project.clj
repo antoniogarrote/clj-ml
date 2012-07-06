@@ -1,14 +1,13 @@
-(defproject clj-ml "0.0.3-SNAPSHOT"
+(defproject com.leadtune/clj-ml "0.2.3"
   :description "Machine Learning library for Clojure built around Weka and friends"
-  :java-source-path "src/java"
+  :repositories {"leadtune-repo" "http://utility.leadtune.com:8081/nexus/content/repositories/thirdparty/"}
+  :aoc "src/java"
   :javac-fork "true"
-  :dependencies [[org.clojure/clojure "1.1.0"]
-                 [org.clojure/clojure-contrib "1.1.0"]
-                 [lein-javac "0.0.2-SNAPSHOT"]
-                 [incanter/incanter-full "1.0-master-SNAPSHOT"]
-                 [com.mongodb/mongo "1.0"]
-                 [weka/weka "3.6.2"]]
-  :dev-dependencies [[autodoc "0.7.0"]]
-  :autodoc { :name "clj-ml", :page-title "clj-ml machine learning Clojure's style"
-             :author "Antonio Garrote <antoniogarrote@gmail.com>"
-             :copyright "2010 (c) Antonio Garrote, under the MIT license"})
+  :warn-on-reflection true
+  :dependencies [[org.clojure/clojure "1.3.0"]
+                 [incanter/incanter-core "1.3.0"]
+                 [incanter/incanter-charts "1.3.0"]
+                 [lt/weka "3.6.3"]
+                 [hr.irb/fastRandomForest "0.98"]]
+  :dev-dependencies [[midje "1.3.0-RC2"]
+                     [swank-clojure "1.3.4"]])

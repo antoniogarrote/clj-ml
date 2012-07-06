@@ -1,0 +1,19 @@
+pom.xml
+*jar
+lib
+classes
+.lein*
+
+## EMACS
+*~
+\#*
+.\#*
+.dir-locals.el
+
+## VIM
+*.sw?
+
+## OSx
+.DS_Store
+
+

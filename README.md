@@ -1,55 +1,54 @@
 # clj-ml
 
-A machine learning library for Clojure built on top of Weka and friends
+A machine learning library for Clojure built on top of Weka and friends.
 
 ## Installation
 
 In order to install the library you must first install Leiningen.
-You should also download the Weka 3.6.2 jar from the official weka homepage.
-If maven complains about not finding weka, follow its instructions to install
-the jar manually.
 
 ### To install from source
 
-*  git clone the project
-* $ lein deps
-* $ lein compile
-* $ lein compile-java
-* $ lein uberjar
+git clone the project, then run:
+
+    $ lein deps
+    $ lein javac
+    $ lein uberjar
 
 ### Installing from Clojars
 
-  [clj-ml "0.0.3-SNAPSHOT"]
+    [org.clojars.bmabey/clj-ml "0.2.3"]
 
 ### Installing from Maven
 
 (add Clojars repository)
 
- <dependency>
-   <groupId>clj-ml</groupId>
-   <artifactId>clj-ml</artifactId>
-   <version>0.0.3-SNAPSHOT</version>
- </dependency>
+    <dependency>
+      <groupId>clj-ml</groupId>
+      <artifactId>clj-ml</artifactId>
+      <version>0.2.3</version>
+    </dependency>
 
 ## Supported algorithms
 
  * Filters
-  - supervised discretize
-  - unsupervised discretize
-  - supervised nominal to binary
-  - unsupervised nominal to binary
+   * supervised discretize
+   * unsupervised discretize
+   * supervised nominal to binary
+   * unsupervised nominal to binary
 
  * Classifiers
-  - C4.5 (J4.8)
-  - naive Bayes
-  - multilayer perceptron
+   * C4.5 (J4.8)
+   * naive Bayes
+   * multilayer perceptron
 
-  * Clusterers
-   - k-means
+ * Clusterers
+   * k-means
 
 ## Usage
 
-* I/O of data
+API documenation can be found [here](http://antoniogarrote.github.com/clj-ml/index.html).
+
+### I/O of data
 
     REPL>(use 'clj-ml.io)
 
@@ -59,7 +58,7 @@ the jar manually.
     REPL>; Saving data in a different format
     REPL>(save-instances :csv "file:///Users/antonio.garrote/Desktop/iris.csv"  ds)
 
-* Working with datasets
+### Working with datasets
 
     REPL>(use 'clj-ml.data)
 
@@ -90,18 +89,29 @@ the jar manually.
     REPL>(instance-to-vector (dataset-at ds 0))
     [12.0 34.0 :good]
 
-* Filtering datasets
+### Filtering datasets
 
-    REPL>(us 'clj-ml.filters)
+    REPL>(use '(clj-ml filters io))
 
     REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
 
     REPL>; Discretizing a numeric attribute using an unsupervised filter
-    REPL>(def  discretize (make-filter :unsupervised-discretize {:dataset *ds* :attributes [0 2]}))
+    REPL>(def  discretize (make-filter :unsupervised-discretize {:dataset-format ds :attributes [:sepallength :petallength]}))
 
-    REPL>(def filtered-ds (filter-process discretize ds))
 
-* Using classifiers
+    REPL>(def filtered-ds (filter-apply discretize ds))
+
+    REPL>; You can also use the filter's fn directly which will create and apply the filter:
+    REPL>(def filtered-ds (unsupervised-discretize ds {:attributes [:sepallength :petallength]}))
+    REPL>; The above way lends itself to the -> macro and is useful when using multiple filters.
+
+
+    REPL>; The eqivalent operation can be done with the ->> macro and make-apply-filter fn:
+    REPL>(def filtered-ds (->> "file:///Applications/weka-3-6-2/data/iris.arff")
+                               (load-instances :arff)
+                               (make-apply-filter :unsupervised-discretize {:attributes [0 2]}))
+
+### Using classifiers
 
     REPL>(use 'clj-ml.classifiers)
 
@@ -198,7 +208,7 @@ the jar manually.
 
      0.0
 
-    REPL>(classifier-label to-classify)
+    REPL>(classifier-label classifier to-classify)
 
      #<Instance 5.1,3.5,1.4,0.2,Iris-setosa>
 
@@ -206,10 +216,9 @@ the jar manually.
     REPL>; The classifiers can be saved and restored later
     REPL>(use 'clj-ml.utils)
 
-    REPL>(serialize-to-file classifier
-    REPL> "/Users/antonio.garrote/Desktop/classifier.bin")
+    REPL>(serialize-to-file classifier "/Users/antonio.garrote/Desktop/classifier.bin")
 
-* Using clusterers
+### Using clusterers
 
     REPL>(use 'clj-ml.clusterers)
 

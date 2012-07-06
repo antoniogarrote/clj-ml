@@ -13,14 +13,13 @@
             NoSuchAlgorithmException
             MessageDigest)))
 
-
-(defn key-to-str
-  "transforms a keyword into a string"
-  ([k]
-     (if (= (class k) String)
-       k
-       (let [sk (str k)]
-         (.substring sk 1)))))
+;; taken from clojure.contrib.seq
+(defn find-first
+  "Returns the first item of coll for which (pred item) returns logical true.
+  Consumes sequences up to the first match, will consume the entire sequence
+  and return nil if no match is found."
+  [pred coll]
+  (first (filter pred coll)))
 
 (defn first-or-default
   "Returns the first element in the collection or the default value"
@@ -28,6 +27,30 @@
      (if (empty? col)
        default
        (first col))))
+
+(defn into-fast-vector
+  "Similar to into-array but returns a weka.core.FastVector"
+  [coll]
+  (let [fv (weka.core.FastVector.)]
+    (doseq [item coll]
+      (.addElement fv item))
+    fv))
+
+(defn map-fast-vec [^weka.core.FastVector fast-vector f]
+  (->> (.elements fast-vector)
+       enumeration-seq
+       (map f)
+       into-fast-vector))
+
+(defn update-in-when
+  "Similar to update-in, but returns m unmodified if any levels do
+  not exist"
+  ([m [k & ks] f & args]
+   (if (contains? m k)
+     (if ks
+       (assoc m k (apply update-in-when (get m k) ks f args))
+       (assoc m k (apply f (get m k) args)))
+     m)))
 
 ;; trying metrics
 
@@ -56,47 +79,6 @@
       (.toString (new BigInteger 1 (.digest alg)) 16)
       (catch NoSuchAlgorithmException e
         (throw (new RuntimeException e))))))
-
-;; Manipulation of array of options
-
-(defn check-option [opts val flag map]
-  "Sets an option for a filter"
-  (let [val-in-map (get map val)]
-    (if (nil? val-in-map)
-      opts
-      (conj opts flag))))
-
-(defn check-option-value [opts val flag map]
-  "Sets an option with value for a filter"
-  (let [val-in-map (get map val)]
-    (if (nil? val-in-map)
-      opts
-      (conj  (conj opts flag) (str val-in-map)))))
-
-
-(defn check-options [opts-map args-map tmp]
-  "Checks the presence of a set of options for a filter"
-  (loop [rem (keys opts-map)
-         acum tmp]
-    (if (empty? rem)
-      acum
-      (let [k (first rem)
-            vk (get opts-map k)
-            rst (rest rem)]
-        (recur rst
-               (check-option acum k vk args-map))))))
-
-(defn check-option-values [opts-map args-map tmp]
-  "Checks the presence of a set of options with value for a filter"
-  (loop [rem (keys opts-map)
-         acum tmp]
-    (if (empty? rem)
-      acum
-      (let [k (first rem)
-            vk (get opts-map k)
-            rst (rest rem)]
-        (recur rst
-               (check-option-value acum k vk args-map))))))
 
 ;; Serializing classifiers
 

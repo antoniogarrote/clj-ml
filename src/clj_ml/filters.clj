@@ -9,102 +9,158 @@
    dataset in some way: transforming nominal attributes into binary attributes, removing
    attributes etc.
 
-   A sample use of the API is shown below:
+   There are a number of ways to use the filtering API.  The most straight forward and
+   idomatic clojure way is to use the provided filter fns:
 
-     ;; *ds* is the dataset where the first attribute is to be removed
-     (def *filter* (make-filter :remove-attributes {:dataset-format *ds* :attributes [0]}))
+     ;; ds is the dataset
+     (def ds (make-dataset :test [:a :b {:c [:g :m]}]
+                                     [ [1 2 :g]
+                                       [2 3 :m]
+                                       [4 5 :g]]))
+     (def filtered-ds
+        (-> ds
+            (add-attribute {:type :nominal, :column 1, :name \"pet\", :labels [\"dog\" \"cat\"]})
+            (remove-attributes {:attributes [:a :c]})))
+
+
+   The above functions rely on lower level fns that create and apply the filters which you may
+   also use if you need more control over the actual filter objects:
+
+     (def filter (make-filter :remove-attributes {:dataset-format ds :attributes [:a :c]}))
+
 
      ;; We apply the filter to the original data set and obtain the new one
-     (def *filtered-ds* (filter-apply *filter* *ds*))
+     (def filtered-ds (filter-apply filter ds))
 
 
    The previous sample of code could be rewritten with the make-apply-filter function:
 
-     ;; There is no necessity of passing the :dataset-format option, *ds* format is used
-     ;; automatically
-     (def *filtered-ds* (make-apply-filter :remove-attributes {:attributes [0]} *ds*))"
-  (:use [clj-ml data utils])
-  (:import (weka.filters Filter)))
-
+     (def filtered-ds (make-apply-filter :remove-attributes {:attributes [:a :c]} ds))"
+  (:use [clj-ml utils options-utils])
+  (:require [clojure [string :as str]])
+  (:import (weka.filters Filter)
+           (weka.core OptionHandler)
+           (cljml ClojureStreamFilter ClojureBatchFilter)))
 
 
 ;; Options for the filters
 
 (defmulti  #^{:skip-wiki true}
   make-filter-options
-  "Creates the right parameters for a filter"
+  "Creates the right parameters for a filter. Returns a clojure vector."
   (fn [kind map] kind))
 
+(declare make-apply-filter)
+;TODO: consider passing in the make-filter-options body here as well in additon to the docstring.
+(defmacro deffilter
+  "Defines the filter's fn that creates a fn to make and apply the filter."
+  [filter-name]
+  (let [filter-keyword (keyword filter-name)]
+    `(do
+       (defn ~filter-name
+         ([ds#]
+            (make-apply-filter ~filter-keyword {} ds#))
+         ([ds# attributes#]
+            (make-apply-filter ~filter-keyword attributes# ds#))))))
+
+
 (defmethod make-filter-options :supervised-discretize
-  ([kind map]
-     (let [cols (get map :attributes)
-           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
-           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
-           cols-val-b (check-options {:invert "-V"
-                                      :binary "-D"
-                                      :better-encoding "-E"
-                                      :kononenko "-K"}
-                                     map
-                                     cols-val-a)]
-    (into-array cols-val-b))))
+  ([kind m]
+     (->> (extract-attributes m)
+          (check-options m {:invert "-V"
+                            :binary "-D"
+                            :better-encoding "-E"
+                            :kononenko "-K"}))))
+
+(deffilter supervised-discretize)
 
 (defmethod make-filter-options :unsupervised-discretize
-  ([kind map]
-     (let [cols (get map :attributes)
-           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
-           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
-           cols-val-b (check-options {:unset-class "-unset-class-temporarily"
-                                      :binary "-D"
-                                      :better-encoding "-E"
-                                      :equal-frequency "-F"
-                                      :optimize "-O"}
-                                     map
-                                     cols-val-a)
-           cols-val-c (check-option-values {:number-bins "-B"
-                                            :weight-bins "-M"}
-                                           map
-                                           cols-val-b)]
-       (into-array cols-val-c))))
+  ([kind m]
+     (->> (extract-attributes m)
+          (check-options m {:unset-class "-unset-class-temporarily"
+                            :binary "-D"
+                            :better-encoding "-E"
+                            :equal-frequency "-F"
+                            :optimize "-O"})
+          (check-option-values m {:number-bins "-B"
+                                  :weight-bins "-M"}))))
+
+(deffilter unsupervised-discretize)
 
 (defmethod make-filter-options :supervised-nominal-to-binary
-  ([kind map]
-     (let [cols-val (check-options {:also-binary "-N"
-                                    :for-each-nominal "-A"}
-                                   map
-                                   [""])]
-    (into-array cols-val))))
+  ([kind m]
+     (check-options m {:also-binary "-N" :for-each-nominal "-A"})))
+
+
+(deffilter supervised-nominal-to-binary)
 
 (defmethod make-filter-options :unsupervised-nominal-to-binary
-  ([kind map]
-     (let [cols (get map :attributes)
-           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
-           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
-           cols-val-b (check-options {:invert "-V"
-                                      :also-binary "-N"
-                                      :for-each-nominal "-A"}
-                                     map
-                                     cols-val-a)]
-       (into-array cols-val-b))))
+  ([kind m]
+     (->> (extract-attributes m)
+          (check-options m {:invert "-V"
+                            :also-binary "-N"
+                            :for-each-nominal "-A"}))))
+
+(deffilter unsupervised-nominal-to-binary)
+
+(defmethod make-filter-options :numeric-to-nominal
+  ([kind m]
+     (->> (extract-attributes m) (check-options m {:invert "-V"}))))
+
+(deffilter numeric-to-nominal)
+
+(def attribute-types
+  "Mapping of Weka's attribute types from clj-ml keywords to the -T flag's representation."
+  {:numeric "NUM" :nominal "NOM" :string "STR" :date "DAT"})
+
+(defmethod make-filter-options :add-attribute
+  ([kind m]
+     (-> m
+         (update-in-when [:name] name)
+         (update-in-when [:type] attribute-types)
+         (update-in-when [:labels] (partial str/join ","))
+         (update-in-when [:column] #(if (number? %) (inc %) %))
+         (check-option-values {:type "-T"
+                                :labels "-L"
+                                :name "-N"
+                                :column "-C"
+                                :date-format "-F"}))))
+
+(deffilter add-attribute)
 
 (defmethod make-filter-options :remove-attributes
-  ([kind map]
-     (let [cols (get map :attributes)
-           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
-           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
-           cols-val-b (check-options {:invert "-V"}
-                                     map
-                                     cols-val-a)]
-       (into-array cols-val-b))))
+  ([kind m]
+     (->> (extract-attributes m)
+          (check-options m {:invert "-V"}))))
+
+(deffilter remove-attributes)
+
+(defmethod make-filter-options :remove-percentage
+  ([kind m]
+     (->> (check-option-values m {:percentage "-P"})
+          (check-options m {:invert "-V"}))))
+
+(deffilter remove-percentage)
+
+(defmethod make-filter-options :remove-range
+  ([kind m]
+     (->> (check-option-values m {:range "-R"})
+          (check-options m {:invert "-V"}))))
+
+(deffilter remove-range)
+
+(defmethod make-filter-options :remove-useless-attributes
+  ([kind m]
+     (check-option-values m {:max-variance "-M"})))
+
+(deffilter remove-useless-attributes)
 
 (defmethod make-filter-options :select-append-attributes
-  ([kind map]
-     (let [cols (get map :attributes)
-           pre-cols (reduce #(str %1 "," (+ %2 1)) "" cols)
-           cols-val-a ["-R" (.substring pre-cols 1 (.length pre-cols))]
-           cols-val-b (check-options {:invert "-V"}
-                                     map
-                                     cols-val-a)]
-       (into-array cols-val-b))))
+  ([kind m]
+     (->> (extract-attributes m)
+          (check-options m {:invert "-V"}))))
+
+(deffilter select-append-attributes)
 
 (defmethod make-filter-options :project-attributes
   ([kind options]
@@ -113,19 +169,30 @@
                   (dissoc options :invert))]
        (make-filter-options :remove-attributes opts))))
 
+(deffilter project-attributes)
+
+(deffilter clj-streamable)
+(deffilter clj-batch)
 
 ;; Creation of filters
 
-(defmacro #^{:skip-wiki true}
-  make-filter-m [kind options filter-class]
-  `(let [filter# (new ~filter-class)
-         dataset-format# (get ~options :dataset-format)
-         opts# (make-filter-options ~kind ~options)]
-     (.setOptions filter# opts#)
-     (.setInputFormat filter# dataset-format#)
-     filter#))
+(def filter-aliases
+  "Mapping of cjl-ml keywords to actual Weka classes"
+  {:supervised-discretize weka.filters.supervised.attribute.Discretize
+   :unsupervised-discretize weka.filters.unsupervised.attribute.Discretize
+   :supervised-nominal-to-binary weka.filters.supervised.attribute.NominalToBinary
+   :unsupervised-nominal-to-binary weka.filters.unsupervised.attribute.NominalToBinary
+   :numeric-to-nominal weka.filters.unsupervised.attribute.NumericToNominal
+   :add-attribute weka.filters.unsupervised.attribute.Add
+   :remove-attributes weka.filters.unsupervised.attribute.Remove
+   :remove-percentage weka.filters.unsupervised.instance.RemovePercentage
+   :remove-range weka.filters.unsupervised.instance.RemoveRange
+   :remove-useless-attributes weka.filters.unsupervised.attribute.RemoveUseless
+   :select-append-attributes weka.filters.unsupervised.attribute.Copy
+   :project-attributes weka.filters.unsupervised.attribute.Remove})
 
-(defmulti make-filter
+
+(defn make-filter
   "Creates a filter for the provided attributes format. The first argument must be a symbol
    identifying the kind of filter to generate.
    Currently the following filters are supported:
@@ -134,14 +201,26 @@
      - :unsupervised-discretize
      - :supervised-nominal-to-binary
      - :unsupervised-nominal-to-binary
+     - :numeric-to-nominal
+     - :add-attribute
      - :remove-attributes
+     - :remove-percentage
+     - :remove-range
+     - :remove-useless-attributes
      - :select-append-attributes
      - :project-attributes
+     - :clj-streamable
+     - :clj-batch
 
-    The second parameter is a map of attributes
-    for the filter to be built.
+    The second parameter is a map of attributes for the filter.
+    All filters require a :dataset-format parameter:
 
-    An example of usage could be:
+        - :dataset-format
+            The dataset where the filter is going to be applied or a
+            description of the format of its attributes. Sample value:
+            dataset, (dataset-format dataset)
+
+    An example of usage:
 
       (make-filter :remove {:attributes [0 1] :dataset-format dataset})
 
@@ -157,6 +236,7 @@
 
         - :attributes
             Index of the attributes to be discretized, sample value: [0,4,6]
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
         - :invert
             Invert mathcing sense of the columns, sample value: true
         - :kononenko
@@ -171,10 +251,7 @@
 
         - :attributes
             Index of the attributes to be discretized, sample value: [0,4,6]
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
         - :unset-class
             Does not take class attribute into account for the application
             of the filter, sample-value: true
@@ -195,10 +272,6 @@
       is transformed into k binary attributes if the class is nominal.
 
       Parameters:
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
         - :also-binary
             Sets if binary attributes are to be coded as nominal ones, sample value: true
         - :for-each-nominal
@@ -212,16 +285,45 @@
       Parameters:
 
         - :attributes
-            Index of the attributes to be binarized. Sample value: [1 2 3]
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
+            Index of the attributes to be binarized. Sample value: [0 1 2]
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
         - :also-binary
             Sets if binary attributes are to be coded as nominal ones, sample value: true
         - :for-each-nominal
             For each nominal value one binary attribute is created, not only if the
             values of the nominal attribute are greater than two., sample value: true
+
+    * :numeric-to-nominal
+
+      Transforms numeric attributes into nominal ones.
+
+      Parameters:
+
+        - :attributes
+            Index of the attributes to be transformed. Sample value: [0 1 2]
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
+        - :invert
+            Invert the selection of the columns. Sample value: true
+
+    * :add-attribute
+
+      Adds a new attribute to the dataset. The new attribute will contain all missing values.
+
+      Parameters:
+
+        - :type
+            Type of the new attribute. Valid options: :numeric, :nominal, :string, :date. Defaults to :numeric.
+        - :name
+            Name of the new attribute.
+        - :column
+            Index of where to insert the attribute, indexed by 0. You may also pass in \"first\" and \"last\".
+            Sample values: \"first\", 0, 1, \"last\"
+            The default is: \"last\"
+        - :labels
+            Vector of valid nominal values. This only applies when the type is :nominal.
+        - :format
+            The format of the date values (see ISO-8601).  This only applies when the type is :date.
+            The default is: \"yyyy-MM-dd'T'HH:mm:ss\"
 
     * :remove-attributes
 
@@ -229,12 +331,22 @@
 
       Parameters:
 
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
         - :attributes
-            Index of the attributes to remove. Sample value: [1 2 3]
+            Index of the attributes to remove. Sample value: [0 1 2]
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
+
+    * :remove-useless-attributes
+
+       Remove attributes that do not vary at all or that vary too much. All constant
+       attributes are deleted automatically, along with any that exceed the maximum percentage
+       of variance parameter. The maximum variance test is only applied to nominal attributes.
+
+     Parameters:
+
+        - :max-variance
+            Maximum variance percentage allowed (default 99).
+            Note: percentage, not decimal. e.g. 89 not 0.89
+            If you pass in a decimal Weka silently sets it to 0.0.
 
     * :select-append-attributes
 
@@ -242,14 +354,11 @@
 
       Parameters:
 
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
         - :attributes
-            Index of the attributes to remove. Sample value: [1 2 3]
+            Index of the attributes. Sample value: [1 2 3]
+            The attributes may also be specified by names as well: [:some-name, \"another-name\"]
         - :invert
-            Invert the selection of the columns. Sample value: [0 1]
+            Invert the selection of the columns. Sample value: true
 
     * :project-attributes
 
@@ -257,42 +366,67 @@
 
       Parameters:
 
-        - :dataset-format
-            The dataset where the filter is going to be applied or a
-            description of the format of its attributes. Sample value:
-            dataset, (dataset-format dataset)
         - :invert
-            Invert the selection of columns. Sample value: [0 1]"
-  (fn [kind options] kind))
+            Invert the selection of columns. Sample value: true
 
-(defmethod make-filter :supervised-discretize
-  ([kind options]
-     (make-filter-m kind options weka.filters.supervised.attribute.Discretize)))
+      * :clj-streamable
 
+      Allows you to create a custom streamable filter with clojure functions.
+      A streamable filter is appropriate when you don't need to iterate over
+      the entire dataset before processing it.
 
-(defmethod make-filter :unsupervised-discretize
-  ([kind options]
-     (make-filter-m kind options weka.filters.unsupervised.attribute.Discretize)))
+      Parameters:
 
-(defmethod make-filter :supervised-nominal-to-binary
-  ([kind options]
-     (make-filter-m kind options weka.filters.supervised.attribute.NominalToBinary)))
+        - :process
+            This function will receive individual weka.core.Instance objects (rows
+            of the dataset) and should return a newly processed Instance. The
+            actual Instance is passed in and you may change it directly. However, a better
+            approach is to copy the Instance with the copy method or Instance
+            constructor and return a modified version of the copy.
+        - :determine-dataset-format
+            This function will receive the dataset's weka.core.Instances object with
+            no actual Instance objects (i.e. just the format enocded in the attributes).
+            You must return a Instances object that contains the new format of the
+            filtered dataset.  Passing this fn is optional.  If you are not changing
+            the format of the dataset then by omitting a function will use the
+            current format.
 
-(defmethod make-filter :unsupervised-nominal-to-binary
-    ([kind options]
-     (make-filter-m kind options weka.filters.unsupervised.attribute.NominalToBinary)))
+      * :clj-batch
 
-(defmethod make-filter :remove-attributes
-  ([kind options]
-     (make-filter-m kind options weka.filters.unsupervised.attribute.Remove)))
+      Allows you to create a custom batch filter with clojure functions.
+      A batch filter is appropriate when you need to iterate over
+      the entire dataset before processing it.
 
-(defmethod make-filter :select-append-attributes
-  ([kind options]
-     (make-filter-m kind options weka.filters.unsupervised.attribute.Copy)))
+      Parameters:
 
-(defmethod make-filter :project-attributes
-  ([kind options]
-     (make-filter-m kind options weka.filters.unsupervised.attribute.Remove)))
+        - :process
+            This function will receive the entire dataset as a weka.core.Instances
+            objects.  A processed Instances object should be returned with the
+            new Instance objects added to it.  The format of the dataset (Instances)
+            that is returned from this will be returned from the filter (see below).
+        - :determine-dataset-format
+            This function will receive the dataset's weka.core.Instances object with
+            no actual Instance objects (i.e. just the format enocded in the attributes).
+            You must return a Instances object that contains the new format of the
+            filtered dataset.  Passing this fn is optional.
+            For many batch filters you need to process the entire dataset to determine
+            the correct format (e.g. filters that operate on nominal attributes). For
+            this reason the clj-batch filter will *always* use format of the dataset
+            that the process fn outputs.  In other words, if you need to operate on the
+            entire dataset before determining the format then this should be done in the
+            process-fn and nothing needs to be passed for this fn.
+
+   For examples on how to use the filters, especially the clojure filters, you may
+   refer to filters_test.clj of clj-ml."
+  [kind options]
+  (let [^Filter filter (if-let [^Class class (kind filter-aliases)]
+                         (let [^OptionHandler f (.newInstance class)]
+                           (.setOptions f (into-array String (make-filter-options kind options)))
+                           f)
+                 (case kind
+                   :clj-streamable (ClojureStreamFilter. (:process options) (:determine-dataset-format options))
+                   :clj-batch (ClojureBatchFilter. (:process options) (:determine-dataset-format options))))]
+    (doto filter (.setInputFormat (:dataset-format options)))))
 
 ;; Processing the filtering of data
 
@@ -308,9 +442,21 @@
    The :dataset-format attribute for the making of the filter will be setup to the
    dataset passed as an argument if no other value is provided.
 
-   The application of this filter is equivalent a the consequetive application of
+   The application of this filter is equivalent to the consecutive application of
    make-filter and apply-filter."
   [kind options dataset]
   (let [opts (if (nil? (:dataset-format options)) (conj options {:dataset-format dataset}))
         filter (make-filter kind opts)]
     (filter-apply filter dataset)))
+
+(defn make-apply-filters
+  "Creates new filters with the provided options and applies them to the provided dataset.
+   The :dataset-format attribute for the making of the filter will be setup to the
+   dataset passed as an argument if no other value is provided."
+  [filter-options dataset]
+  ;TODO: Consider using Weka's MultiFilter instead.. could be faster for streamable filters.
+  (reduce
+   (fn [ds [kind options]]
+     (make-apply-filter kind options ds))
+   dataset
+   filter-options))

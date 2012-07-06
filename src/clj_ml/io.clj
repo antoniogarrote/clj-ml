@@ -9,7 +9,7 @@
    persistence mechanisms."
   (:import (weka.core.converters CSVLoader ArffLoader XRFFLoader)
            (weka.core.converters CSVSaver ArffSaver XRFFSaver)
-           (java.io File)
+           (java.io File InputStream OutputStream)
            (java.net URL URI)))
 
 
@@ -21,10 +21,11 @@
 
 (defmacro m-load-instances [loader source]
   `(do
-     (if (= (class ~source) java.lang.String)
-       (.setSource ~loader (new URL ~source))
-       (if (= (class ~source) java.io.File)
-         (.setFile ~loader ~source)))
+     (if (= (class ~source)  java.io.File)
+       (.setFile ~loader ~source)
+       (.setSource ~loader (if (= (class ~source) java.lang.String)
+                             (new URL ~source)
+                             ^InputStream ~source)))
      (.getDataSet ~loader)))
 
 (defmethod load-instances :arff
@@ -43,12 +44,6 @@
      (let [loader (new CSVLoader)]
        (m-load-instances loader source))))
 
-(defmethod load-instances :mongodb
-  ([kind source & options]
-     (let [database {:database source}
-           name {:dataset-name source}]
-       (clj-ml.data-store/data-store-load-dataset :mongodb database name options))))
-
 ;; Saving of instances
 
 (defmulti save-instances
@@ -57,10 +52,10 @@
 
 (defmacro m-save-instances [saver destiny instances]
   `(do
-     (if (= (class ~destiny) java.lang.String)
-       (.setFile ~saver (new File (new URI ~destiny)))
-       (if (= (class ~destiny) java.io.File)
-         (.setFile ~saver ~destiny)))
+     (condp #(isa? %2 %1) (class ~destiny)
+       String (.setFile ~saver (File. (URI. ~destiny)))
+       File (.setFile ~saver ~destiny)
+       OutputStream (.setDestination ~saver ~destiny))
      (.setInstances ~saver ~instances)
      (.writeBatch ~saver)))
 
@@ -78,7 +73,3 @@
   ([kind destiny instances & options]
      (let [saver (new CSVSaver)]
        (m-save-instances saver destiny instances))))
-
-(defmethod save-instances :mongodb
-  ([kind destiny instances & options]
-     (clj-ml.data-store/data-store-save-dataset :mongodb destiny instances options)))

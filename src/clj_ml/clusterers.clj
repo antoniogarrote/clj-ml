@@ -13,8 +13,7 @@
    having the full data set in main memory. Functions for evaluating the clusterer
    as well as for clustering new instances are also supported
 "
-  (:use [clj-ml utils data distance-functions]
-        [incanter charts])
+  (:use [clj-ml utils data distance-functions options-utils])
   (:import (java.util Date Random)
            (weka.clusterers ClusterEvaluation SimpleKMeans Cobweb EM)))
 
@@ -27,37 +26,33 @@
   (fn [kind map] kind))
 
 (defmethod make-clusterer-options :k-means
-  ([kind map]
-     (let [cols-val (check-options {:display-standard-deviation "-V"
+  ([kind m]
+     (let [cols-val (check-options m {:display-standard-deviation "-V"
                                     :replace-missing-values "-M"
-                                    :preserve-instances-order "-O"}
-                                     map
-                                     [""])
-           cols-val-a (check-option-values {:number-clusters "-N"
-                                            :random-seed "-S"
-                                            :number-iterations "-I"}
-                                           map
+                                      :preserve-instances-order "-O"}
+                                   [""])
+           cols-val-a (check-option-values m {:number-clusters "-N"
+                                              :random-seed "-S"
+                                              :number-iterations "-I"}
                                            cols-val)]
     (into-array cols-val-a))))
 
 
 (defmethod make-clusterer-options :cobweb
-  ([kind map]
-     (let [cols-val-a (check-option-values {:acuity "-A"
-                                            :cutoff "-C"
-                                            :random-seed "-S"}
-                                           map
+  ([kind m]
+     (let [cols-val-a (check-option-values m {:acuity "-A"
+                                              :cutoff "-C"
+                                              :random-seed "-S"}
                                            [""])]
     (into-array cols-val-a))))
 
 
 (defmethod make-clusterer-options :expectation-maximization
-  ([kind map]
-     (let [cols-val-a (check-option-values {:number-clusters "-N"
-                                            :maximum-iterations "-I"
-                                            :minimum-standard-deviation "-M"
-                                            :random-seed "-S"}
-                                           map
+  ([kind m]
+     (let [cols-val-a (check-option-values m {:number-clusters "-N"
+                                              :maximum-iterations "-I"
+                                              :minimum-standard-deviation "-M"
+                                              :random-seed "-S"}
                                            [""])]
     (into-array cols-val-a))))
 

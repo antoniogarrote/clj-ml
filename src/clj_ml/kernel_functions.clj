@@ -8,7 +8,7 @@
   "Kernel functions that can be passed as parameters to support vector machines classifiers.
 
    Polynomic, radial basis and string kernels are supported"
-  (:use [clj-ml utils data])
+  (:use [clj-ml utils data options-utils])
   (:import (weka.classifiers.functions.supportVector PolyKernel RBFKernel StringKernel)))
 
 (defmulti make-kernel-function-options
@@ -17,19 +17,17 @@
 
 (defmethod make-kernel-function-options :polynomic
   ([kind map]
-     (let [cols-val (check-option-values {:cache-size "-C"
+     (let [cols-val (check-option-values map {:cache-size "-C"
                                           :exponent "-E"
                                           :use=lower-order-terms "-L"}
-                                         map
                                          [""])]
        (into-array cols-val))))
 
 
 (defmethod make-kernel-function-options :radial-basis
   ([kind map]
-     (let [cols-val (check-option-values {:cache-size "-C"
-                                          :gamma "-G"}
-                                         map
+     (let [cols-val (check-option-values map {:cache-size "-C"
+                                              :gamma "-G"}
                                          [""])]
        (into-array cols-val))))
 
@@ -48,12 +46,11 @@
                             (conj (conj pre-values-a "-P" ) "0"))
                           pre-values-a)
            _foo (println (str "pre b" pre-values-b))
-           cols-val (check-option-values {:cache-size "-C"
-                                          :internal-cache-size "-IC"
-                                          :lambda "-L"
-                                          :sequence-length "-ssl"
-                                          :maximum-sequence-length "-ssl-max"}
-                                         map
+           cols-val (check-option-values map {:cache-size "-C"
+                                              :internal-cache-size "-IC"
+                                              :lambda "-L"
+                                              :sequence-length "-ssl"
+                                              :maximum-sequence-length "-ssl-max"}
                                          pre-values-b)]
        (into-array cols-val))))
 
