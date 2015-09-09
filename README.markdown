@@ -19,18 +19,21 @@ the jar manually.
 
 ### Installing from Clojars
 
-  [clj-ml "0.0.3-SNAPSHOT"]
+```clojure
+[clj-ml "0.0.3-SNAPSHOT"]
+```
 
 ### Installing from Maven
 
 (add Clojars repository)
 
- <dependency>
+```xml
+<dependency>
    <groupId>clj-ml</groupId>
    <artifactId>clj-ml</artifactId>
    <version>0.0.3-SNAPSHOT</version>
  </dependency>
-
+```
 ## Supported algorithms
 
  * Filters
@@ -51,16 +54,19 @@ the jar manually.
 
 * I/O of data
 
-    REPL>(use 'clj-ml.io)
+```clojure
+    REPL> (use 'clj-ml.io)
 
-    REPL>; Loading data from an ARFF file, XRFF and CSV are also supported
-    REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
+    REPL> ; Loading data from an ARFF file, XRFF and CSV are also supported
+    REPL> (def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
 
-    REPL>; Saving data in a different format
-    REPL>(save-instances :csv "file:///Users/antonio.garrote/Desktop/iris.csv"  ds)
+    REPL> ; Saving data in a different format
+    REPL> (save-instances :csv "file:///Users/antonio.garrote/Desktop/iris.csv"  ds)
+```
 
 * Working with datasets
 
+```clojure
     REPL>(use 'clj-ml.data)
 
     REPL>; Defining a dataset
@@ -89,9 +95,11 @@ the jar manually.
 
     REPL>(instance-to-vector (dataset-at ds 0))
     [12.0 34.0 :good]
+```
 
 * Filtering datasets
 
+```clojure
     REPL>(us 'clj-ml.filters)
 
     REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
@@ -100,9 +108,11 @@ the jar manually.
     REPL>(def  discretize (make-filter :unsupervised-discretize {:dataset *ds* :attributes [0 2]}))
 
     REPL>(def filtered-ds (filter-process discretize ds))
+```
 
 * Using classifiers
 
+```clojure
     REPL>(use 'clj-ml.classifiers)
 
     REPL>; Building a classifier using a  C4.5 decission tree
@@ -113,6 +123,7 @@ the jar manually.
 
     REPL>; Training the classifier
     REPL>(classifier-train classifier ds)
+
 
      #<J48 J48 pruned tree
      ------------------
@@ -208,9 +219,11 @@ the jar manually.
 
     REPL>(serialize-to-file classifier
     REPL> "/Users/antonio.garrote/Desktop/classifier.bin")
+```
 
 * Using clusterers
 
+```clojure
     REPL>(use 'clj-ml.clusterers)
 
     REPL> ; we build a clusterer using k-means and three clusters
@@ -242,7 +255,7 @@ the jar manually.
       petallength                 3.7587            4.26           1.464           5.552
       petalwidth                  1.1987           1.326           0.244           2.026
       class                  Iris-setosa Iris-versicolor     Iris-setosa  Iris-virginica
-
+```
 
 ## License
 
