@@ -100,7 +100,7 @@ the jar manually.
 * Filtering datasets
 
 ```clojure
-    REPL>(us 'clj-ml.filters)
+    REPL>(use 'clj-ml.filters)
 
     REPL>(def ds (load-instances :arff "file:///Applications/weka-3-6-2/data/iris.arff"))
 
