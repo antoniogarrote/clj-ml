@@ -6,7 +6,7 @@
 (ns #^{:author "Antonio Garrote <antoniogarrote@gmail.com>"}
   clj-ml.classifiers
   "This namespace contains several functions for building classifiers using different
-   classification algorithms: Bayes networks, multilayer perceptron, decission tree or
+   classification algorithms: Bayes networks, multilayer perceptron, decision tree or
    support vector machines are available. Some of these classifiers have incremental
    versions so they can be built without having all the dataset instances in memory.
 
@@ -17,8 +17,8 @@
 
     (use 'clj-ml.classifiers)
 
-    ; Building a classifier using a  C4.5 decission tree
-    (def *classifier* (make-classifier :decission-tree :c45))
+    ; Building a classifier using a  C4.5 decision tree
+    (def *classifier* (make-classifier :decision-tree :c45))
 
     ; We set the class attribute for the loaded dataset.
     ; *dataset* is supposed to contain a set of instances.
@@ -77,7 +77,7 @@
   "Creates the right parameters for a classifier"
   (fn [kind algorithm map] [kind algorithm]))
 
-(defmethod make-classifier-options [:decission-tree :c45]
+(defmethod make-classifier-options [:decision-tree :c45]
   ([kind algorithm map]
      (let [cols-val (check-options {:unpruned "-U"
                                     :reduced-error-pruning "-R"
@@ -154,11 +154,11 @@
   "Creates a new classifier for the given kind algorithm and options.
 
    The first argument identifies the kind of classifier and the second
-   argument the algorithm to use, e.g. :decission-tree :c45.
+   argument the algorithm to use, e.g. :decision-tree :c45.
 
    The classifiers currently supported are:
 
-     - :decission-tree :c45
+     - :decision-tree :c45
      - :bayes :naive
      - :neural-network :mutilayer-perceptron
      - :support-vector-machine :smo
@@ -169,9 +169,9 @@
    This is the description of the supported classifiers and the accepted
    option parameters for each of them:
 
-    * :decission-tree :c45
+    * :decision-tree :c45
 
-      A classifier building a pruned or unpruned C 4.5 decission tree using
+      A classifier building a pruned or unpruned C 4.5 decision tree using
       Weka J 4.8 implementation.
 
       Parameters:
@@ -271,7 +271,7 @@
 "
   (fn [kind algorithm & options] [kind algorithm]))
 
-(defmethod make-classifier [:decission-tree :c45]
+(defmethod make-classifier [:decision-tree :c45]
   ([kind algorithm & options]
      (make-classifier-m kind algorithm J48 options)))
 
